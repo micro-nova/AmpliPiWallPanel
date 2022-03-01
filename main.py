@@ -1,14 +1,15 @@
-import urequests
-import json
-from machine import Pin, UART
-import network
+import time
 
-# debugUart = UART(0, baudrate=115200, tx=1, rx=3)
-tftUart = UART(2, baudrate=115200, tx=16, rx=17)
+import network
+from machine import Pin
+import DisplaySerial
+from API import command_stream, get_stream_id_from_zone
+from Polling import poll
+
 tftReset = Pin(4, Pin.OUT)
 
 # constants for temporarily hardcoded stuff
-IP = "192.168.0.195"
+
 ZONE_ID = 4
 WIFI_SSID = "home_2G"
 WIFI_PASSWD = "***REMOVED***"
@@ -17,46 +18,9 @@ WIFI_PASSWD = "***REMOVED***"
 PLAY_BUTTON_ID = 1
 NEXT_BUTTON_ID = 2
 PREV_BUTTON_ID = 3
-SONG_NAME_VAR = "gname"
-ARTIST_NAME_VAR = "gartist"
 
-
-def get_zone(zid):
-    response = json.loads(urequests.get(f'http://{IP}/api/zones/{zid}').text)
-    print(response)
-    return response
-
-
-def get_source(sid):
-    response = json.loads(urequests.get(f'http://{IP}/api/sources/{sid}').text)
-    print(response)
-    return response
-
-
-def command_stream(sid, cmd):
-    response = json.loads(urequests.post(f'http://{IP}/api/streams/{sid}/{cmd}').text)
-    print(response)
-
-
-def send_title(title):
-    # check if string is too long and trim if it is
-    if len(title) > 60:
-        title = title[0:59]
-    tftUart.write(f'{SONG_NAME_VAR}.txt="{title}"')
-
-
-def send_artist(artist):
-    # check if string is too long and trim if it is
-    if len(artist) > 60:
-        artist = artist[0:59]
-    tftUart.write(f'{ARTIST_NAME_VAR}.txt="{artist}"')
-
-def update_play_pause_button(playing):
-    if playing:
-        tftUart.write(f'{SONG_NAME_VAR}.txt="{title}"')
-    else:
-        tftUart.write(f'{SONG_NAME_VAR}.txt="{title}"')
-
+# polling constants
+POLLING_INTERVAL_SECONDS = 2
 
 
 def on_play():
@@ -74,17 +38,6 @@ def on_next():
 
 def on_prev():
     command_stream(stream_id, "prev")
-
-
-def get_stream_id_from_zone(zid):
-    zone = get_zone(zid)
-    source = get_source(zone["source_id"])
-    source_input = source["input"]
-
-    if source_input.startswith("local"):
-        return None
-
-    return int(source["input"].split("=")[1])
 
 
 # initial startup stuff
@@ -108,16 +61,20 @@ print(f"stream id is: {stream_id}")
 
 is_playing = True
 
-send_artist("test artist")
-send_title("test title")
+last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
 
 message = b''
 while True:
     # poll info from amplipi api
+    curr_time = time.time()
+    if curr_time - last_poll_time >= POLLING_INTERVAL_SECONDS:
+        last_poll_time = time.time()
+        poll(ZONE_ID)
+        print("polled from amplipi")
 
     # poll serial messages from display
-    if tftUart.any():
-        message += tftUart.read()
+    if DisplaySerial.any():
+        message += DisplaySerial.read()
         print("read stuff in!")
 
         if message[-3:] == bytes([0xff, 0xff, 0xff]):
