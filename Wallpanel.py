@@ -7,18 +7,19 @@ import network
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 tftReset = Pin(4, Pin.OUT)
 
-#constants for temporarily hardcoded stuff
+# constants for temporarily hardcoded stuff
 IP = "192.168.0.195"
 ZONE_ID = 4
 WIFI_SSID = "home_2G"
 WIFI_PASSWD = "***REMOVED***"
 
-#constants for ui
+# constants for ui
 PLAY_BUTTON_ID = 1
 NEXT_BUTTON_ID = 2
 PREV_BUTTON_ID = 3
 SONG_NAME_VAR = "gname"
 ARTIST_NAME_VAR = "gartist"
+
 
 def get_zone(zid):
     response = json.loads(urequests.get(f'http://{IP}/api/zones/{zid}').text)
@@ -50,6 +51,13 @@ def send_artist(artist):
         artist = artist[0:59]
     tftUart.write(f'{ARTIST_NAME_VAR}.txt="{artist}"')
 
+def update_play_pause_button(playing):
+    if playing:
+        tftUart.write(f'{SONG_NAME_VAR}.txt="{title}"')
+    else:
+        tftUart.write(f'{SONG_NAME_VAR}.txt="{title}"')
+
+
 
 def on_play():
     command_stream(stream_id, "play")
@@ -58,7 +66,7 @@ def on_play():
 
 def on_pause():
     command_stream(stream_id, "pause")
-    
+
 
 def on_next():
     command_stream(stream_id, "next")
@@ -72,10 +80,10 @@ def get_stream_id_from_zone(zid):
     zone = get_zone(zid)
     source = get_source(zone["source_id"])
     source_input = source["input"]
-    
+
     if source_input.startswith("local"):
         return None
-    
+
     return int(source["input"].split("=")[1])
 
 
@@ -90,7 +98,7 @@ if not wlan.isconnected():
     wlan.connect(WIFI_SSID, WIFI_PASSWD)
     while not wlan.isconnected():
         pass
-    
+
     print('connected!')
 
 # currently not doing any polling from amplipi at all
@@ -105,6 +113,9 @@ send_title("test title")
 
 message = b''
 while True:
+    # poll info from amplipi api
+
+    # poll serial messages from display
     if tftUart.any():
         message += tftUart.read()
         print("read stuff in!")
@@ -128,7 +139,7 @@ while True:
                 if id == NEXT_BUTTON_ID:
                     on_next()
 
-                if id == PREV_BUTTON_ID:               
+                if id == PREV_BUTTON_ID:
                     on_prev()
 
             message = b''
