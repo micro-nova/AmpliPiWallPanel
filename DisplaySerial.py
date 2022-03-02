@@ -1,8 +1,8 @@
 from machine import UART
 
 PLAY_BUTTON_OBJNAME = "bplay"
-SONG_NAME_VAR = "gname"
-ARTIST_NAME_VAR = "gartist"
+SONG_NAME_VAR = "tname"
+ARTIST_NAME_VAR = "tartist"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
@@ -16,15 +16,15 @@ PAUSE_PIC_ID = 1
 
 def send_title(title):
     # check if string is too long and trim if it is
-    if len(title) > 60:
-        title = title[0:59]
+    if len(title) > 30:
+        title = title[0:26] + "..."
     uartWrite(f'{SONG_NAME_VAR}.txt="{title}"')
 
 
 def send_artist(artist):
     # check if string is too long and trim if it is
-    if len(artist) > 60:
-        artist = artist[0:59]
+    if len(artist) > 30:
+        artist = artist[0:26] + "..."
     uartWrite(f'{ARTIST_NAME_VAR}.txt="{artist}"')
 
 
