@@ -3,7 +3,7 @@ import time
 import network
 from machine import Pin
 import DisplaySerial
-from API import command_stream, get_stream_id_from_zone, get_image
+from API import command_stream, get_stream_id_from_zone, get_image, set_vol_f
 from ImageRendering import draw_image
 from Polling import poll, get_is_playing, poll_playing, get_source
 
@@ -19,6 +19,9 @@ WIFI_PASSWD = "***REMOVED***"
 PLAY_BUTTON_ID = 1
 NEXT_BUTTON_ID = 2
 PREV_BUTTON_ID = 3
+VOL_SLIDER_ID = 6
+
+VOL_INT_MAX = 1024.0
 
 # polling constants
 POLLING_INTERVAL_SECONDS = 2
@@ -84,7 +87,18 @@ while True:
         if message[-3:] == bytes([0xff, 0xff, 0xff]):
             print(f"message recieved!\n{message}")
 
-            if message[0] == 0x65 and message[3] == 0x00:
+            if message[0] == 0x66:
+                id = message[1]
+                if id == VOL_SLIDER_ID:
+                    # new_vol = int.from_bytes(message[5:8], byteorder='big', signed=False)
+                    new_vol = message[5] + (message[6] << 8) + (message[7] << 16) + (message[8] << 24)
+                    vol_f = new_vol / VOL_INT_MAX
+                    set_vol_f(ZONE_ID, vol_f)
+                    print(f'new volume: {vol_f}')
+
+                pass
+
+            elif message[0] == 0x65 and message[3] == 0x00:
                 id = message[2]
 
                 print("valid message")
