@@ -4,7 +4,7 @@ import network
 from machine import Pin
 import DisplaySerial
 from API import command_stream, get_stream_id_from_zone
-from Polling import poll
+from Polling import poll, get_is_playing, poll_playing, get_source
 
 tftReset = Pin(4, Pin.OUT)
 
@@ -59,8 +59,6 @@ stream_id = get_stream_id_from_zone(ZONE_ID)
 
 print(f"stream id is: {stream_id}")
 
-is_playing = True
-
 last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
 
 message = b''
@@ -86,12 +84,11 @@ while True:
                 print("valid message")
 
                 if id == PLAY_BUTTON_ID:
-                    if is_playing:
+                    if get_is_playing():
                         on_pause()
                     else:
                         on_play()
-
-                    is_playing = not is_playing
+                    poll_playing(get_source(ZONE_ID))
 
                 if id == NEXT_BUTTON_ID:
                     on_next()

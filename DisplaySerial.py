@@ -14,7 +14,6 @@ PLAY_PIC_ID = 2
 PAUSE_PIC_ID = 1
 
 
-
 def send_title(title):
     # check if string is too long and trim if it is
     if len(title) > 60:
@@ -32,10 +31,10 @@ def send_artist(artist):
 def update_play_pause_button(playing):
     if playing:
         uartWrite(f'{PLAY_BUTTON_OBJNAME}.pic={PAUSE_PIC_ID}')
-        # uartWrite(f'{PLAY_BUTTON_OBJNAME}.pic2={PAUSE_PIC_ID}')
+        uartWrite(f'{PLAY_BUTTON_OBJNAME}.pic2={PAUSE_PIC_ID}')
     else:
         uartWrite(f'{PLAY_BUTTON_OBJNAME}.pic={PLAY_PIC_ID}')
-        # uartWrite(f'{PLAY_BUTTON_OBJNAME}.pic2={PLAY_PIC_ID}')
+        uartWrite(f'{PLAY_BUTTON_OBJNAME}.pic2={PLAY_PIC_ID}')
 
 
 def any():
