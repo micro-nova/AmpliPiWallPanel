@@ -3,7 +3,8 @@ import time
 import network
 from machine import Pin
 import DisplaySerial
-from API import command_stream, get_stream_id_from_zone
+from API import command_stream, get_stream_id_from_zone, get_image
+from ImageRendering import draw_image
 from Polling import poll, get_is_playing, poll_playing, get_source
 
 tftReset = Pin(4, Pin.OUT)
@@ -60,6 +61,11 @@ stream_id = get_stream_id_from_zone(ZONE_ID)
 print(f"stream id is: {stream_id}")
 
 last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
+
+
+test_image = get_image(ZONE_ID, 25)
+# print(test_image.content) # .text
+draw_image(test_image.content)
 
 message = b''
 while True:

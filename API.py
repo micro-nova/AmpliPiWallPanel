@@ -4,22 +4,27 @@ import json
 IP = "192.168.0.195"
 
 
-def get_source_json(sid):
-    response = json.loads(urequests.get(f'http://{IP}/api/sources/{sid}').text)
+def get_source_json(source_id):
+    response = json.loads(urequests.get(f'http://{IP}/api/sources/{source_id}').text)
     return response
 
 
-def get_zone_json(zid):
-    response = json.loads(urequests.get(f'http://{IP}/api/zones/{zid}').text)
+def get_zone_json(zone_id):
+    response = json.loads(urequests.get(f'http://{IP}/api/zones/{zone_id}').text)
     return response
 
 
-def command_stream(sid, cmd):
-    urequests.post(f'http://{IP}/api/streams/{sid}/{cmd}')
+def command_stream(stream_id, cmd):
+    urequests.post(f'http://{IP}/api/streams/{stream_id}/{cmd}')
 
 
-def get_stream_id_from_zone(zid):
-    zone = get_zone_json(zid)
+def get_image(zone_id, height):
+    source_id = get_zone_json(zone_id)["source_id"]
+    return urequests.get(f'http://{IP}/api/sources/{source_id}/image/{height}')
+
+
+def get_stream_id_from_zone(zone_id):
+    zone = get_zone_json(zone_id)
     source = get_source_json(zone["source_id"])
     source_input = source["input"]
 
