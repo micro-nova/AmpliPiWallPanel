@@ -63,9 +63,9 @@ print(f"stream id is: {stream_id}")
 last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
 
 
-test_image = get_image(ZONE_ID, 25)
-# print(test_image.content) # .text
-draw_image(test_image.content)
+# uncomment for very corrupt image to appear on screen
+# test_image = get_image(ZONE_ID, 25)
+# draw_image(test_image.content)
 
 message = b''
 while True:
