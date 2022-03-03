@@ -3,8 +3,7 @@ import time
 import network
 from machine import Pin
 import DisplaySerial
-from API import command_stream, get_stream_id_from_zone, get_image, set_vol_f, get_vol_f
-from ImageRendering import draw_image
+from API import command_stream, get_stream_id_from_zone, set_vol_f, get_vol_f
 from Polling import poll, get_is_playing, poll_playing, get_source
 
 tft_reset = Pin(4, Pin.OUT)
@@ -20,6 +19,11 @@ PLAY_BUTTON_ID = 1
 NEXT_BUTTON_ID = 2
 PREV_BUTTON_ID = 3
 VOL_SLIDER_ID = 6
+
+# pages
+MAIN_PAGE = 0
+CONFIG_PAGE = 2
+SSID_PAGE = 3
 
 # polling constants
 POLLING_INTERVAL_SECONDS = 1
@@ -84,6 +88,7 @@ while True:
         message += DisplaySerial.uart_read()
 
         if message[-3:] == bytes([0xff, 0xff, 0xff]):
+            if message[1] == MAIN_PAGE:
             # message received
             if message[0] == 0x66:
                 # valid slider update
