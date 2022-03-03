@@ -19,13 +19,7 @@ def command_stream(stream_id, cmd):
 
 
 def set_vol_f(zone_id, vol_f):
-    header = {"Content-Type": "application/json\r\n"}
-    json_str = '{"vol_f":' + str(vol_f) + '}'
-
-    # print(urequests.patch(f'http://{IP}/api/zones/{zone_id}', data=json_str).text, headers=header)
-    urequests.request("PATCH", f'http://{IP}/api/zones/{zone_id}', data=json_str, headers=header)
-    # print(json_str)
-    # urequests.patch(f'http://{IP}/api/zones/{zone_id}', data={'vol_f': f'{vol_f}'})
+    print(urequests.patch(f'http://{IP}/api/zones/{zone_id}', json={"vol_f": vol_f}).text)
 
 
 def get_image(zone_id, height):
