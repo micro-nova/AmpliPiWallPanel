@@ -26,7 +26,7 @@ def draw_image(image):
             # color = round(rshifted + gshifted * b5shift + bshifted * b5shift * b6shift)
             color = rshifted + (gshifted << 5) + (bshifted << 11)
             # color = 65535
-            DisplaySerial.uartWrite(f'fill {x*3},{y*3},3,3,{color}')
+            DisplaySerial.uart_write(f'fill {x * 3},{y * 3},3,3,{color}')
 
 
 

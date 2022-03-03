@@ -19,7 +19,12 @@ def command_stream(stream_id, cmd):
 
 
 def set_vol_f(zone_id, vol_f):
-    print(urequests.patch(f'http://{IP}/api/zones/{zone_id}', json={"vol_f": vol_f}).text)
+    urequests.patch(f'http://{IP}/api/zones/{zone_id}', json={"vol_f": vol_f})
+
+
+def get_vol_f(zone_id):
+    zone_response = get_zone_json(zone_id)
+    return zone_response["vol_f"]
 
 
 def get_image(zone_id, height):
