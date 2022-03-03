@@ -3,10 +3,11 @@ import time
 import network
 from machine import Pin
 import DisplaySerial
-from API import command_stream, get_stream_id_from_zone
+from API import command_stream, get_stream_id_from_zone, get_image, set_vol_f, get_vol_f
+from ImageRendering import draw_image
 from Polling import poll, get_is_playing, poll_playing, get_source
 
-tftReset = Pin(4, Pin.OUT)
+tft_reset = Pin(4, Pin.OUT)
 
 # constants for temporarily hardcoded stuff
 
@@ -18,9 +19,10 @@ WIFI_PASSWD = "***REMOVED***"
 PLAY_BUTTON_ID = 1
 NEXT_BUTTON_ID = 2
 PREV_BUTTON_ID = 3
+VOL_SLIDER_ID = 6
 
 # polling constants
-POLLING_INTERVAL_SECONDS = 2
+POLLING_INTERVAL_SECONDS = 1
 
 
 def on_play():
@@ -42,7 +44,7 @@ def on_prev():
 
 # initial startup stuff
 print('resetting screen...')
-tftReset.value(0)
+tft_reset.value(0)
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -54,34 +56,46 @@ if not wlan.isconnected():
 
     print('connected!')
 
-# currently not doing any polling from amplipi at all
 stream_id = get_stream_id_from_zone(ZONE_ID)
 
 print(f"stream id is: {stream_id}")
 
 last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
 
+# uncomment for very corrupt image to appear on screen
+# test_image = get_image(ZONE_ID, 25)
+# draw_image(test_image.content)
+
+# init gui volume slider
+DisplaySerial.set_vol_slider_vol_f(get_vol_f(ZONE_ID))
+
 message = b''
 while True:
     # poll info from amplipi api
     curr_time = time.time()
-    if curr_time - last_poll_time >= POLLING_INTERVAL_SECONDS:
+    if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
         last_poll_time = time.time()
         poll(ZONE_ID)
         print("polled from amplipi")
 
     # poll serial messages from display
-    if DisplaySerial.any():
-        message += DisplaySerial.read()
-        print("read stuff in!")
+    if DisplaySerial.uart_any():
+        # read stuff in
+        message += DisplaySerial.uart_read()
 
         if message[-3:] == bytes([0xff, 0xff, 0xff]):
-            print(f"message recieved!\n{message}")
+            # message received
+            if message[0] == 0x66:
+                # valid slider update
+                id = message[1]
+                if id == VOL_SLIDER_ID:
+                    vol_f = DisplaySerial.get_vol_slider_vol_f(message)
+                    set_vol_f(ZONE_ID, vol_f)
+                    print(f'new volume: {vol_f}')
 
-            if message[0] == 0x65 and message[3] == 0x00:
+            elif message[0] == 0x65 and message[3] == 0x00:
+                # valid press/release event
                 id = message[2]
-
-                print("valid message")
 
                 if id == PLAY_BUTTON_ID:
                     if get_is_playing():
