@@ -12,6 +12,10 @@ ARTIST_NAME_OBJNAME = "tartist"
 VOL_OBJNAME = "hvol"
 VOL_SLIDER_MAX = 1024.0
 
+# serial constants
+BUTTON_MESSAGE = 0x65
+SLIDER_MESSAGE = 0x64
+
 # page names
 MAIN_PAGE_NAME = "mainpage"
 CONFIG_PAGE_NAME = "configpage"
@@ -20,18 +24,27 @@ SSID_PAGE_NAME = "ssidpage"
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
 
+def change_page(pagename):
+    uart_write(f'page {pagename}')
+
+
 def send_title(title):
     # check if string is too long and trim if it is
     if len(title) > 30:
         title = title[0:26] + "..."
-    uart_write(f'{MAIN_PAGE_NAME}.{SONG_NAME_OBJNAME}.txt="{title}"')
+    set_component_txt(MAIN_PAGE_NAME, SONG_NAME_OBJNAME, title)
 
 
 def send_artist(artist):
     # check if string is too long and trim if it is
     if len(artist) > 30:
         artist = artist[0:26] + "..."
-    uart_write(f'{MAIN_PAGE_NAME}.{ARTIST_NAME_OBJNAME}.txt="{artist}"')
+    set_component_txt(MAIN_PAGE_NAME, ARTIST_NAME_OBJNAME, artist)
+    # uart_write(f'{MAIN_PAGE_NAME}.{ARTIST_NAME_OBJNAME}.txt="{artist}"')
+
+
+def set_component_txt(pagename, componentname, txt):
+    uart_write(f'{pagename}.{componentname}.txt="{txt}"')
 
 
 def update_play_pause_button(playing):
@@ -66,3 +79,4 @@ def uart_read():
 def uart_write(string):
     tftUart.write(string)
     tftUart.write(TERM)  # message termination for
+
