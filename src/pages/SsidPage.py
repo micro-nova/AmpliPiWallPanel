@@ -1,10 +1,8 @@
-
 # component names
 import Wifi
-from DisplaySerial import BUTTON_MESSAGE
+from DisplaySerial import BUTTON_MESSAGE, set_visible
 
 _SSID_OBJNAME = "tssid"  # num
-
 
 # component ids
 _SSID_ID_START = 1  # + index
@@ -15,6 +13,7 @@ ssids = []
 start_index = 0
 
 
+# only call this when on this page
 def load_ssid_page():
     global ssids
     # get list of ssid
@@ -33,7 +32,6 @@ def handle_ssid_page_msg(message):
             # if ssid_index < len(ssids):
             #     ssid = ssids[ssid_index]
             # else:
-
 
 
 # decrement list start index, keep within range
@@ -70,4 +68,4 @@ def _update_ssid_fields(ssids):
     # make sure all fields are visible
     # TODO: make sure this is only called when on this page since set_visible only works locally
     for i in range(_NUM_SSID_FIELDS):
-        pass
+        set_visible(i + _SSID_ID_START, True)

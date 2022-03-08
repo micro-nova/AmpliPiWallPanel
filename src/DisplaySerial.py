@@ -40,7 +40,6 @@ def send_artist(artist):
     if len(artist) > 30:
         artist = artist[0:26] + "..."
     set_component_txt(MAIN_PAGE_NAME, ARTIST_NAME_OBJNAME, artist)
-    # uart_write(f'{MAIN_PAGE_NAME}.{ARTIST_NAME_OBJNAME}.txt="{artist}"')
 
 
 def set_component_txt(pagename, componentname, txt):
@@ -82,5 +81,5 @@ def uart_read():
 
 def uart_write(string):
     tftUart.write(string)
-    tftUart.write(TERM)  # message termination for
+    tftUart.write(TERM)  # message termination for nextion uart
 
