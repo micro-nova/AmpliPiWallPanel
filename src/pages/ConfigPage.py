@@ -9,6 +9,7 @@ _STATUS_LABEL_OBJNAME = 'tstatuslabel'
 # component ids
 _CONNECT_BUTTON_ID = 8
 _BACK_BUTTON_ID = 9
+_SSID_FIELD_ID = 3
 
 ssid_list = []
 
@@ -53,6 +54,9 @@ def handle_config_page_msg(message):
             # back button should reset the fields to their saved state
             # nextion handles the page change on press already
             load_config_page()
+        elif id == _SSID_FIELD_ID:
+            # nextion will switch to ssidpage, so we need to init that page
+            pass
     # when connect button is pressed, update wifi config
     # then call disconnect() and try_connect()
     # then

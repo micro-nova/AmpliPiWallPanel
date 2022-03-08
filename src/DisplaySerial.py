@@ -47,6 +47,10 @@ def set_component_txt(pagename, componentname, txt):
     uart_write(f'{pagename}.{componentname}.txt="{txt}"')
 
 
+def set_visible(id, visible):
+    uart_write(f'vis {id},{1 if visible else 0}')
+
+
 def update_play_pause_button(playing):
     if playing:
         uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PAUSE_PIC_ID}')
