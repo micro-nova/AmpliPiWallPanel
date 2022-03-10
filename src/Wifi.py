@@ -3,6 +3,7 @@ import network
 import time
 
 from DisplaySerial import change_page, CONFIG_PAGE_NAME
+from pages.ConfigPage import load_config_page
 
 _WIFI_CONFIG_FILENAME = '../wifi.txt'
 
@@ -38,6 +39,9 @@ def _save_wifi_info(wifi_file_dict):
 # returns a list of tuples that look like
 # (ssid, bssid, channel, RSSI, authmode, hidden)
 def get_ssid_list():
+    _wlan.active(False)
+    time.sleep_ms(100)
+    _wlan.active(True)
     tuples = _wlan.scan()
     ssids = []
     for t in tuples:
@@ -78,6 +82,7 @@ def try_connect():
         if not _set_page_config:
             print("Please configure wifi settings.")
             change_page(CONFIG_PAGE_NAME)
+            load_config_page()
             _set_page_config = True
         return False
 

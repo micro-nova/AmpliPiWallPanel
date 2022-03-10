@@ -1,3 +1,5 @@
+import time
+
 import Wifi
 from DisplaySerial import set_component_txt, CONFIG_PAGE_NAME, BUTTON_MESSAGE, TEXT_MESSAGE, receive_text_message_str
 
@@ -30,8 +32,11 @@ def load_config_page():
 
     # update page components
     print(f'updating ssid and passworld fields to {ssid} and {password}')
+    time.sleep_ms(10)
     set_component_txt(CONFIG_PAGE_NAME, _SSID_FIELD_OBJNAME, ssid)
+    time.sleep_ms(10)
     set_component_txt(CONFIG_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, password)
+    time.sleep_ms(10)
     update_config_status()
 
 

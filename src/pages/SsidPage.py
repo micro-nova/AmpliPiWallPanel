@@ -24,7 +24,8 @@ def load_ssid_page():
     ssids.clear()
     for s in ssids_with_hidden:
         if len(s) > 0:
-            ssids.append(s)
+            if s not in ssids:
+                ssids.append(s)
     print(f'{len(ssids_with_hidden)} networks are available')
     print(f'{len(ssids)} networks are visible (non-hidden)')
     _update_ssid_fields(ssids)
