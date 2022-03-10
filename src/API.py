@@ -1,3 +1,4 @@
+import time
 import urequests
 import json
 
@@ -19,11 +20,13 @@ def get_zone_json(zone_id):
 def command_stream(stream_id, cmd):
     if Wifi.is_connected():
         urequests.post(f'http://{IP}/api/streams/{stream_id}/{cmd}')
+        time.sleep_ms(10)
 
 
 def set_vol_f(zone_id, vol_f):
     if Wifi.is_connected():
         urequests.patch(f'http://{IP}/api/zones/{zone_id}', json={"vol_f": vol_f})
+        time.sleep_ms(10)
 
 
 def get_vol_f(zone_id):
