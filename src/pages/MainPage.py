@@ -2,7 +2,7 @@
 # import DisplaySerial
 from DisplaySerial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
 from API import command_stream, set_vol_f
-from Polling import get_is_playing, poll_playing, get_source
+from Polling import get_is_playing, poll_playing, get_source, set_is_playing
 
 # component ids
 PLAY_BUTTON_ID = 1
@@ -13,11 +13,14 @@ VOL_SLIDER_ID = 6
 
 def _on_play(stream_id):
     command_stream(stream_id, "play")
+    set_is_playing(True)
     print("playing")
 
 
 def _on_pause(stream_id):
     command_stream(stream_id, "pause")
+    set_is_playing(False)
+    print("pausing")
 
 
 def _on_next(stream_id):
@@ -48,7 +51,7 @@ def handle_main_page_msg(stream_id, zone_id, message):
                 print("set volume failed.")
 
     # if message is button and button is pressed
-    elif message[0] == BUTTON_MESSAGE and message[3] == 0x00:
+    elif message[0] == BUTTON_MESSAGE and message[3] == 0x01:
         # valid press/release event
         id = message[2]
 
@@ -58,7 +61,7 @@ def handle_main_page_msg(stream_id, zone_id, message):
                     _on_pause(stream_id)
                 else:
                     _on_play(stream_id)
-                poll_playing(get_source(zone_id))
+                # poll_playing(get_source(zone_id))
             except OSError:
                 print("play/pause button event failed.")
 

@@ -1,6 +1,8 @@
 import urequests
 import json
 
+import Wifi
+
 IP = "192.168.0.195"
 
 
@@ -15,11 +17,13 @@ def get_zone_json(zone_id):
 
 
 def command_stream(stream_id, cmd):
-    urequests.post(f'http://{IP}/api/streams/{stream_id}/{cmd}')
+    if Wifi.is_connected():
+        urequests.post(f'http://{IP}/api/streams/{stream_id}/{cmd}')
 
 
 def set_vol_f(zone_id, vol_f):
-    urequests.patch(f'http://{IP}/api/zones/{zone_id}', json={"vol_f": vol_f})
+    if Wifi.is_connected():
+        urequests.patch(f'http://{IP}/api/zones/{zone_id}', json={"vol_f": vol_f})
 
 
 def get_vol_f(zone_id):

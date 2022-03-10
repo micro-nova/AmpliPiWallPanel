@@ -4,7 +4,7 @@ import time
 
 from DisplaySerial import change_page, CONFIG_PAGE_NAME
 
-_WIFI_CONFIG_FILENAME = 'wifi.txt'
+_WIFI_CONFIG_FILENAME = '../wifi.txt'
 
 # create wlan for connecting to router
 _wlan = network.WLAN(network.STA_IF)
@@ -44,7 +44,7 @@ def get_ssid_list():
         # what happens if there is a hidden network? would the ssid be an empty string?
         # TODO: handle hidden networks
         ssids.append(t[0])
-    return _wlan.scan()
+    return ssids
 
 
 # called during initialization or after applying new wifi configuration
@@ -53,11 +53,15 @@ def try_connect():
     if not _wlan.active():
         _wlan.active(True)
 
+    needs_config = False
     wifi_info_dict = load_wifi_info()
     if len(wifi_info_dict['ssid']) != 0:
         start_time = time.time()
-        _wlan.connect(wifi_info_dict['ssid'], wifi_info_dict['password'])
-        print(f"Connecting to {wifi_info_dict['ssid']}...")
+        try:
+            _wlan.connect(wifi_info_dict['ssid'], wifi_info_dict['password'])
+        except OSError:
+            print("uhh I don't think it should crash here")
+        print(f"Connecting to ssid: {wifi_info_dict['ssid']} pass: {wifi_info_dict['password']}...")
         while time.time() - start_time <= 3 and not _wlan.isconnected():
             pass
 
@@ -66,8 +70,11 @@ def try_connect():
             return True
         else:
             print(f"Failed to connect to {wifi_info_dict['ssid']}")
-            return False
+            needs_config = True
     else:
+        needs_config = True
+
+    if needs_config:
         if not _set_page_config:
             print("Please configure wifi settings.")
             change_page(CONFIG_PAGE_NAME)
@@ -82,7 +89,6 @@ def keep_connected():
     wifi_info_dict = load_wifi_info()
     if not _wlan.isconnected():
         _wlan.connect(wifi_info_dict['ssid'], wifi_info_dict['password'])
-
 
 
 def is_connected():

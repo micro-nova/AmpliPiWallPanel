@@ -15,6 +15,7 @@ VOL_SLIDER_MAX = 1024.0
 # serial constants
 BUTTON_MESSAGE = 0x65
 SLIDER_MESSAGE = 0x64
+TEXT_MESSAGE = 0x63
 
 # page names
 MAIN_PAGE_NAME = "mainpage"
@@ -65,6 +66,18 @@ def get_vol_slider_vol_f(message):
     return vol / VOL_SLIDER_MAX
 
 
+# returns the string from a test message
+def receive_text_message_str(message):
+    # get bytes from 3 to len-3 and convert to string
+    text_str = ''
+    str_msg = message[3:]
+    for i in str_msg:
+        text_str += chr(i)
+
+        # text_str = text_str + message[i].to_bytes(1, 'big').decode("utf-8")
+    return text_str
+
+
 # vol_f is from 0 to 1
 def set_vol_slider_vol_f(vol_f):
     pos = floor(vol_f * VOL_SLIDER_MAX)
@@ -82,4 +95,5 @@ def uart_read():
 def uart_write(string):
     tftUart.write(string)
     tftUart.write(TERM)  # message termination for nextion uart
+
 

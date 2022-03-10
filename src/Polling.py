@@ -44,6 +44,12 @@ def get_is_playing():
     return is_playing
 
 
+def set_is_playing(is_p):
+    global is_playing
+    is_playing = is_p
+    update_play_pause_button(is_playing)
+
+
 def get_source(zid):
     zone = get_zone_json(zid)
     return get_source_json(zone["source_id"])
