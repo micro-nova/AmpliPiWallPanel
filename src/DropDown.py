@@ -14,7 +14,6 @@ class DropDown:
     # down_button_id: the id of the down button
     # num_fields: the number of fields on the page for the dropdown menu
     def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, num_fields):
-        self.__update_fields()
         self.page_name = page_name
         self.first_field_id = first_field_id
         self.field_objname_prefix = field_objname_prefix
@@ -22,11 +21,13 @@ class DropDown:
         self.down_button_id = down_button_id
         self.num_fields = num_fields
 
+        # self.__update_fields()
+
     # clears and populates the items list
     # items must be a list of strings
     def populate(self, items):
         self.items.clear()
-        self.items.append(items)
+        self.items.extend(items)
         self.__update_fields()
 
     def set_selected_string(self, selected_string):
