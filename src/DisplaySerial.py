@@ -17,6 +17,10 @@ BUTTON_MESSAGE = 0x65
 SLIDER_MESSAGE = 0x64
 TEXT_MESSAGE = 0x63
 
+# event constants
+PRESSED_EVENT = 0x01
+RELEASED_EVENT = 0x00
+
 # page names
 MAIN_PAGE_NAME = "mainpage"
 CONFIG_PAGE_NAME = "configpage"
