@@ -29,6 +29,15 @@ def set_vol_f(zone_id, vol_f):
         time.sleep_ms(10)
 
 
+def set_mute(zone_id, muted):
+    if Wifi.is_connected():
+        output_json = {"mute": muted}
+        print(output_json)
+        print(json.dumps(output_json))
+        urequests.patch(f'http://{IP}/api/zones/{zone_id}', json=output_json)
+        time.sleep_ms(10)
+
+
 def get_vol_f(zone_id):
     zone_response = get_zone_json(zone_id)
     return zone_response["vol_f"]

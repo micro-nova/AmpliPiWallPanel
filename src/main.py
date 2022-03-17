@@ -77,6 +77,11 @@ while True:
                 # remove termination
                 message = message[0:-3]
                 if len(message) > 1:
+                    # if message is a relay event,
+                    print(f'Received message: {message}')
+                    # if message[0] == b'#':
+                    #
+                    #     pass
                     # if message is for the main page
                     if message[1] == MAIN_PAGE_ID:
                         handle_main_page_msg(stream_id, ZONE_ID, message)

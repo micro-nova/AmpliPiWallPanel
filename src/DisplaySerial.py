@@ -4,10 +4,18 @@ from math import floor
 TERM = b"\xff\xff\xff"
 
 # ui constants
-PLAY_PIC_ID = 2
-PAUSE_PIC_ID = 1
+PLAY_UP_PIC_ID = 20
+PLAY_DOWN_PIC_ID = 19
+PAUSE_UP_PIC_ID = 4
+PAUSE_DOWN_PIC_ID = 3
+
+MUTED_PIC_ID = 16
+UNMUTED_PIC_ID = 17
+
 PLAY_BUTTON_OBJNAME = "bplay"
+MUTE_BUTTON_OBJNAME = "bmute"
 SONG_NAME_OBJNAME = "tname"
+ALBUM_NAME_OBJNAME = "talbum"
 ARTIST_NAME_OBJNAME = "tartist"
 VOL_OBJNAME = "hvol"
 VOL_SLIDER_MAX = 1024.0
@@ -39,6 +47,11 @@ def send_title(title):
         title = title[0:26] + "..."
     set_component_txt(MAIN_PAGE_NAME, SONG_NAME_OBJNAME, title)
 
+def send_album(album):
+    if len(album) > 35:
+        album = album[0:31] + "..."
+    set_component_txt(MAIN_PAGE_NAME, ALBUM_NAME_OBJNAME, album)
+
 
 def send_artist(artist):
     # check if string is too long and trim if it is
@@ -57,11 +70,20 @@ def set_visible(id, visible):
 
 def update_play_pause_button(playing):
     if playing:
-        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PAUSE_PIC_ID}')
-        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PAUSE_PIC_ID}')
+        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PAUSE_UP_PIC_ID}')
+        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PAUSE_DOWN_PIC_ID}')
     else:
-        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PLAY_PIC_ID}')
-        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PLAY_PIC_ID}')
+        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PLAY_UP_PIC_ID}')
+        uart_write(f'{MAIN_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PLAY_DOWN_PIC_ID}')
+
+
+def update_mute_button(muted):
+    if muted:
+        uart_write(f'{MAIN_PAGE_NAME}.{MUTE_BUTTON_OBJNAME}.pic={MUTED_PIC_ID}')
+        uart_write(f'{MAIN_PAGE_NAME}.{MUTE_BUTTON_OBJNAME}.pic2={MUTED_PIC_ID}')
+    else:
+        uart_write(f'{MAIN_PAGE_NAME}.{MUTE_BUTTON_OBJNAME}.pic={UNMUTED_PIC_ID}')
+        uart_write(f'{MAIN_PAGE_NAME}.{MUTE_BUTTON_OBJNAME}.pic2={UNMUTED_PIC_ID}')
 
 
 # returns vol_f from 0 to 1
