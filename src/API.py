@@ -34,7 +34,9 @@ def set_mute(zone_id, muted):
         output_json = {"mute": muted}
         print(output_json)
         print(json.dumps(output_json))
-        urequests.patch(f'http://{IP}/api/zones/{zone_id}', json=output_json)
+        response = urequests.patch(f'http://{IP}/api/zones/{zone_id}', json=output_json)
+        print(response.status_code)
+        print(response.json())
         time.sleep_ms(10)
 
 

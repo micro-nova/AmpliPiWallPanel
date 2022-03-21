@@ -91,8 +91,8 @@ def handle_main_page_msg(stream_id, zone_id, message):
         elif id == MUTE_BUTTON_ID:
             try:
                 if get_muted():
-                    _on_unmute(stream_id)
+                    _on_unmute(zone_id)
                 else:
-                    _on_mute(stream_id)
+                    _on_mute(zone_id)
             except OSError:
                 print("mute/unmute button event failed due to internet probably")

@@ -52,6 +52,7 @@ def send_title(title):
         title = title[0:26] + "..."
     set_component_txt(MAIN_PAGE_NAME, SONG_NAME_OBJNAME, title)
 
+
 def send_album(album):
     if len(album) > 35:
         album = album[0:31] + "..."
