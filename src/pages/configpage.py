@@ -1,10 +1,10 @@
 import time
 
-import Wifi
-from DisplaySerial import set_component_txt, CONFIG_PAGE_NAME, BUTTON_MESSAGE, TEXT_MESSAGE, receive_text_message_str
+import wifi
+from displayserial import set_component_txt, CONFIG_PAGE_NAME, BUTTON_MESSAGE, TEXT_MESSAGE, receive_text_message_str
 
 # component names
-from pages import SsidPage
+from pages import ssidpage
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
 _PASSWORD_FIELD_OBJNAME = 'tpassfield'
@@ -26,7 +26,7 @@ pass_field_txt = ''
 # override it.
 def load_config_page():
     # load wifi info
-    wifi_info = Wifi.load_wifi_info()
+    wifi_info = wifi.load_wifi_info()
     ssid = wifi_info['ssid']
     password = wifi_info['password']
 
@@ -42,7 +42,7 @@ def load_config_page():
 
 def update_config_status():
     status = "Status: "
-    if Wifi.is_connected():
+    if wifi.is_connected():
         status += "Connected"
     else:
         status += "Disconnected"
@@ -58,9 +58,9 @@ def handle_config_page_msg(message):
 
         if id == _CONNECT_BUTTON_ID:
             set_component_txt(CONFIG_PAGE_NAME, _STATUS_LABEL_OBJNAME, "Status: Connecting...")
-            Wifi.disconnect()
-            Wifi.save_wifi_info(ssid_field_txt, pass_field_txt)
-            Wifi.try_connect()
+            wifi.disconnect()
+            wifi.save_wifi_info(ssid_field_txt, pass_field_txt)
+            wifi.try_connect()
             update_config_status()
 
         elif id == _BACK_BUTTON_ID:
@@ -69,7 +69,7 @@ def handle_config_page_msg(message):
             load_config_page()
         elif id == _SSID_FIELD_ID:
             # nextion will switch to ssidpage, so we need to init that page
-            SsidPage.load_ssid_page()
+            ssidpage.load_ssid_page()
     elif message[0] == TEXT_MESSAGE:
         id = message[2]
         text = receive_text_message_str(message)

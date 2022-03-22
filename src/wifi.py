@@ -2,8 +2,8 @@ import json
 import network
 import time
 
-from DisplaySerial import change_page, CONFIG_PAGE_NAME
-from pages.ConfigPage import load_config_page
+from displayserial import change_page, CONFIG_PAGE_NAME
+from pages.configpage import load_config_page
 
 _WIFI_CONFIG_FILENAME = '../wifi.txt'
 

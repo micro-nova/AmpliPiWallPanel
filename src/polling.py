@@ -1,6 +1,6 @@
 # note: track and song are the same thing
-from API import get_source_json, get_zone_json, get_vol_f
-from DisplaySerial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
+from api import get_source_json, get_zone_json, get_vol_f
+from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
     set_vol_slider_vol_f
 
 track_name = ""

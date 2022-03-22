@@ -1,4 +1,4 @@
-import DisplaySerial
+import displayserial
 
 
 class DropDown:
@@ -40,7 +40,7 @@ class DropDown:
 
     # handles a serial message from the display
     def handle_message(self, message):
-        if message[0] == DisplaySerial.BUTTON_MESSAGE and message[3] == DisplaySerial.PRESSED_EVENT:
+        if message[0] == displayserial.BUTTON_MESSAGE and message[3] == displayserial.PRESSED_EVENT:
             id = message[2]
             if id in range(self.first_field_id, self.first_field_id + self.num_fields):
                 # grab the selection's index and string
@@ -68,12 +68,12 @@ class DropDown:
 
         # make sure all fields are visible
         for i in range(self.num_fields):
-            DisplaySerial.set_visible(i + self.first_field_id, True)
+            displayserial.set_visible(i + self.first_field_id, True)
 
         # if there are less than num_fields, disable unnecessary fields
         if num_items < self.num_fields:
             for i in range(num_items, self.num_fields):
-                DisplaySerial.set_visible(i + self.first_field_id, False)
+                displayserial.set_visible(i + self.first_field_id, False)
 
         # populate fields
         for i in range(min(self.num_fields, num_items)):
@@ -87,21 +87,21 @@ class DropDown:
     def __update_button_vis(self):
         if self.start_index == 0:
             # make up button invisible
-            DisplaySerial.set_visible(self.up_button_id, False)
+            displayserial.set_visible(self.up_button_id, False)
         else:
             # make up button visible
-            DisplaySerial.set_visible(self.up_button_id, True)
+            displayserial.set_visible(self.up_button_id, True)
         if self.start_index == len(self.items) - self.num_fields:
             # make down button invisible
-            DisplaySerial.set_visible(self.down_button_id, False)
+            displayserial.set_visible(self.down_button_id, False)
         else:
             # make down button visible
-            DisplaySerial.set_visible(self.down_button_id, True)
+            displayserial.set_visible(self.down_button_id, True)
 
     def __field_name_from_index(self, index):
         return f'{self.field_objname_prefix}{index}'
 
     def __set_field_txt(self, index, txt):
-        DisplaySerial.set_component_txt(self.page_name, self.__field_name_from_index(index), txt)
+        displayserial.set_component_txt(self.page_name, self.__field_name_from_index(index), txt)
 
 

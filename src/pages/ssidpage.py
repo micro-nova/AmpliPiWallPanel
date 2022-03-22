@@ -1,7 +1,7 @@
 # component names
-import Wifi
-from DisplaySerial import BUTTON_MESSAGE, set_visible, SSID_PAGE_NAME, set_component_txt
-from DropDown import DropDown
+import wifi
+from displayserial import BUTTON_MESSAGE, set_visible, SSID_PAGE_NAME, set_component_txt
+from dropdown import DropDown
 
 _SSID_OBJNAME = "tssid"  # num
 
@@ -21,7 +21,7 @@ dropdown = DropDown(SSID_PAGE_NAME, _SSID_FIRST_ID,
 def load_ssid_page():
     # get list of ssid
     print("Loading SSID list")
-    ssids_with_hidden = Wifi.get_ssid_list()
+    ssids_with_hidden = wifi.get_ssid_list()
     ssids = []
     for s in ssids_with_hidden:
         s_str = s.decode("utf-8")

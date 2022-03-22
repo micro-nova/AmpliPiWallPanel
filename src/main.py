@@ -2,21 +2,21 @@ import time
 
 from machine import Pin
 
-import DisplaySerial
-import Wifi
-from API import get_stream_id_from_zone, get_vol_f
-from Polling import poll
-from pages.ConfigPage import handle_config_page_msg, load_config_page, update_config_status
-from pages.MainPage import handle_main_page_msg
-from pages.SsidPage import handle_ssid_page_msg
+import displayserial
+import wifi
+from api import get_stream_id_from_zone, get_vol_f
+from polling import poll
+from pages.configpage import handle_config_page_msg, load_config_page, update_config_status
+from pages.mainpage import handle_main_page_msg
+from pages.ssidpage import handle_ssid_page_msg
 
 tft_reset = Pin(4, Pin.OUT)
 
 # constants for temporarily hardcoded stuff
 ZONE_ID = 4
-# WIFI_SSID = "home_2G"
-# WIFI_PASSWD = "***REMOVED***"
-# Wifi.save_wifi_info(WIFI_SSID, WIFI_PASSWD)
+# wifi_SSID = "home_2G"
+# wifi_PASSWD = "***REMOVED***"
+# wifi.save_wifi_info(wifi_SSID, wifi_PASSWD)
 
 
 # pages
@@ -33,7 +33,7 @@ print('resetting screen...')
 tft_reset.value(0)
 
 load_config_page()
-Wifi.try_connect()
+wifi.try_connect()
 update_config_status()
 
 initialized = False
@@ -49,25 +49,25 @@ while True:
     if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
         last_poll_time = time.time()
         try:
-            if Wifi.is_connected():
+            if wifi.is_connected():
                 if not initialized:
                     initialized = True
                     # get stream id from the current zone
                     stream_id = get_stream_id_from_zone(ZONE_ID)
                     # init gui volume slider
-                    # DisplaySerial.set_vol_slider_vol_f(get_vol_f(ZONE_ID))
+                    # displayserial.set_vol_slider_vol_f(get_vol_f(ZONE_ID))
                     print(f"stream id is: {stream_id}")
                 poll(ZONE_ID)
                 print("polled from amplipi")
         except OSError:
-            if not Wifi.is_connected():
-                print("Wifi disconnected.")
+            if not wifi.is_connected():
+                print("wifi disconnected.")
             print("polling failed somehow.")
 
     # poll serial messages from display
-    if DisplaySerial.uart_any():
+    if displayserial.uart_any():
         # read stuff in
-        message_part = DisplaySerial.uart_read()
+        message_part = displayserial.uart_read()
         byte_list = [message_part[i:i+1] for i in range(len(message_part))]
         for i in byte_list:
             message += i
