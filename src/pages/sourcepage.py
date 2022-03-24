@@ -29,7 +29,11 @@ def load_source_page():
     sources_json = api.get_sources_dict()
     source_names = []
     for source in sources_json['sources']:
-        source_names.append(source['name'])
+        source_names.append(source['info']['name'])
+
+    print(f'{len(source_names)} sources: ')
+    print(source_names)
+    print(sources_json)
 
     dropdown.populate(source_names)
 
