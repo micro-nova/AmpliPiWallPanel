@@ -1,7 +1,8 @@
 import time
 
 import wifi
-from displayserial import set_component_txt, CONFIG_PAGE_NAME, BUTTON_MESSAGE, TEXT_MESSAGE, receive_text_message_str
+from displayserial import set_component_txt, CONFIG_PAGE_NAME, BUTTON_MESSAGE, TEXT_MESSAGE, receive_text_message_str, \
+    uart_write
 
 # component names
 from pages import ssidpage
@@ -9,10 +10,15 @@ from pages import ssidpage
 _SSID_FIELD_OBJNAME = 'tssidfield'
 _PASSWORD_FIELD_OBJNAME = 'tpassfield'
 _STATUS_LABEL_OBJNAME = 'tstatuslabel'
+_WIFI_STATUS_OBJNAME = 'pwifi'
+
+# picture ids
+_WIFI_CONNECTED_PIC_ID = 30
+_WIFI_DISCONNECTED_PIC_ID = 32
 
 # component ids
-_CONNECT_BUTTON_ID = 8
-_BACK_BUTTON_ID = 9
+_CONNECT_BUTTON_ID = 7
+_BACK_BUTTON_ID = 8
 _SSID_FIELD_ID = 3
 _PASSWORD_FIELD_ID = 4
 
@@ -31,7 +37,7 @@ def load_config_page():
     password = wifi_info['password']
 
     # update page components
-    print(f'updating ssid and passworld fields to {ssid} and {password}')
+    print(f'updating ssid and password fields to {ssid} and {password}')
     time.sleep_ms(10)
     set_component_txt(CONFIG_PAGE_NAME, _SSID_FIELD_OBJNAME, ssid)
     time.sleep_ms(10)
@@ -41,12 +47,10 @@ def load_config_page():
 
 
 def update_config_status():
-    status = "Status: "
     if wifi.is_connected():
-        status += "Connected"
+        uart_write(f'{CONFIG_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_CONNECTED_PIC_ID}')
     else:
-        status += "Disconnected"
-    set_component_txt(CONFIG_PAGE_NAME, _STATUS_LABEL_OBJNAME, status)
+        uart_write(f'{CONFIG_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_DISCONNECTED_PIC_ID}')
 
 
 def handle_config_page_msg(message):
@@ -57,7 +61,8 @@ def handle_config_page_msg(message):
         id = message[2]
 
         if id == _CONNECT_BUTTON_ID:
-            set_component_txt(CONFIG_PAGE_NAME, _STATUS_LABEL_OBJNAME, "Status: Connecting...")
+            # TODO: indicate that device is trying to connect here somehow
+            print("Connect button pressed")
             wifi.disconnect()
             wifi.save_wifi_info(ssid_field_txt, pass_field_txt)
             wifi.try_connect()
