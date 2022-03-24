@@ -1,5 +1,5 @@
 # note: track and song are the same thing
-from api import get_source_json, get_zone_json, get_vol_f
+from api import get_source_dict, get_zone_dict, get_vol_f
 from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
     set_vol_slider_vol_f
 
@@ -12,8 +12,8 @@ vol_f = 0.0
 
 
 def poll(zid):
-    zone = get_zone_json(zid)
-    source = get_source_json(zone["source_id"])
+    zone = get_zone_dict(zid)
+    source = get_source_dict(zone["source_id"])
     poll_vol_f(zone)
     poll_muted(zone)
     poll_track(source)
@@ -91,6 +91,6 @@ def set_muted(muted):
 
 
 def get_source(zid):
-    zone = get_zone_json(zid)
-    return get_source_json(zone["source_id"])
+    zone = get_zone_dict(zid)
+    return get_source_dict(zone["source_id"])
 

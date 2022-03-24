@@ -7,12 +7,17 @@ import wifi
 IP = "192.168.0.195"
 
 
-def get_source_json(source_id):
+def get_source_dict(source_id):
     response = json.loads(urequests.get(f'http://{IP}/api/sources/{source_id}').text)
     return response
 
 
-def get_zone_json(zone_id):
+def get_sources_dict():
+    response = json.loads(urequests.get(f'http://{IP}/api/sources').text)
+    return response
+
+
+def get_zone_dict(zone_id):
     response = json.loads(urequests.get(f'http://{IP}/api/zones/{zone_id}').text)
     return response
 
@@ -41,21 +46,24 @@ def set_mute(zone_id, muted):
 
 
 def get_vol_f(zone_id):
-    zone_response = get_zone_json(zone_id)
+    zone_response = get_zone_dict(zone_id)
     return zone_response["vol_f"]
 
 
 def get_image(zone_id, height):
-    source_id = get_zone_json(zone_id)["source_id"]
+    source_id = get_zone_dict(zone_id)["source_id"]
     return urequests.get(f'http://{IP}/api/sources/{source_id}/image/{height}')
 
 
 def get_stream_id_from_zone(zone_id):
-    zone = get_zone_json(zone_id)
-    source = get_source_json(zone["source_id"])
+    zone = get_zone_dict(zone_id)
+    source = get_source_dict(zone["source_id"])
     source_input = source["input"]
 
     if source_input.startswith("local"):
         return None
 
     return int(source["input"].split("=")[1])
+
+
+

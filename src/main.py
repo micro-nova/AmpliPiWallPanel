@@ -5,6 +5,7 @@ from machine import Pin
 import displayserial
 import wifi
 from api import get_stream_id_from_zone, get_vol_f
+from pages.sourcepage import handle_source_page_msg
 from polling import poll
 from pages.configpage import handle_config_page_msg, load_config_page, update_config_status
 from pages.mainpage import handle_main_page_msg
@@ -23,6 +24,7 @@ ZONE_ID = 4
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
 SSID_PAGE_ID = 3
+SOURCE_PAGE_ID = 5
 
 # polling constants
 POLLING_INTERVAL_SECONDS = 1
@@ -89,6 +91,8 @@ while True:
                         handle_config_page_msg(message)
                     elif message[1] == SSID_PAGE_ID:
                         handle_ssid_page_msg(message)
+                    elif message[1] == SOURCE_PAGE_ID:
+                        handle_source_page_msg(message)
 
                 # clear message only if it was properly terminated
                 message = b''

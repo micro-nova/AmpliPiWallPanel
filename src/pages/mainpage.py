@@ -2,6 +2,7 @@
 # import DisplaySerial
 from displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
 from api import command_stream, set_vol_f, set_mute
+from pages import sourcepage
 from polling import get_is_playing, poll_playing, get_source, set_is_playing, get_muted, set_muted
 
 # component ids
@@ -10,6 +11,11 @@ NEXT_BUTTON_ID = 2
 PREV_BUTTON_ID = 3
 MUTE_BUTTON_ID = 13
 VOL_SLIDER_ID = 6
+SOURCE_BUTTON_ID = 11
+
+
+def _on_source():
+    sourcepage.load_source_page()
 
 
 def _on_play(stream_id):
@@ -87,6 +93,9 @@ def handle_main_page_msg(stream_id, zone_id, message):
 
         elif id == PREV_BUTTON_ID:
             _on_prev(stream_id)
+
+        elif id == SOURCE_BUTTON_ID:
+            _on_source()
 
         elif id == MUTE_BUTTON_ID:
             try:
