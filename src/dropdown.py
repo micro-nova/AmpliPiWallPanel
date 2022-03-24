@@ -13,12 +13,13 @@ class DropDown:
     # up_button_id: the id of the up button
     # down_button_id: the id of the down button
     # num_fields: the number of fields on the page for the dropdown menu
-    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, num_fields):
+    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, loading_text_id, num_fields):
         self.page_name = page_name
         self.first_field_id = first_field_id
         self.field_objname_prefix = field_objname_prefix
         self.up_button_id = up_button_id
         self.down_button_id = down_button_id
+        self.loading_text_id = loading_text_id
         self.num_fields = num_fields
 
         # self.__update_fields()
@@ -26,9 +27,22 @@ class DropDown:
     # clears and populates the items list
     # items must be a list of strings
     def populate(self, items):
+        self.start_index = 0
         self.items.clear()
         self.items.extend(items)
         self.__update_fields()
+
+    def set_loading_state(self):
+        # make all fields invisible
+        for i in range(self.num_fields):
+            displayserial.set_visible(i + self.first_field_id, False)
+
+        # make buttons invisible
+        displayserial.set_visible(self.up_button_id, False)
+        displayserial.set_visible(self.down_button_id, False)
+
+        # make loading text visible
+        displayserial.set_visible(self.loading_text_id, True)
 
     def set_selected_string(self, selected_string):
         self.selected_string = selected_string
@@ -65,15 +79,26 @@ class DropDown:
 
     def __update_fields(self):
         num_items = len(self.items)
+        print(f'{num_items} items in SSID list.')
 
-        # make sure all fields are visible
+        # make loading text invisible
+        displayserial.set_visible(self.loading_text_id, False)
+
+        # update field visibility
         for i in range(self.num_fields):
-            displayserial.set_visible(i + self.first_field_id, True)
-
-        # if there are less than num_fields, disable unnecessary fields
-        if num_items < self.num_fields:
-            for i in range(num_items, self.num_fields):
+            if i in range(num_items, self.num_fields):
                 displayserial.set_visible(i + self.first_field_id, False)
+            else:
+                displayserial.set_visible(i + self.first_field_id, True)
+
+        # # make sure all fields are visible
+        # for i in range(self.num_fields):
+        #     displayserial.set_visible(i + self.first_field_id, True)
+        #
+        # # if there are less than num_fields, disable unnecessary fields
+        # if num_items < self.num_fields:
+        #     for i in range(num_items, self.num_fields):
+        #         displayserial.set_visible(i + self.first_field_id, False)
 
         # populate fields
         for i in range(min(self.num_fields, num_items)):
