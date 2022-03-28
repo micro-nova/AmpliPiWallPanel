@@ -17,6 +17,16 @@ def get_sources_dict():
     return response
 
 
+def get_streams_dict():
+    response = json.loads(urequests.get(f'http://{IP}/api/streams').text)
+    return response
+
+
+def get_zones_dict():
+    response = json.loads(urequests.get(f'http://{IP}/api/zones').text)
+    return response
+
+
 def get_zone_dict(zone_id):
     response = json.loads(urequests.get(f'http://{IP}/api/zones/{zone_id}').text)
     return response

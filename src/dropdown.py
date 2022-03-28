@@ -2,11 +2,6 @@ import displayserial
 
 
 class DropDown:
-    items = []
-    selected_index = -1
-    selected_string = ''
-    start_index = 0
-
     # first_field_id: the id of the first text field component. the fields must be in order from least to greatest
     # field_objname_prefix: the object name of the text field components without the number. e.g: "tssid" could be
     #   field_objname_prefix where and example of an actual field's name in nextion would be "tssid0"
@@ -22,7 +17,11 @@ class DropDown:
         self.loading_text_id = loading_text_id
         self.num_fields = num_fields
 
-        # self.__update_fields()
+        self.callbacks = []
+        self.items = []
+        self.selected_index = -1
+        self.selected_string = ''
+        self.start_index = 0
 
     # clears and populates the items list
     # items must be a list of strings
@@ -44,13 +43,16 @@ class DropDown:
         # make loading text visible
         displayserial.set_visible(self.loading_text_id, True)
 
-    def set_selected_string(self, selected_string):
-        self.selected_string = selected_string
-        # compute index of selected string
-        try:
-            self.selected_index = self.items.index(selected_string)
-        except ValueError:
-            self.selected_index = -1
+    def add_item_index_callback(self, callb):
+        self.callbacks.append(callb)
+
+    # def set_selected_string(self, selected_string):
+    #     self.selected_string = selected_string
+    #     # compute index of selected string
+    #     try:
+    #         self.selected_index = self.items.index(selected_string)
+    #     except ValueError:
+    #         self.selected_index = -1
 
     # handles a serial message from the display
     def handle_message(self, message):
@@ -60,6 +62,9 @@ class DropDown:
                 # grab the selection's index and string
                 self.selected_index = self.start_index + id - self.first_field_id
                 self.selected_string = self.items[self.selected_index]
+                print(message)
+                for c in self.callbacks:
+                    c(self.selected_index)
             elif id == self.up_button_id:
                 self.__on_up()
             elif id == self.down_button_id:

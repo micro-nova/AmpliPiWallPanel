@@ -38,7 +38,8 @@ RELEASED_EVENT = 0x00
 MAIN_PAGE_NAME = "mainpage"
 CONFIG_PAGE_NAME = "configpage"
 SSID_PAGE_NAME = "ssidpage"
-SOURCE_PAGE_NAME = "sourcepage"
+STREAM_PAGE_NAME = "streampage"
+ZONE_PAGE_NAME = "zonepage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
