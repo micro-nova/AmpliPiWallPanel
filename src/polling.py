@@ -12,8 +12,8 @@ is_muted = False
 vol_f = 0.0
 
 
-def poll(zone_id, stream_id):
-    zone = get_zone_dict(zone_id)
+def poll(audioconf):
+    zone = get_zone_dict(audioconf.zone_id)
     source = get_source_dict(zone["source_id"])
     poll_vol_f(zone)
     poll_muted(zone)
@@ -22,7 +22,7 @@ def poll(zone_id, stream_id):
     poll_artist(source)
     poll_playing(source)
     poll_zone_name(zone)
-    poll_stream_name(stream_id)
+    poll_stream_name(audioconf.stream_id)
 
 
 def poll_vol_f(zone):

@@ -16,27 +16,34 @@ dropdown = DropDown(ZONE_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID,
                     _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
 
-
-zones_json = {}
+_zones = {}
+_audioconf = None
 
 
 # only call this when display is on this page
-def load_zone_page():
-    global zones_json
+def load_zone_page(audioconf):
+    global _zones
+    global _audioconf
+    _audioconf = audioconf
     dropdown.set_loading_state()
     # get list of zones
     print("Loading zone list")
-    zones_json = api.get_zones_dict()
+    _zones = api.get_zones_dict()
     zone_names = []
-    for zone in zones_json['zones']:
+    for zone in _zones['zones']:
         zone_names.append(zone['name'])
 
     print(f'{len(zone_names)} zones: ')
     print(zone_names)
-    print(zones_json)
+    print(_zones)
 
     dropdown.populate(zone_names)
 
 
 def handle_zone_page_msg(message):
     dropdown.handle_message(message)
+
+def _change_zone_callback(index):
+    new_zone = _zones[index]
+    if _audioconf is not None:
+        _audioconf.change_zone(int(new_zone['id']))

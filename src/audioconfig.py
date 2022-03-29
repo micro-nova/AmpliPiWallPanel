@@ -1,13 +1,28 @@
+import json
+
 import api
 
+_AUDIO_CONFIG_FILENAME = '../zone.txt'
 
+
+# TODO: https://python-patterns.guide/gang-of-four/singleton/
 class AudioConfig:
-    def __init__(self, zone_id):
-        self.zone_id = zone_id
+    def __init__(self):
+        self.zone_id = -1
         self.source_id = -1
         self.stream_id = -1
+        self.__load_zone()
         # calling this will give real values to source_id and stream_id (if it has a stream)
-        self.change_zone(zone_id)
+        self.change_zone(self.zone_id)
+
+    # def poll_source_and_stream_id(self):
+    #     if self.zone_id >= 0:
+    #         # get id of source that this new zone belongs to
+    #         zone = api.get_zone_dict(self.zone_id)
+    #         self.source_id = zone['source_id']
+    #
+    #         # get the current stream that is running on the source
+    #         self.__update_stream_id_from_source()
 
     # changes what stream the sources is playing
     def change_stream(self, new_stream_id):
@@ -18,13 +33,13 @@ class AudioConfig:
     # changing the zone may also change the source and stream
     def change_zone(self, new_zone_id):
         self.zone_id = new_zone_id
+        if new_zone_id >= 0:
+            # get id of source that this new zone belongs to
+            zone = api.get_zone_dict(self.zone_id)
+            self.source_id = zone['source_id']
 
-        # get id of source that this new zone belongs to
-        zone = api.get_zone_dict(self.zone_id)
-        self.source_id = zone['source_id']
-
-        # get the current stream that is running on the source
-        self.__update_stream_id_from_source()
+            # get the current stream that is running on the source
+            self.__update_stream_id_from_source()
 
     # moves the current zone to a different source
     # this may also change the stream
@@ -36,8 +51,22 @@ class AudioConfig:
         # get current stream
         self.__update_stream_id_from_source()
 
+    def __load_zone(self):
+        try:
+            with open(_AUDIO_CONFIG_FILENAME) as zone_file:
+                zone_file_str = zone_file.read()
+                zone_file_dict = json.loads(zone_file_str)
+                self.zone_id = zone_file_dict['zone']
+        except OSError:
+            # open failed, make file
+            self.__save_zone()
+
+    def __save_zone(self):
+        zone_file_dict = {'zone': self.zone_id}
+        with open(_AUDIO_CONFIG_FILENAME, 'w') as zone_file:
+            zone_file_str = json.dumps(zone_file_dict)
+            zone_file.write(zone_file_str)
+
     def __update_stream_id_from_source(self):
         source = api.get_source_dict(self.source_id)
         self.stream_id = api.get_stream_id_from_source_dict(source)
-
-

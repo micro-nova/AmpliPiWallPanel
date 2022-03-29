@@ -4,7 +4,8 @@ from machine import Pin
 
 import displayserial
 import wifi
-from api import get_stream_id_from_zone_id, get_vol_f
+from api import get_stream_id_from_zone_id
+from audioconfig import AudioConfig
 from pages.streampage import handle_stream_page_msg
 from pages.zonepage import handle_zone_page_msg
 from polling import poll
@@ -15,7 +16,6 @@ from pages.ssidpage import handle_ssid_page_msg
 tft_reset = Pin(4, Pin.OUT)
 
 # constants for temporarily hardcoded stuff
-ZONE_ID = 4
 # wifi_SSID = "home_2G"
 # wifi_PASSWD = "***REMOVED***"
 # wifi.save_wifi_info(wifi_SSID, wifi_PASSWD)
@@ -37,11 +37,11 @@ print('resetting screen...')
 tft_reset.value(0)
 
 load_config_page()
+audioconf = None
 wifi.try_connect()
 update_config_status()
 
 initialized = False
-stream_id = -1
 
 last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
 
@@ -56,13 +56,17 @@ while True:
             if wifi.is_connected():
                 if not initialized:
                     initialized = True
-                    # get stream id from the current zone
-                    stream_id = get_stream_id_from_zone_id(ZONE_ID)
+                    # init audioconf
+                    audioconf = AudioConfig()
+
                     # init gui volume slider
                     # displayserial.set_vol_slider_vol_f(get_vol_f(ZONE_ID))
-                    print(f"stream id is: {stream_id}")
-                poll(ZONE_ID, stream_id)
-                print("polled from amplipi")
+                    print(f"stream id is: {audioconf.stream_id}")
+                if audioconf.zone_id >= 0:
+                    poll(audioconf)
+                    print("polled from amplipi")
+                else:
+                    print("didn't poll because zone is unconfigured")
         except OSError:
             if not wifi.is_connected():
                 print("wifi disconnected.")
@@ -88,7 +92,7 @@ while True:
                     #     pass
                     # if message is for the main page
                     if message[1] == MAIN_PAGE_ID:
-                        handle_main_page_msg(stream_id, ZONE_ID, message)
+                        handle_main_page_msg(audioconf, message)
                     elif message[1] == CONFIG_PAGE_ID:
                         handle_config_page_msg(message)
                     elif message[1] == SSID_PAGE_ID:

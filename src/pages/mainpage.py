@@ -1,5 +1,3 @@
-# message types
-# import DisplaySerial
 from api import command_stream, set_vol_f, set_mute
 from displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
 from pages import streampage, zonepage
@@ -65,7 +63,7 @@ def _on_prev(stream_id):
         print("prev button failed.")
 
 
-def handle_main_page_msg(stream_id, zone_id, message):
+def handle_main_page_msg(audioconf, message):
     print("handling main page message")
     if message[0] == SLIDER_MESSAGE:
         # valid slider update
@@ -73,7 +71,7 @@ def handle_main_page_msg(stream_id, zone_id, message):
         if id == VOL_SLIDER_ID:
             vol_f = get_vol_slider_vol_f(message)
             try:
-                set_vol_f(zone_id, vol_f)
+                set_vol_f(audioconf.zone_id, vol_f)
                 print(f'new volume: {vol_f}')
             except OSError:
                 print("set volume failed.")
@@ -86,18 +84,18 @@ def handle_main_page_msg(stream_id, zone_id, message):
         if id == PLAY_BUTTON_ID:
             try:
                 if get_is_playing():
-                    _on_pause(stream_id)
+                    _on_pause(audioconf.stream_id)
                 else:
-                    _on_play(stream_id)
+                    _on_play(audioconf.stream_id)
                 # poll_playing(get_source(zone_id))
             except OSError:
                 print("play/pause button event failed due to internet probably.")
 
         elif id == NEXT_BUTTON_ID:
-            _on_next(stream_id)
+            _on_next(audioconf.stream_id)
 
         elif id == PREV_BUTTON_ID:
-            _on_prev(stream_id)
+            _on_prev(audioconf.stream_id)
 
         elif id == STREAM_BUTTON_ID:
             _on_source()
@@ -108,8 +106,8 @@ def handle_main_page_msg(stream_id, zone_id, message):
         elif id == MUTE_BUTTON_ID:
             try:
                 if get_muted():
-                    _on_unmute(zone_id)
+                    _on_unmute(audioconf.zone_id)
                 else:
-                    _on_mute(zone_id)
+                    _on_mute(audioconf.zone_id)
             except OSError:
                 print("mute/unmute button event failed due to internet probably")
