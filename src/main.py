@@ -4,7 +4,7 @@ from machine import Pin
 
 import displayserial
 import wifi
-from api import get_stream_id_from_zone, get_vol_f
+from api import get_stream_id_from_zone_id, get_vol_f
 from pages.streampage import handle_stream_page_msg
 from pages.zonepage import handle_zone_page_msg
 from polling import poll
@@ -57,11 +57,11 @@ while True:
                 if not initialized:
                     initialized = True
                     # get stream id from the current zone
-                    stream_id = get_stream_id_from_zone(ZONE_ID)
+                    stream_id = get_stream_id_from_zone_id(ZONE_ID)
                     # init gui volume slider
                     # displayserial.set_vol_slider_vol_f(get_vol_f(ZONE_ID))
                     print(f"stream id is: {stream_id}")
-                poll(ZONE_ID)
+                poll(ZONE_ID, stream_id)
                 print("polled from amplipi")
         except OSError:
             if not wifi.is_connected():

@@ -17,6 +17,9 @@ SLIDER_UNMUTED_CURSOR_PIC_ID = 13
 SLIDER_MUTED_FOREGROUND_PIC_ID = 10
 SLIDER_UNMUTED_FOREGROUND_PIC_ID = 11
 
+
+STREAM_NAME_OBJNAME = "bstream"
+ZONE_NAME_OBJNAME = "bzone"
 PLAY_BUTTON_OBJNAME = "bplay"
 MUTE_BUTTON_OBJNAME = "bmute"
 SONG_NAME_OBJNAME = "tname"
@@ -66,6 +69,18 @@ def send_artist(artist):
     if len(artist) > 30:
         artist = artist[0:26] + "..."
     set_component_txt(MAIN_PAGE_NAME, ARTIST_NAME_OBJNAME, artist)
+
+
+def send_stream_name(stream_name):
+    if len(stream_name) > 30:
+        stream_name = stream_name[0:26] + "..."
+    set_component_txt(MAIN_PAGE_NAME, STREAM_NAME_OBJNAME, stream_name)
+
+
+def send_zone_name(zone_name):
+    if len(zone_name) > 30:
+        zone_name = zone_name[0:26] + "..."
+    set_component_txt(MAIN_PAGE_NAME, ZONE_NAME_OBJNAME, zone_name)
 
 
 def set_component_txt(pagename, componentname, txt):

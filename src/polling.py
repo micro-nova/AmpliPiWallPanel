@@ -1,7 +1,8 @@
 # note: track and song are the same thing
-from api import get_source_dict, get_zone_dict, get_vol_f
+import api
+from api import get_source_dict, get_zone_dict
 from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
-    set_vol_slider_vol_f
+    set_vol_slider_vol_f, send_stream_name, send_zone_name
 
 track_name = ""
 album_name = ""
@@ -11,8 +12,8 @@ is_muted = False
 vol_f = 0.0
 
 
-def poll(zid):
-    zone = get_zone_dict(zid)
+def poll(zone_id, stream_id):
+    zone = get_zone_dict(zone_id)
     source = get_source_dict(zone["source_id"])
     poll_vol_f(zone)
     poll_muted(zone)
@@ -20,6 +21,8 @@ def poll(zid):
     poll_album(source)
     poll_artist(source)
     poll_playing(source)
+    poll_zone_name(zone)
+    poll_stream_name(stream_id)
 
 
 def poll_vol_f(zone):
@@ -70,6 +73,15 @@ def poll_playing(source):
         update_play_pause_button(is_playing)
 
 
+def poll_stream_name(stream_id):
+    stream = api.get_stream_dict(stream_id)
+    send_stream_name(stream['name'])
+
+
+def poll_zone_name(zone):
+    send_zone_name(zone['name'])
+
+
 def get_is_playing():
     return is_playing
 
@@ -89,8 +101,4 @@ def set_muted(muted):
     is_muted = muted
     update_mute_button(is_muted)
 
-
-def get_source(zid):
-    zone = get_zone_dict(zid)
-    return get_source_dict(zone["source_id"])
 

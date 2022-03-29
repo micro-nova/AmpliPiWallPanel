@@ -16,26 +16,39 @@ dropdown = DropDown(STREAM_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID,
                     _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
 
+_streams = []
 
-streams_json = {}
+
+def _change_stream_callback(index):
+    new_stream = _streams[index]
+
+    pass
+
+
+dropdown.add_item_index_callback(lambda index: _change_stream_callback(index))
 
 
 # only call this when on this page
 def load_stream_page():
-    global streams_json
+    global _streams
     dropdown.set_loading_state()
-    # get list of sources
-    print("Loading source list")
-    streams_json = api.get_streams_dict()
-    stream_names = []
-    for stream in streams_json['streams']:
-        stream_names.append(stream['name'])
+    # get list of streams
+    print("Loading stream list")
+    _streams = api.get_streams_dict()
+    print(_streams)
+    names = [stream['name'] for stream in _streams]  # if 'name' in stream
 
-    print(f'{len(stream_names)} sources: ')
-    print(stream_names)
-    print(streams_json)
+    # stream_id_names = {stream.id: stream.name for stream in _streams}
+    #
+    # names = stream_id_names.values()
+    # ids = stream_id_names.keys()
+    # stream = stream_id_names[id]
 
-    dropdown.populate(stream_names)
+    print(f'{len(names)} streams: ')
+    print(names)
+    print(_streams)
+
+    dropdown.populate(names)
 
 
 def handle_stream_page_msg(message):

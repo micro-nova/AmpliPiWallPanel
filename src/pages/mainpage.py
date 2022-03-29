@@ -1,9 +1,9 @@
 # message types
 # import DisplaySerial
-from displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
 from api import command_stream, set_vol_f, set_mute
+from displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
 from pages import streampage, zonepage
-from polling import get_is_playing, poll_playing, get_source, set_is_playing, get_muted, set_muted
+from polling import get_is_playing, set_is_playing, get_muted, set_muted
 
 # component ids
 PLAY_BUTTON_ID = 1
