@@ -15,17 +15,12 @@ from pages.ssidpage import handle_ssid_page_msg
 
 tft_reset = Pin(4, Pin.OUT)
 
-# constants for temporarily hardcoded stuff
-# wifi_SSID = "home_2G"
-# wifi_PASSWD = "***REMOVED***"
-# wifi.save_wifi_info(wifi_SSID, wifi_PASSWD)
-
 
 # pages
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
 SSID_PAGE_ID = 3
-SOURCE_PAGE_ID = 5
+STREAM_PAGE_ID = 5
 ZONE_PAGE_ID = 6
 
 # polling constants
@@ -37,7 +32,7 @@ print('resetting screen...')
 tft_reset.value(0)
 
 load_config_page()
-audioconf = None
+audioconf = AudioConfig()
 wifi.try_connect()
 update_config_status()
 
@@ -57,16 +52,12 @@ while True:
                 if not initialized:
                     initialized = True
                     # init audioconf
-                    audioconf = AudioConfig()
-
-                    # init gui volume slider
-                    # displayserial.set_vol_slider_vol_f(get_vol_f(ZONE_ID))
-                    print(f"stream id is: {audioconf.stream_id}")
+                    audioconf.load_settings()
                 if audioconf.zone_id >= 0:
-                    poll(audioconf)
+                    poll()
                     print("polled from amplipi")
                 else:
-                    print("didn't poll because zone is unconfigured")
+                    print("didn't poll because zone is not configured")
         except OSError:
             if not wifi.is_connected():
                 print("wifi disconnected.")
@@ -92,12 +83,12 @@ while True:
                     #     pass
                     # if message is for the main page
                     if message[1] == MAIN_PAGE_ID:
-                        handle_main_page_msg(audioconf, message)
+                        handle_main_page_msg(message)
                     elif message[1] == CONFIG_PAGE_ID:
                         handle_config_page_msg(message)
                     elif message[1] == SSID_PAGE_ID:
                         handle_ssid_page_msg(message)
-                    elif message[1] == SOURCE_PAGE_ID:
+                    elif message[1] == STREAM_PAGE_ID:
                         handle_stream_page_msg(message)
                     elif message[1] == ZONE_PAGE_ID:
                         handle_zone_page_msg(message)

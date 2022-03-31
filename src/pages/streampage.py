@@ -1,4 +1,5 @@
 import api
+from audioconfig import AudioConfig
 from displayserial import STREAM_PAGE_NAME
 from dropdown import DropDown
 
@@ -20,9 +21,9 @@ _streams = []
 
 
 def _change_stream_callback(index):
+    audioconf = AudioConfig()
     new_stream = _streams[index]
-
-    pass
+    audioconf.change_stream(int(new_stream['id']))
 
 
 dropdown.add_item_index_callback(lambda index: _change_stream_callback(index))
@@ -34,19 +35,12 @@ def load_stream_page():
     dropdown.set_loading_state()
     # get list of streams
     print("Loading stream list")
-    _streams = api.get_streams_dict()
-    print(_streams)
+    _streams = api.get_streams_list()
     names = [stream['name'] for stream in _streams]  # if 'name' in stream
-
-    # stream_id_names = {stream.id: stream.name for stream in _streams}
-    #
-    # names = stream_id_names.values()
-    # ids = stream_id_names.keys()
-    # stream = stream_id_names[id]
 
     print(f'{len(names)} streams: ')
     print(names)
-    print(_streams)
+    # print(_streams)
 
     dropdown.populate(names)
 

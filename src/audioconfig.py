@@ -5,12 +5,28 @@ import api
 _AUDIO_CONFIG_FILENAME = '../zone.txt'
 
 
-# TODO: https://python-patterns.guide/gang-of-four/singleton/
+# this is a singleton. all constructed instances refer to the same _instance
 class AudioConfig:
+    _instance = None
+    _initialized = False
+
+    # https://python-patterns.guide/gang-of-four/singleton/
+    def __new__(cls):
+        if cls._instance is None:
+            print("creating AudioConfig object")
+            cls._instance = super(AudioConfig, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self.zone_id = -1
-        self.source_id = -1
-        self.stream_id = -1
+        if not self._initialized:
+            self._initialized = True
+            print("initializing AudioConfig object")
+            self.zone_id = -1
+            self.source_id = -1
+            self.stream_id = -1
+
+    def load_settings(self):
+        print("loading AudioConfig settings")
         self.__load_zone()
         # calling this will give real values to source_id and stream_id (if it has a stream)
         self.change_zone(self.zone_id)
@@ -26,12 +42,20 @@ class AudioConfig:
 
     # changes what stream the sources is playing
     def change_stream(self, new_stream_id):
+        print('changing stream')
+        print(f'current zone id is {self.zone_id}')
+        print(f'current stream id is {self.stream_id}')
+        print(f'new stream id is {new_stream_id}')
         self.stream_id = new_stream_id
         # make api call to change the source's stream to new_stream_id
         api.set_stream(self.source_id, new_stream_id)
 
     # changing the zone may also change the source and stream
     def change_zone(self, new_zone_id):
+        print('changing zone')
+        print(f'current zone id is {self.zone_id}')
+        print(f'current stream id is {self.stream_id}')
+        print(f'new stream id is {new_zone_id}')
         self.zone_id = new_zone_id
         if new_zone_id >= 0:
             # get id of source that this new zone belongs to
@@ -40,6 +64,7 @@ class AudioConfig:
 
             # get the current stream that is running on the source
             self.__update_stream_id_from_source()
+            self.__save_zone()
 
     # moves the current zone to a different source
     # this may also change the stream

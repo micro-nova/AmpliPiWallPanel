@@ -1,6 +1,7 @@
 # note: track and song are the same thing
 import api
 from api import get_source_dict, get_zone_dict
+from audioconfig import AudioConfig
 from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
     set_vol_slider_vol_f, send_stream_name, send_zone_name
 
@@ -12,8 +13,11 @@ is_muted = False
 vol_f = 0.0
 
 
-def poll(audioconf):
-    zone = get_zone_dict(audioconf.zone_id)
+_audioconf = AudioConfig()
+
+
+def poll():
+    zone = get_zone_dict(_audioconf.zone_id)
     source = get_source_dict(zone["source_id"])
     poll_vol_f(zone)
     poll_muted(zone)
@@ -22,7 +26,7 @@ def poll(audioconf):
     poll_artist(source)
     poll_playing(source)
     poll_zone_name(zone)
-    poll_stream_name(audioconf.stream_id)
+    poll_stream_name(_audioconf.stream_id)
 
 
 def poll_vol_f(zone):
@@ -43,7 +47,13 @@ def poll_muted(zone):
 
 def poll_track(source):
     global track_name
-    new_track_name = source["info"]["track"]
+    # new_track_name = source["info"]["track"]
+    new_track_name = ''
+    if 'track' in source['info']:
+        new_track_name = source['info']['track']
+    else:
+        print("null track name!")
+
     if new_track_name != track_name:
         track_name = new_track_name
         send_title(track_name)
@@ -51,7 +61,13 @@ def poll_track(source):
 
 def poll_album(source):
     global album_name
-    new_album_name = source["info"]["album"]
+    # new_album_name = source["info"]["album"]
+    new_album_name = ''
+    if 'album' in source['info']:
+        new_album_name = source['info']['album']
+    else:
+        print("null album name!")
+
     if new_album_name != album_name:
         album_name = new_album_name
         send_album(album_name)
@@ -59,7 +75,12 @@ def poll_album(source):
 
 def poll_artist(source):
     global artist_name
-    new_artist_name = source["info"]["artist"]
+    # new_artist_name = source["info"]["artist"]
+    new_artist_name = ''
+    if 'artist' in source['info']:
+        new_artist_name = source['info']['artist']
+    else:
+        print("null artist name!")
     if new_artist_name != artist_name:
         artist_name = new_artist_name
         send_artist(artist_name)
