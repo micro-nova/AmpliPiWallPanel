@@ -8,6 +8,11 @@ IP = "192.168.0.195"
 
 _NET_SLEEP_TIME = 10
 
+# TODO: add helper method for handling urequests.get and returning None if its not okay
+# TODO: add something similar for patch, post probably
+# TODO: remove type naming and add type hinting
+# TODO: add doc strings
+# TODO: add state machine for handling stuff. need it to handle error states. maybe keep track of screen states
 
 def get_source_dict(source_id):
     response = json.loads(urequests.get(f'http://{IP}/api/sources/{source_id}').text)
