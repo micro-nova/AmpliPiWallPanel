@@ -1,7 +1,7 @@
 from api import command_stream, set_vol_f, set_mute
 from audioconfig import AudioConfig
 from displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
-from pages import streampage, zonepage
+from pages import stream, zone
 from polling import get_is_playing, set_is_playing, get_muted, set_muted
 
 # component ids
@@ -17,11 +17,11 @@ ZONE_BUTTON_ID = 12
 _audioconf = AudioConfig()
 
 def _on_source():
-    streampage.load_stream_page()
+    stream.load_stream_page()
 
 
 def _on_zone():
-    zonepage.load_zone_page()
+    zone.load_zone_page()
 
 
 def _on_play(stream_id):

@@ -5,7 +5,7 @@ from displayserial import set_component_txt, CONFIG_PAGE_NAME, BUTTON_MESSAGE, T
     uart_write
 
 # component names
-from pages import ssidpage
+from pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
 _PASSWORD_FIELD_OBJNAME = 'tpassfield'
@@ -33,15 +33,15 @@ pass_field_txt = ''
 def load_config_page():
     # load wifi info
     wifi_info = wifi.load_wifi_info()
-    ssid = wifi_info['ssid']
-    password = wifi_info['password']
+    wifi_ssid = wifi_info['ssid']
+    wifi_password = wifi_info['password']
 
     # update page components
-    print(f'updating ssid and password fields to {ssid} and {password}')
+    print(f'updating ssid and password fields to {wifi_ssid} and {wifi_password}')
     time.sleep_ms(10)
-    set_component_txt(CONFIG_PAGE_NAME, _SSID_FIELD_OBJNAME, ssid)
+    set_component_txt(CONFIG_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
     time.sleep_ms(10)
-    set_component_txt(CONFIG_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, password)
+    set_component_txt(CONFIG_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
     time.sleep_ms(10)
     update_config_status()
 
@@ -74,7 +74,7 @@ def handle_config_page_msg(message):
             load_config_page()
         elif id == _SSID_FIELD_ID:
             # nextion will switch to ssidpage, so we need to init that page
-            ssidpage.load_ssid_page()
+            ssid.load_ssid_page()
     elif message[0] == TEXT_MESSAGE:
         id = message[2]
         text = receive_text_message_str(message)

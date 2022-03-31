@@ -5,11 +5,11 @@ from machine import Pin
 import displayserial
 import wifi
 from audioconfig import AudioConfig
-from pages.configpage import handle_config_page_msg, load_config_page, update_config_status
-from pages.mainpage import handle_main_page_msg
-from pages.ssidpage import handle_ssid_page_msg
-from pages.streampage import handle_stream_page_msg
-from pages.zonepage import handle_zone_page_msg
+from pages.config import handle_config_page_msg, load_config_page, update_config_status
+from pages.home import handle_main_page_msg
+from pages.ssid import handle_ssid_page_msg
+from pages.stream import handle_stream_page_msg
+from pages.zone import handle_zone_page_msg
 from polling import poll
 
 tft_reset = Pin(4, Pin.OUT)

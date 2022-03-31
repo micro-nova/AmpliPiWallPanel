@@ -3,7 +3,7 @@ import network
 import time
 
 from displayserial import change_page, CONFIG_PAGE_NAME
-from pages.configpage import load_config_page
+from pages.config import load_config_page
 
 _WIFI_CONFIG_FILENAME = '../wifi.txt'
 
