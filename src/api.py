@@ -68,6 +68,7 @@ def _patch_safe(request, content):
     if wifi.is_connected():
         try:
             urequests.patch(request, json=content)
+            # TODO: get response and handle status_code similarly to _get_safe
             time.sleep_ms(_NET_SLEEP_TIME_MS)
         except OSError as e:
             print(e)
@@ -77,6 +78,7 @@ def _post_safe(request):
     if wifi.is_connected():
         try:
             urequests.post(request)
+            # TODO: get response and handle status_code similarly to _get_safe
             time.sleep_ms(_NET_SLEEP_TIME_MS)
         except OSError as e:
             print(e)
