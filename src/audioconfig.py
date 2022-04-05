@@ -59,7 +59,7 @@ class AudioConfig:
         self.zone_id = new_zone_id
         if new_zone_id >= 0:
             # get id of source that this new zone belongs to
-            zone = api.get_zone_dict(self.zone_id)
+            zone = api.get_zone(self.zone_id)
             self.source_id = zone['source_id']
 
             # get the current stream that is running on the source
@@ -93,5 +93,5 @@ class AudioConfig:
             zone_file.write(zone_file_str)
 
     def __update_stream_id_from_source(self):
-        source = api.get_source_dict(self.source_id)
+        source = api.get_source(self.source_id)
         self.stream_id = api.get_stream_id_from_source_dict(source)

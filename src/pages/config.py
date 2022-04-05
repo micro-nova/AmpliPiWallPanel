@@ -26,11 +26,9 @@ ssid_list = []
 ssid_field_txt = ''
 pass_field_txt = ''
 
-
-# this can be called whenever since all relevant components are global in the config page.
-# although, it shouldn't be called when the user is entering new wifi info since it would
-# override it.
 def load_config_page():
+    """Loads config page contents. Can be called whenever since all relevant components are global in the config page.
+    Although, it shouldn't be called when the user is entering new wifi info since it would override it."""
     # load wifi info
     wifi_info = wifi.load_wifi_info()
     wifi_ssid = wifi_info['ssid']
@@ -39,21 +37,25 @@ def load_config_page():
     # update page components
     print(f'updating ssid and password fields to {wifi_ssid} and {wifi_password}')
     time.sleep_ms(10)
+    # TODO: investigate effectiveness of delaying on improving the chances of the message being
+    #  successfully sent to the display. if it actually helps, might make more sense to put the delay in
+    #  every display update function
     set_component_txt(CONFIG_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
     time.sleep_ms(10)
     set_component_txt(CONFIG_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
     time.sleep_ms(10)
     update_config_status()
 
-
 def update_config_status():
+    """Updates the config page's WiFi and AmpliPi status symbols."""
     if wifi.is_connected():
         uart_write(f'{CONFIG_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_CONNECTED_PIC_ID}')
     else:
         uart_write(f'{CONFIG_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_DISCONNECTED_PIC_ID}')
-
+    # TODO: update AmpliPi connectivity info
 
 def handle_config_page_msg(message):
+    """Receives a config page message (from the display) and processes it."""
     global ssid_field_txt
     global pass_field_txt
     print("handling config page message")
@@ -83,7 +85,3 @@ def handle_config_page_msg(message):
         elif id == _PASSWORD_FIELD_ID:
             pass_field_txt = text
         print(f'Received string: {text}')
-
-    # when connect button is pressed, update wifi config
-    # then call disconnect() and try_connect()
-    # then

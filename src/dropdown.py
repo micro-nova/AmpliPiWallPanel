@@ -2,12 +2,15 @@ import displayserial
 
 
 class DropDown:
-    # first_field_id: the id of the first text field component. the fields must be in order from least to greatest
-    # field_objname_prefix: the object name of the text field components without the number. e.g: "tssid" could be
-    #   field_objname_prefix where and example of an actual field's name in nextion would be "tssid0"
-    # up_button_id: the id of the up button
-    # down_button_id: the id of the down button
-    # num_fields: the number of fields on the page for the dropdown menu
+    """
+    Logic for operating dropdown selection pages on the display.
+    first_field_id: the id of the first text field component. the fields must be in order from least to greatest
+    field_objname_prefix: the object name of the text field components without the number. e.g: "tssid" could be
+       field_objname_prefix where and example of an actual field's name in nextion would be "tssid0"
+    up_button_id: the id of the up button
+    down_button_id: the id of the down button
+    num_fields: the number of fields on the page for the dropdown menu
+    """
     def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, loading_text_id, num_fields):
         self.page_name = page_name
         self.first_field_id = first_field_id
@@ -26,12 +29,14 @@ class DropDown:
     # clears and populates the items list
     # items must be a list of strings
     def populate(self, items):
+        """Clears and populates the items list. Items must be a list of strings."""
         self.start_index = 0
         self.items.clear()
         self.items.extend(items)
         self.__update_fields()
 
     def set_loading_state(self):
+        """Manipulates the display to show a loading state."""
         # make all fields invisible
         for i in range(self.num_fields):
             displayserial.set_visible(i + self.first_field_id, False)
@@ -44,6 +49,8 @@ class DropDown:
         displayserial.set_visible(self.loading_text_id, True)
 
     def add_item_index_callback(self, callb):
+        """callb is a lambda one argument and no return value. Adds callb to a list of callbacks that is called
+        when the user selects an option from the list."""
         self.callbacks.append(callb)
 
     # def set_selected_string(self, selected_string):
@@ -56,6 +63,8 @@ class DropDown:
 
     # handles a serial message from the display
     def handle_message(self, message):
+        """Receives a message from the display and processes it. Should only be
+        passed messages that are relevant to the page that contains the instance of DropDown."""
         if message[0] == displayserial.BUTTON_MESSAGE and message[3] == displayserial.PRESSED_EVENT:
             id = message[2]
             if id in range(self.first_field_id, self.first_field_id + self.num_fields):

@@ -35,7 +35,7 @@ def load_zone_page():
     dropdown.set_loading_state()
     # get list of zones
     print("Loading zone list")
-    _zones = api.get_zones_list()
+    _zones = api.get_zones()
     names = [zone['name'] for zone in _zones]
 
     print(f'{len(names)} zones: ')

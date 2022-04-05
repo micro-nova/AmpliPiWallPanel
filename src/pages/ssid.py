@@ -17,9 +17,8 @@ dropdown = DropDown(SSID_PAGE_NAME, _SSID_FIRST_ID,
                     _SSID_OBJNAME, _UP_BUTTON_ID,
                     _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_SSID_FIELDS)
 
-
-# only call this when on this page
 def load_ssid_page():
+    """Loads the contents of the SSID page. Should only be called when the display is on this page."""
     dropdown.set_loading_state()
     # get list of ssid
     print("Loading SSID list")
@@ -37,6 +36,7 @@ def load_ssid_page():
 
 
 def handle_ssid_page_msg(message):
+    """Receives a message from the ssid page (from the display) and processes it."""
     dropdown.handle_message(message)
 
 

@@ -26,7 +26,7 @@ def _on_play(stream_id):
     polling.skip_next_playing()
 
     def call():
-        api.command_stream(stream_id, "play")
+        api.send_stream_command(stream_id, "play")
         polling.skip_next_playing()
         print("playing")
 
@@ -38,7 +38,7 @@ def _on_pause(stream_id):
     polling.skip_next_playing()
 
     def call():
-        api.command_stream(stream_id, "pause")
+        api.send_stream_command(stream_id, "pause")
         polling.skip_next_playing()
         print("pausing")
 
@@ -75,13 +75,13 @@ def _on_unmute(zone_id):
 
 def _on_next(stream_id):
     try:
-        api.command_stream(stream_id, "next")
+        api.send_stream_command(stream_id, "next")
     except OSError:
         print("next button failed.")
 
 def _on_prev(stream_id):
     try:
-        api.command_stream(stream_id, "prev")
+        api.send_stream_command(stream_id, "prev")
     except OSError:
         print("prev button failed.")
 
@@ -110,6 +110,7 @@ def _on_vol(message):
         api.queue_call(call, droppable=True)
 
 def handle_main_page_msg(message):
+    """Receives a message from the main page (from the display) and processes it."""
     print("handling main page message")
     if message[0] == SLIDER_MESSAGE:
         # valid slider update

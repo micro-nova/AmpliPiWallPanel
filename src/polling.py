@@ -3,7 +3,7 @@ import time
 
 import api
 import dt
-from api import get_source_dict, get_zone_dict
+from api import get_source, get_zone
 from audioconfig import AudioConfig
 from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
     set_vol_slider_vol_f, send_stream_name, send_zone_name
@@ -30,9 +30,9 @@ def poll():
     global _skip_next_mute
 
     poll_start_time = dt.time_sec()
-    zone = get_zone_dict(_audioconf.zone_id)
+    zone = get_zone(_audioconf.zone_id)
     if zone is not None:
-        source = get_source_dict(zone["source_id"])
+        source = get_source(zone["source_id"])
         poll_track(source)
         poll_album(source)
         poll_zone_name(zone)
@@ -118,7 +118,7 @@ def poll_playing(source):
 
 
 def poll_stream_name(stream_id):
-    stream = api.get_stream_dict(stream_id)
+    stream = api.get_stream(stream_id)
     send_stream_name(stream['name'])
 
 

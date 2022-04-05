@@ -31,11 +31,12 @@ dropdown.add_item_index_callback(lambda index: _change_stream_callback(index))
 
 # only call this when on this page
 def load_stream_page():
+    """Loads stream page contents. Should only be called when the display is on the stream page."""
     global _streams
     dropdown.set_loading_state()
     # get list of streams
     print("Loading stream list")
-    _streams = api.get_streams_list()
+    _streams = api.get_streams()
     names = [stream['name'] for stream in _streams]  # if 'name' in stream
 
     print(f'{len(names)} streams: ')
@@ -46,4 +47,5 @@ def load_stream_page():
 
 
 def handle_stream_page_msg(message):
+    """Handles messages from the display that are relevant to the stream page."""
     dropdown.handle_message(message)
