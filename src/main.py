@@ -2,6 +2,7 @@ import time
 
 from machine import Pin
 
+import api
 import displayserial
 import wifi
 from audioconfig import AudioConfig
@@ -42,6 +43,8 @@ last_poll_time = time.time() - POLLING_INTERVAL_SECONDS
 
 message = b''
 while True:
+    # handle api call queue
+    api.update()
     # poll info from amplipi api
     curr_time = time.time()
     if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
@@ -53,8 +56,9 @@ while True:
                     # init audioconf
                     audioconf.load_settings()
                 if audioconf.zone_id >= 0:
-                    poll()
-                    print("polled from amplipi")
+                    api.queue_call(poll)
+                    # poll()
+                    print("queued poll from amplipi")
                 else:
                     print("didn't poll because zone is not configured")
         except OSError:

@@ -1,5 +1,8 @@
 # note: track and song are the same thing
+import time
+
 import api
+import dt
 from api import get_source_dict, get_zone_dict
 from audioconfig import AudioConfig
 from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
@@ -13,21 +16,42 @@ is_muted = False
 vol_f = 0.0
 
 
+_skip_next_vol_f = False
+_skip_next_playing = False
+_skip_next_mute = False
+
+
 _audioconf = AudioConfig()
 
 
 def poll():
-    zone = get_zone_dict(_audioconf.zone_id)
-    source = get_source_dict(zone["source_id"])
-    poll_vol_f(zone)
-    poll_muted(zone)
-    poll_track(source)
-    poll_album(source)
-    poll_artist(source)
-    poll_playing(source)
-    poll_zone_name(zone)
-    poll_stream_name(_audioconf.stream_id)
+    global _skip_next_vol_f
+    global _skip_next_playing
+    global _skip_next_mute
 
+    poll_start_time = dt.time_sec()
+    zone = get_zone_dict(_audioconf.zone_id)
+    if zone is not None:
+        source = get_source_dict(zone["source_id"])
+        poll_track(source)
+        poll_album(source)
+        poll_zone_name(zone)
+        poll_stream_name(_audioconf.stream_id)
+        poll_artist(source)
+
+        if not _skip_next_vol_f:
+            poll_vol_f(zone)
+        else:
+            _skip_next_vol_f = False
+        if not _skip_next_mute:
+            poll_muted(zone)
+        else:
+            _skip_next_mute = False
+        if not _skip_next_playing:
+            poll_playing(source)
+        else:
+            _skip_next_playing = False
+    print(f'polling took {dt.time_sec() - poll_start_time} seconds.')
 
 def poll_vol_f(zone):
     global vol_f
@@ -47,7 +71,6 @@ def poll_muted(zone):
 
 def poll_track(source):
     global track_name
-    # new_track_name = source["info"]["track"]
     new_track_name = ''
     if 'track' in source['info']:
         new_track_name = source['info']['track']
@@ -122,4 +145,23 @@ def set_muted(muted):
     is_muted = muted
     update_mute_button(is_muted)
 
+def skip_next_vol_f():
+    global _skip_next_vol_f
+    _skip_next_vol_f = True
 
+def skip_next_playing():
+    global _skip_next_playing
+    _skip_next_playing = True
+
+def skip_next_mute():
+    global _skip_next_mute
+    _skip_next_mute = True
+
+# def resume_polling():
+#     global _skip_next_vol_f
+#     global _skip_next_playing
+#     global _skip_next_mute
+#
+#     _skip_next_vol_f = False
+#     _skip_next_playing = False
+#     _skip_next_mute = False
