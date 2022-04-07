@@ -19,6 +19,9 @@ dropdown = DropDown(ZONE_PAGE_NAME, _ITEM_FIRST_ID,
 
 _zones = []
 
+# TODO: zone page will now toggle between zones and groups. need to figure out how
+#  other systems will handle this change.
+
 
 def _change_zone_callback(index):
     audioconf = AudioConfig()
@@ -26,7 +29,7 @@ def _change_zone_callback(index):
     audioconf.change_zone(int(new_zone['id']))
 
 
-dropdown.add_item_index_callback(lambda index: _change_zone_callback(index))
+dropdown.add_item_index_callback(_change_zone_callback)
 
 
 # only call this when display is on this page
