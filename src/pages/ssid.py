@@ -1,4 +1,3 @@
-# component names
 import wifi
 from displayserial import SSID_PAGE_NAME
 from dropdown import DropDown

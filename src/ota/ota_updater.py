@@ -1,5 +1,7 @@
-import os, gc
-from .httpclient import HttpClient
+import gc
+import os
+
+from httpclient import HttpClient
 
 class OTAUpdater:
     """
@@ -142,7 +144,7 @@ class OTAUpdater:
 
     def _download_all_files(self, version, sub_dir=''):
         url = 'https://api.github.com/repos/{}/contents{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
-        gc.collect() 
+        gc.collect()
         file_list = self.http_client.get(url)
         file_list_json = file_list.json()
         for file in file_list_json:
@@ -242,7 +244,7 @@ class OTAUpdater:
         try:
             os.mkdir(path)
         except OSError as exc:
-            if exc.args[0] == 17: 
+            if exc.args[0] == 17:
                 pass
 
 

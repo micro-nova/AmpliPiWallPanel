@@ -43,6 +43,7 @@ CONFIG_PAGE_NAME = "configpage"
 SSID_PAGE_NAME = "ssidpage"
 STREAM_PAGE_NAME = "streampage"
 ZONE_PAGE_NAME = "zonepage"
+VERSION_PAGE_NAME = "versionpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 

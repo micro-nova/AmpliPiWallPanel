@@ -26,7 +26,7 @@ def _change_stream_callback(index):
     audioconf.change_stream(int(new_stream['id']))
 
 
-dropdown.add_item_index_callback(lambda index: _change_stream_callback(index))
+dropdown.add_item_index_callback(_change_stream_callback)
 
 
 # only call this when on this page
