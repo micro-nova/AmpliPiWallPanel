@@ -9,14 +9,15 @@ class OTAUpdater:
     optimized for low power usage.
     """
 
-    def __init__(self, github_repo, github_src_dir='', module='', main_dir='main', new_version_dir='next', secrets_file=None, headers={}):
+    def __init__(self, github_repo, github_src_dir='', module='', main_dir='main', new_version_dir='next', secrets_files=None, headers={}):
+        """secrets_files was modified to be a list instead of a single file"""
         self.http_client = HttpClient(headers=headers)
         self.github_repo = github_repo.rstrip('/').replace('https://github.com/', '')
         self.github_src_dir = '' if len(github_src_dir) < 1 else github_src_dir.rstrip('/') + '/'
         self.module = module.rstrip('/')
         self.main_dir = main_dir
         self.new_version_dir = new_version_dir
-        self.secrets_file = secrets_file
+        self.secrets_files = secrets_files
 
     def __del__(self):
         self.http_client = None
@@ -64,6 +65,7 @@ class OTAUpdater:
         print('No new updates found...')
         return False
 
+    # TODO: make a method to update to a specific tagged release
     def install_update_if_available(self) -> bool:
         """This method will immediately install the latest version if out-of-date.
         
@@ -171,12 +173,14 @@ class OTAUpdater:
         self.http_client.get('https://raw.githubusercontent.com/{}/{}/{}'.format(self.github_repo, version, gitPath), saveToFile=path)
 
     def _copy_secrets_file(self):
-        if self.secrets_file:
-            fromPath = self.modulepath(self.main_dir + '/' + self.secrets_file)
-            toPath = self.modulepath(self.new_version_dir + '/' + self.secrets_file)
-            print('Copying secrets file from {} to {}'.format(fromPath, toPath))
-            self._copy_file(fromPath, toPath)
-            print('Copied secrets file from {} to {}'.format(fromPath, toPath))
+        # iterate through all secrets files
+        for secrets_file in self.secrets_files:
+            if secrets_file:
+                fromPath = self.modulepath(self.main_dir + '/' + secrets_file)
+                toPath = self.modulepath(self.new_version_dir + '/' + secrets_file)
+                print(f'Copying secrets file from {fromPath} to {toPath}')
+                self._copy_file(fromPath, toPath)
+                print(f'Copied secrets file from {fromPath} to {toPath}')
 
     def _delete_old_version(self):
         print('Deleting old version at {} ...'.format(self.modulepath(self.main_dir)))
