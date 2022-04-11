@@ -1,6 +1,7 @@
 import wifi
 from displayserial import VERSION_PAGE_NAME
 from dropdown import DropDown
+from ota.ota_updater import OTAUpdater
 
 _ITEM_OBJNAME = "titem"  # num
 
@@ -32,10 +33,15 @@ def load_version_page():
     # TODO: get list of versions from github api
     #  store in _versions
 
-    # take raw _versions data and extract just the version numbers
-    version_names = []
+    # temporary test to get a list of tags
+    ota = OTAUpdater('micro-nova/AmpliPi')
 
-    dropdown.populate(version_names)
+    _versions = ota.get_all_tags()
+
+    # take raw _versions data and extract just the tag names
+    tag_names = [tag['name'] for tag in _versions]
+
+    dropdown.populate(tag_names)
 
 def handle_version_page_msg(message):
     """Handles messages from the display that are relevant to the version page."""

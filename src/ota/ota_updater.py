@@ -1,7 +1,7 @@
 import gc
 import os
 
-from httpclient import HttpClient
+from ota.httpclient import HttpClient
 
 class OTAUpdater:
     """
@@ -122,6 +122,12 @@ class OTAUpdater:
                 version = f.read()
                 return version
         return '0.0'
+
+    # jonah added this
+    def get_all_tags(self):
+        tags = self.http_client.get(f'https://api.github.com/repos/{self.github_repo}/tags')
+        return tags.json()
+
 
     def get_latest_version(self):
         latest_release = self.http_client.get('https://api.github.com/repos/{}/releases/latest'.format(self.github_repo))

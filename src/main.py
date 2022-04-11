@@ -10,6 +10,7 @@ from pages.connection import update_connection_status, load_connection_page, han
 from pages.home import handle_main_page_msg
 from pages.ssid import handle_ssid_page_msg
 from pages.stream import handle_stream_page_msg
+from pages.version import handle_version_page_msg
 from pages.zone import handle_zone_page_msg
 from polling import poll
 
@@ -24,6 +25,7 @@ CONFIG_PAGE_ID = 2
 SSID_PAGE_ID = 3
 STREAM_PAGE_ID = 5
 ZONE_PAGE_ID = 6
+VERSION_PAGE_ID = 7
 CONNECTION_PAGE_ID = 8
 
 # polling constants
@@ -101,8 +103,11 @@ while True:
                         handle_stream_page_msg(message)
                     elif message[1] == ZONE_PAGE_ID:
                         handle_zone_page_msg(message)
+                    elif message[1] == VERSION_PAGE_ID:
+                        handle_version_page_msg(message)
                     elif message[1] == CONNECTION_PAGE_ID:
                         handle_connection_page_msg(message)
+
 
                 # clear message only if it was properly terminated
                 message = b''
