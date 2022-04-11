@@ -3,7 +3,7 @@ import network
 import time
 
 from displayserial import change_page, CONFIG_PAGE_NAME
-from pages.config import load_config_page
+from pages.connection import load_connection_page
 
 _WIFI_CONFIG_FILENAME = '../wifi.txt'
 
@@ -88,7 +88,7 @@ def try_connect():
         if not _set_page_config:
             print("Please configure wifi settings.")
             change_page(CONFIG_PAGE_NAME)
-            load_config_page()
+            load_connection_page()
             _set_page_config = True
         return False
 

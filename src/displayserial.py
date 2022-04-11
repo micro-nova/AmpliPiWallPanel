@@ -1,3 +1,5 @@
+import time
+
 from machine import UART
 from math import floor
 
@@ -44,6 +46,7 @@ SSID_PAGE_NAME = "ssidpage"
 STREAM_PAGE_NAME = "streampage"
 ZONE_PAGE_NAME = "zonepage"
 VERSION_PAGE_NAME = "versionpage"
+CONNECTION_PAGE_NAME = "cpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
@@ -81,10 +84,12 @@ def send_stream_name(stream_name):
 def send_zone_name(zone_name):
     if len(zone_name) > 30:
         zone_name = zone_name[0:26] + "..."
-    set_component_txt(MAIN_PAGE_NAME, ZONE_NAME_OBJNAME, zone_name)
+    set_component_txt(CONFIG_PAGE_NAME, ZONE_NAME_OBJNAME, zone_name)
 
 
 def set_component_txt(pagename, componentname, txt):
+    message = f'{pagename}.{componentname}.txt="{txt}"'
+    print(message)
     uart_write(f'{pagename}.{componentname}.txt="{txt}"')
 
 
@@ -148,6 +153,8 @@ def uart_read():
 
 def uart_write(string):
     tftUart.write(string)
+    # tftUart.write(f'{string}{TERM}')
     tftUart.write(TERM)  # message termination for nextion uart
+    time.sleep_ms(5)
 
 

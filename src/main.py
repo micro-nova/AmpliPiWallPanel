@@ -5,14 +5,15 @@ import displayserial
 import wifi
 import dt
 from audioconfig import AudioConfig
-from pages.config import handle_config_page_msg, load_config_page, update_config_status
+from pages.config import handle_config_page_msg
+from pages.connection import update_connection_status, load_connection_page, handle_connection_page_msg
 from pages.home import handle_main_page_msg
 from pages.ssid import handle_ssid_page_msg
 from pages.stream import handle_stream_page_msg
 from pages.zone import handle_zone_page_msg
 from polling import poll
 
-# TODO: replcae from x import y with just import x for pages. do this everywhere, not just main
+# TODO: replace from x import y with just import x for pages. do this everywhere, not just main
 
 tft_reset = Pin(4, Pin.OUT)
 
@@ -23,6 +24,7 @@ CONFIG_PAGE_ID = 2
 SSID_PAGE_ID = 3
 STREAM_PAGE_ID = 5
 ZONE_PAGE_ID = 6
+CONNECTION_PAGE_ID = 8
 
 # polling constants
 POLLING_INTERVAL_SECONDS = 1
@@ -32,10 +34,10 @@ POLLING_INTERVAL_SECONDS = 1
 print('resetting screen...')
 tft_reset.value(0)
 
-load_config_page()
+load_connection_page()
 audioconf = AudioConfig()
 wifi.try_connect()
-update_config_status()
+update_connection_status()
 
 initialized = False
 
@@ -99,6 +101,8 @@ while True:
                         handle_stream_page_msg(message)
                     elif message[1] == ZONE_PAGE_ID:
                         handle_zone_page_msg(message)
+                    elif message[1] == CONNECTION_PAGE_ID:
+                        handle_connection_page_msg(message)
 
                 # clear message only if it was properly terminated
                 message = b''
