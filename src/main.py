@@ -11,6 +11,7 @@ from pages.home import handle_main_page_msg
 from pages.ssid import handle_ssid_page_msg
 from pages.stream import handle_stream_page_msg
 from pages.version import handle_version_page_msg
+from pages.versioninfo import handle_versioninfo_page_msg
 from pages.zone import handle_zone_page_msg
 from polling import poll
 
@@ -27,6 +28,7 @@ STREAM_PAGE_ID = 5
 ZONE_PAGE_ID = 6
 VERSION_PAGE_ID = 7
 CONNECTION_PAGE_ID = 8
+VERSIONINFO_PAGE_ID = 9
 
 # polling constants
 POLLING_INTERVAL_SECONDS = 1
@@ -43,9 +45,10 @@ update_connection_status()
 
 initialized = False
 
+# make sure display is on the home page
+displayserial.change_page(displayserial.HOME_PAGE_NAME)
+
 last_poll_time = dt.time_sec() - POLLING_INTERVAL_SECONDS
-
-
 message = b''
 while True:
     # handle api call queue
@@ -107,7 +110,8 @@ while True:
                         handle_version_page_msg(message)
                     elif message[1] == CONNECTION_PAGE_ID:
                         handle_connection_page_msg(message)
-
+                    elif message[1] == VERSIONINFO_PAGE_ID:
+                        handle_versioninfo_page_msg(message)
 
                 # clear message only if it was properly terminated
                 message = b''

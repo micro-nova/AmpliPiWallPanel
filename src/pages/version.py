@@ -1,7 +1,10 @@
+import json
+
 import wifi
 from displayserial import VERSION_PAGE_NAME
 from dropdown import DropDown
 from ota.ota_updater import OTAUpdater
+from pages import versioninfo
 
 _ITEM_OBJNAME = "titem"  # num
 
@@ -17,31 +20,42 @@ dropdown = DropDown(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID,
                     _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
 
-_versions = []
+_releases = [] # list of tag jsons (not just tag names)
+
+_ota = None
 
 def _select_version_callback(index):
-    # TODO: move to version page
-    #  grab version info from _versions[index]
-    pass
+    # load version info page since nextion display should be there already
+    versioninfo.load_versioninfo_page(_ota, _releases[index])
 
 dropdown.add_item_index_callback(_select_version_callback)
 
 def load_version_page():
     """Loads version page contents. Should only be called when the display is on the version page."""
-    global _versions
+    global _releases
+    global _ota
     dropdown.set_loading_state()
-    # TODO: get list of versions from github api
-    #  store in _versions
+    if _ota is None:
+        token = None
+        with open('temp-token.txt') as file:
+            token = json.loads(file.read())
 
-    # temporary test to get a list of tags
-    ota = OTAUpdater('micro-nova/AmpliPi')
+        if token is None:
+            _ota = OTAUpdater('micro-nova/WallPanel', github_src_dir='src', main_dir='src',
+                              secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'])
+        else:
+            _ota = OTAUpdater('micro-nova/WallPanel', github_src_dir='src', main_dir='src',
+                              secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'],
+                              headers={'Authorization': 'token {}'.format(token['token'])})
 
-    _versions = ota.get_all_tags()
+    _releases = _ota.get_all_releases()
+    reload_version_page_ui()
 
-    # take raw _versions data and extract just the tag names
-    tag_names = [tag['name'] for tag in _versions]
+def reload_version_page_ui():
+    # take raw _releases data and extract just the names
+    release_names = [release['name'] for release in _releases]
 
-    dropdown.populate(tag_names)
+    dropdown.populate(release_names)
 
 def handle_version_page_msg(message):
     """Handles messages from the display that are relevant to the version page."""

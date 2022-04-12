@@ -53,13 +53,16 @@ class DropDown:
         when the user selects an option from the list."""
         self.callbacks.append(callb)
 
-    # def set_selected_string(self, selected_string):
-    #     self.selected_string = selected_string
-    #     # compute index of selected string
-    #     try:
-    #         self.selected_index = self.items.index(selected_string)
-    #     except ValueError:
-    #         self.selected_index = -1
+    def set_selected_string(self, selected_string):
+        self.selected_string = selected_string
+        # compute index of selected string
+        try:
+            self.selected_index = self.items.index(selected_string)
+        except ValueError:
+            self.selected_index = -1
+
+    def get_string_from_index(self, index):
+        return
 
     # handles a serial message from the display
     def handle_message(self, message):
@@ -93,7 +96,7 @@ class DropDown:
 
     def __update_fields(self):
         num_items = len(self.items)
-        print(f'{num_items} items in SSID list.')
+        print(f'{num_items} items in dropdown list.')
 
         # make loading text invisible
         displayserial.set_visible(self.loading_text_id, False)

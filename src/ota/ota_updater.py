@@ -66,6 +66,18 @@ class OTAUpdater:
         return False
 
     # TODO: make a method to update to a specific tagged release
+    def install_tagged_release(self, tag_name):
+        """This method will immediately install the release with tag_name.
+
+        This method expects an active internet connection. Must reset microcontroller after
+        calling this method. """
+        print(f'Updating to version {tag_name}')
+        self._create_new_version_file(tag_name)
+        self._download_new_version(tag_name)
+        self._copy_secrets_file()
+        self._delete_old_version()
+        self._install_new_version()
+
     def install_update_if_available(self) -> bool:
         """This method will immediately install the latest version if out-of-date.
         
@@ -129,6 +141,10 @@ class OTAUpdater:
     def get_all_tags(self):
         tags = self.http_client.get(f'https://api.github.com/repos/{self.github_repo}/tags')
         return tags.json()
+
+    def get_all_releases(self):
+        releases = self.http_client.get(f'https://api.github.com/repos/{self.github_repo}/releases')
+        return releases.json()
 
 
     def get_latest_version(self):
