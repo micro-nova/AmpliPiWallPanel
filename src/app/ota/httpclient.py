@@ -4,11 +4,14 @@ class Response:
 
     def __init__(self, socket, saveToFile=None):
         self._socket = socket
+        self._socket.setblocking(True)
+        # self._socket.settimeout(10.0)
         self._saveToFile = saveToFile
         self._encoding = 'utf-8'
         if saveToFile is not None:
             CHUNK_SIZE = 512  # bytes
             print(f'saving file {saveToFile}')
+            print(f'{gc.mem_free()} bytes free.')
             with open(saveToFile, 'w') as outfile:
                 data = self._socket.read(CHUNK_SIZE)
                 while data:
