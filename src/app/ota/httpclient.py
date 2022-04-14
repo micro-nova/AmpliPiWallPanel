@@ -1,4 +1,7 @@
 import usocket, os, gc
+import machine
+
+from app.utils import rmdir_all
 
 class Response:
 
@@ -14,10 +17,27 @@ class Response:
             print(f'{gc.mem_free()} bytes free.')
             with open(saveToFile, 'w') as outfile:
                 data = self._socket.read(CHUNK_SIZE)
+                failed = False
                 while data:
                     outfile.write(data)
-                    data = self._socket.read(CHUNK_SIZE)
+                    try:
+                        data = self._socket.read(CHUNK_SIZE)
+                    except OSError as e:
+                        #??? re-open the socket maybe???
+                        # maybe just delete the next directory and restart the entire update process?
+                        print(f'{e}: Socket.read failed.')
+                        data = None
+                        failed = True
+
+                        outfile.close()
+                        rmdir_all('next')
+                        machine.reset()
+
                 outfile.close()
+
+                if failed:
+                    # TODO: delete next directory, restart entire update process
+                    pass
 
             self.close()
 
