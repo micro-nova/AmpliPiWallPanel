@@ -167,25 +167,30 @@ class OTAUpdater:
         print('Version {} downloaded to {}'.format(version, self.modulepath(self.new_version_dir)))
 
     def _download_all_files(self, version, sub_dir=''):
-        url = 'https://api.github.com/repos/{}/contents{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
+        # was url = 'https://api.github.com/repos/{}/contents{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
+        url = 'https://api.github.com/repos/{}/contents/{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
+        print(url)
         gc.collect()
         file_list = self.http_client.get(url)
         file_list_json = file_list.json()
         for file in file_list_json:
-            # modpathinput = self.new_version_dir + '/' + file['path'].replace(self.main_dir + '/', '').replace(self.github_src_dir, '')
+            print(file)
             if file == 'message':
-                print('got message instead of json. not sure why.')
-                break
-            print('file[path]: ' + file['path'])
-            print('file[path].replace... ' + file['path'].replace(self.github_src_dir, ''))
-            print(f'github_src_dir: {self.github_src_dir}')
-            p1 = self.new_version_dir + '/'
-            print(p1)
-            p1 = p1.replace(self.github_src_dir, '')
-            p1 = p1 + file['path'].replace(self.github_src_dir, '').replace(self.main_dir + '/', '')
-            print(p1)
-            path = self.modulepath(p1)
-            print(path)
+                print('got "message" string instead of dict. not sure why.')
+                continue
+            # print('file[path]: ' + file['path'])
+            # print('file[path].replace... ' + file['path'].replace(self.github_src_dir, ''))
+            # print(f'github_src_dir: {self.github_src_dir}')
+            # p1 = self.new_version_dir + '/'
+            # print(p1)
+            # p1 = p1.replace(self.github_src_dir, '')
+            # p1 = p1 + file['path'].replace(self.github_src_dir, '').replace(self.main_dir + '/', '')
+            # print(p1)
+            # path = self.modulepath(p1)
+            # print(path)
+            path = self.modulepath(self.new_version_dir + '/' + file['path'].replace(self.main_dir + '/', '').replace(self.github_src_dir, ''))
+
+            print(f'path: {path}')
             if file['type'] == 'file':
                 gitPath = file['path']
                 print('\tDownloading: ', gitPath, 'to', path)
@@ -203,13 +208,14 @@ class OTAUpdater:
 
     def _copy_secrets_file(self):
         # iterate through all secrets files
-        for secrets_file in self.secrets_files:
-            if secrets_file:
-                fromPath = self.modulepath(self.main_dir + '/' + secrets_file)
-                toPath = self.modulepath(self.new_version_dir + '/' + secrets_file)
-                print(f'Copying secrets file from {fromPath} to {toPath}')
-                self._copy_file(fromPath, toPath)
-                print(f'Copied secrets file from {fromPath} to {toPath}')
+        if self.secrets_files is not None:
+            for secrets_file in self.secrets_files:
+                if secrets_file:
+                    fromPath = self.modulepath(self.main_dir + '/' + secrets_file)
+                    toPath = self.modulepath(self.new_version_dir + '/' + secrets_file)
+                    print(f'Copying secrets file from {fromPath} to {toPath}')
+                    self._copy_file(fromPath, toPath)
+                    print(f'Copied secrets file from {fromPath} to {toPath}')
 
     def _delete_old_version(self):
         print('Deleting old version at {} ...'.format(self.modulepath(self.main_dir)))

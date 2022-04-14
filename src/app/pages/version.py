@@ -40,12 +40,12 @@ def load_version_page():
             token = json.loads(file.read())
 
         if token is None:
-            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src',
-                              secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'])
+            # _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src/app',
+            #                   secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'])
+            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
             print('OTAUpdater loaded without token.')
         else:
-            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src',
-                              secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'],
+            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
                               headers={'Authorization': 'token {}'.format(token['token'])})
             print('OTAUpdater loaded with token.')
 
