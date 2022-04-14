@@ -1,7 +1,7 @@
-import api
-from audioconfig import AudioConfig
-from displayserial import STREAM_PAGE_NAME
-from dropdown import DropDown
+from app import api
+from app.audioconfig import AudioConfig
+from app.displayserial import STREAM_PAGE_NAME
+from app.dropdown import DropDown
 
 _ITEM_OBJNAME = "titem"  # num
 

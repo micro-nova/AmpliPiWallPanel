@@ -1,10 +1,10 @@
 import machine
 import time
 
-import displayserial
+from app import displayserial
 
 # objnames
-from pages import version
+from app.pages import version
 
 VERSION_INFO_OBJNAME = "tver"
 

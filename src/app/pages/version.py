@@ -1,10 +1,9 @@
 import json
 
-import wifi
-from displayserial import VERSION_PAGE_NAME
-from dropdown import DropDown
-from ota.ota_updater import OTAUpdater
-from pages import versioninfo
+from app.displayserial import VERSION_PAGE_NAME
+from app.dropdown import DropDown
+from app.ota.ota_updater import OTAUpdater
+from app.pages import versioninfo
 
 _ITEM_OBJNAME = "titem"  # num
 
@@ -41,12 +40,14 @@ def load_version_page():
             token = json.loads(file.read())
 
         if token is None:
-            _ota = OTAUpdater('micro-nova/WallPanel', github_src_dir='src', main_dir='src',
+            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src',
                               secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'])
+            print('OTAUpdater loaded without token.')
         else:
-            _ota = OTAUpdater('micro-nova/WallPanel', github_src_dir='src', main_dir='src',
+            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src',
                               secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'],
                               headers={'Authorization': 'token {}'.format(token['token'])})
+            print('OTAUpdater loaded with token.')
 
     _releases = _ota.get_all_releases()
     reload_version_page_ui()

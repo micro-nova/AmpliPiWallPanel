@@ -1,9 +1,8 @@
-import polling
-import api
-from audioconfig import AudioConfig
-from displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
-from pages import stream, zone
-from polling import get_is_playing, set_is_playing, get_muted, set_muted
+from app import api, polling
+from app.audioconfig import AudioConfig
+from app.displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
+from app.pages import stream, zone
+from app.polling import get_is_playing, set_is_playing, get_muted, set_muted
 
 # component ids
 PLAY_BUTTON_ID = 1

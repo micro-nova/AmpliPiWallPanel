@@ -3,8 +3,8 @@ import time
 import urequests
 import json
 
-import wifi
-import dt
+from app import wifi
+from app import dt
 
 IP = "192.168.0.195"
 

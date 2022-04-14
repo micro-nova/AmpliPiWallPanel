@@ -1,9 +1,9 @@
 import time
 
-import wifi
-from displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, BUTTON_MESSAGE, TEXT_MESSAGE, \
+from app import wifi
+from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, BUTTON_MESSAGE, TEXT_MESSAGE, \
     receive_text_message_str
-from pages import ssid
+from app.pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
 _PASSWORD_FIELD_OBJNAME = 'tpassfield'

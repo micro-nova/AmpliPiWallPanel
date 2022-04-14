@@ -1,5 +1,5 @@
-from displayserial import BUTTON_MESSAGE
-from pages import zone, version, connection
+from app.displayserial import BUTTON_MESSAGE
+from app.pages import connection, zone, version
 
 # component ids
 ZONE_BUTTON_ID = 3

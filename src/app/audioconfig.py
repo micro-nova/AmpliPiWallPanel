@@ -1,6 +1,6 @@
 import json
 
-import api
+from app import api
 
 _AUDIO_CONFIG_FILENAME = '../zone.txt'
 

@@ -1,6 +1,6 @@
-import wifi
-from displayserial import SSID_PAGE_NAME
-from dropdown import DropDown
+from app import wifi
+from app.displayserial import SSID_PAGE_NAME
+from app.dropdown import DropDown
 
 _SSID_OBJNAME = "tssid"  # num
 

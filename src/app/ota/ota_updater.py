@@ -1,7 +1,7 @@
 import gc
 import os
 
-from ota.httpclient import HttpClient
+from app.ota.httpclient import HttpClient
 
 class OTAUpdater:
     """
@@ -172,7 +172,20 @@ class OTAUpdater:
         file_list = self.http_client.get(url)
         file_list_json = file_list.json()
         for file in file_list_json:
-            path = self.modulepath(self.new_version_dir + '/' + file['path'].replace(self.main_dir + '/', '').replace(self.github_src_dir, ''))
+            # modpathinput = self.new_version_dir + '/' + file['path'].replace(self.main_dir + '/', '').replace(self.github_src_dir, '')
+            if file == 'message':
+                print('got message instead of json. not sure why.')
+                break
+            print('file[path]: ' + file['path'])
+            print('file[path].replace... ' + file['path'].replace(self.github_src_dir, ''))
+            print(f'github_src_dir: {self.github_src_dir}')
+            p1 = self.new_version_dir + '/'
+            print(p1)
+            p1 = p1.replace(self.github_src_dir, '')
+            p1 = p1 + file['path'].replace(self.github_src_dir, '').replace(self.main_dir + '/', '')
+            print(p1)
+            path = self.modulepath(p1)
+            print(path)
             if file['type'] == 'file':
                 gitPath = file['path']
                 print('\tDownloading: ', gitPath, 'to', path)
@@ -219,6 +232,7 @@ class OTAUpdater:
                 self._rmtree(directory + '/' + entry[0])
             else:
                 os.remove(directory + '/' + entry[0])
+        print(f'removing directory {directory}')
         os.rmdir(directory)
 
     def _os_supports_rename(self) -> bool:

@@ -2,10 +2,10 @@ import json
 import network
 import time
 
-from displayserial import change_page, CONFIG_PAGE_NAME
-from pages.connection import load_connection_page
+from app.displayserial import change_page, CONFIG_PAGE_NAME
+from app.pages.connection import load_connection_page
 
-_WIFI_CONFIG_FILENAME = '../wifi.txt'
+_WIFI_CONFIG_FILENAME = '../../wifi.txt'
 
 # create wlan for connecting to router
 _wlan = network.WLAN(network.STA_IF)

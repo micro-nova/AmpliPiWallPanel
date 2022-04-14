@@ -1,11 +1,10 @@
 # note: track and song are the same thing
-import time
 
-import api
-import dt
-from api import get_source, get_zone
-from audioconfig import AudioConfig
-from displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
+from app import api
+from app import dt
+from app.api import get_source, get_zone
+from app.audioconfig import AudioConfig
+from app.displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
     set_vol_slider_vol_f, send_stream_name, send_zone_name
 
 track_name = ""
