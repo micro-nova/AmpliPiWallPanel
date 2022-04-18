@@ -65,7 +65,6 @@ class OTAUpdater:
         print('No new updates found...')
         return False
 
-    # TODO: make a method to update to a specific tagged release
     def install_tagged_release(self, tag_name):
         """This method will immediately install the release with tag_name.
 

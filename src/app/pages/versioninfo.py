@@ -4,6 +4,7 @@ import time
 from app import displayserial
 
 # objnames
+from app.ota import custom_update
 from app.pages import version
 
 VERSION_INFO_OBJNAME = "tver"
@@ -41,10 +42,11 @@ def load_versioninfo_page(ota, release):
 
 def _on_apply():
     if _tag_name is not None:
-        _ota.install_tagged_release(_tag_name)
-        # TODO: turn off display?
-        print('resetting machine...')
-        time.sleep_ms(100)
+        custom_update.queue_update(_tag_name)
+        # _ota.install_tagged_release(_tag_name)
+        # # TODO: turn off display?
+        # print('resetting machine...')
+        # time.sleep_ms(100)
         machine.reset()
 
 

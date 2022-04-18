@@ -35,13 +35,10 @@ def load_version_page():
     global _ota
     dropdown.set_loading_state()
     if _ota is None:
-        token = None
         with open('temp-token.txt') as file:
             token = json.loads(file.read())
 
         if token is None:
-            # _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src/app',
-            #                   secrets_files=['wifi.txt', 'zone.txt', 'temp-token.txt'])
             _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
             print('OTAUpdater loaded without token.')
         else:
