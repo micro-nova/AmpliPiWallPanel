@@ -1,2 +1,2 @@
-VERSION = '0.1.1' # hello OTA
+VERSION = '0.1.2'
 MIN_AMPLIPI_VERSION = '1.7'

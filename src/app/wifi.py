@@ -61,7 +61,6 @@ def try_connect():
     if not _wlan.active():
         _wlan.active(True)
 
-    needs_config = False
     wifi_info_dict = load_wifi_info()
     if len(wifi_info_dict['ssid']) != 0:
         start_time = time.time()
