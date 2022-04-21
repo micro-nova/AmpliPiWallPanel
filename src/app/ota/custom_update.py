@@ -4,15 +4,42 @@ import os
 
 from app import wifi
 from app.ota.ota_updater import OTAUpdater
+from app.utils import rmdir_all
 
 _TAG_FILE = 'version_queue.txt'
+_MAX_RETRIES = 3
 
 def queue_update(tag):
     if _TAG_FILE in os.listdir():
-        os.remove(_TAG_FILE)
-    with open(_TAG_FILE, 'w') as file:
-        file.write(tag)
-    print(f'wrote "{tag}" to {_TAG_FILE}')
+        with open(_TAG_FILE, 'w') as file:
+            version = json.loads(file.read())
+            if version['tag'] == tag:
+                version['tries'] += 1
+            else:
+                version['tag'] = tag
+                version['tries'] = 0
+            print(f'Writing dict to json: {version}')
+            json_str = json.dumps(version)
+            print(f'String to write: {json_str}')
+            file.write(json_str)
+
+    else:
+        with open(_TAG_FILE, 'w') as file:
+            version = {'tag': tag, 'tries': 0}
+            print(f'Writing dict to json: {version}')
+            json_str = json.dumps(version)
+            print(f'String to write: {json_str}')
+            file.write(json_str)
+
+# def requeue_update():
+#     if _TAG_FILE in os.listdir():
+#         with open(_TAG_FILE, 'w') as file:
+#             version = json.load(file)
+#             if version['tries'] < _MAX_RETRIES:
+#                 version['tries'] += 1
+#             else:
+#                 file.close()
+#                 os.remove(_TAG_FILE)
 
 
 def handle_update():
@@ -24,19 +51,32 @@ def _update_if_queued():
         wifi.try_connect()
         if wifi.is_connected():
             with open(_TAG_FILE) as file:
-                version = file.read()
-            os.remove(_TAG_FILE)
-            with open('temp-token.txt') as file:
-                token = json.loads(file.read())
+                file_str = file.read()
+                print(f'version_queue.txt: {file_str}')
 
-            if token is None:
-                ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
-                print('OTAUpdater loaded without token.')
+                version = json.loads(file_str)
+                version['tries'] += 1
+            with open(_TAG_FILE, 'w') as file:
+                file.write(json.dumps(version))
+
+            if version['tries'] <= _MAX_RETRIES:
+                with open('temp-token.txt') as file:
+                    token = json.loads(file.read())
+
+                if token is None:
+                    ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
+                    print('OTAUpdater loaded without token.')
+                else:
+                    ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
+                                      headers={'Authorization': 'token {}'.format(token['token'])})
+                    print('OTAUpdater loaded with token.')
+
+                print(f'Updating to version {version["tag"]}, try #{version["tries"]}')
+                ota.install_tagged_release(version['tag'])
+                print('removing version_queue.txt and resetting machine...')
+                os.remove(_TAG_FILE)
+                machine.reset()
             else:
-                ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
-                                  headers={'Authorization': 'token {}'.format(token['token'])})
-                print('OTAUpdater loaded with token.')
-
-            ota.install_tagged_release(version)
-            print('resetting machine...')
-            machine.reset()
+                os.remove(_TAG_FILE)
+                # update failed so remove the update folder
+                rmdir_all('next')

@@ -173,7 +173,7 @@ class OTAUpdater:
         file_list = self.http_client.get(url)
         file_list_json = file_list.json()
         for file in file_list_json:
-            print(file)
+            # print(file)
             if file == 'message':
                 print('got "message" string instead of dict. not sure why.')
                 continue
@@ -188,12 +188,18 @@ class OTAUpdater:
             # path = self.modulepath(p1)
             # print(path)
             path = self.modulepath(self.new_version_dir + '/' + file['path'].replace(self.main_dir + '/', '').replace(self.github_src_dir, ''))
-
             print(f'path: {path}')
+            print(f'path without filename: {path[0:path.rfind("/")]}')
+            print(f'filename: {path.split("/")[-1]}')
             if file['type'] == 'file':
                 gitPath = file['path']
-                print('\tDownloading: ', gitPath, 'to', path)
-                self._download_file(version, gitPath, path)
+                print(os.listdir(path[0:path.rfind('/')]))
+
+                if path.split("/")[-1] not in os.listdir(path[0:path.rfind('/')]):
+                    print('\tDownloading: ', gitPath, 'to', path)
+                    self._download_file(version, gitPath, path)
+                else:
+                    print(f'Skipping file, already downloaded')
             elif file['type'] == 'dir':
                 print('Creating dir', path)
                 self.mkdir(path)

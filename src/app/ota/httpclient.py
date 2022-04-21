@@ -17,7 +17,6 @@ class Response:
             print(f'{gc.mem_free()} bytes free.')
             with open(saveToFile, 'w') as outfile:
                 data = self._socket.read(CHUNK_SIZE)
-                failed = False
                 while data:
                     outfile.write(data)
                     try:
@@ -27,17 +26,13 @@ class Response:
                         # maybe just delete the next directory and restart the entire update process?
                         print(f'{e}: Socket.read failed.')
                         data = None
-                        failed = True
 
                         outfile.close()
-                        rmdir_all('next')
+                        os.remove(saveToFile)
+                        # rmdir_all('next')
                         machine.reset()
 
                 outfile.close()
-
-                if failed:
-                    # TODO: delete next directory, restart entire update process
-                    pass
 
             self.close()
 
