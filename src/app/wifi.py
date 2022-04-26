@@ -47,13 +47,9 @@ def get_ssid_list():
     time.sleep_ms(100)
     _wlan.active(True)
     tuples = _wlan.scan()
-    # TODO: use list comprehensions to make this nicer
-    ssids = []
-    for t in tuples:
-        # what happens if there is a hidden network? would the ssid be an empty string?
-        # TODO: handle hidden networks
-        ssids.append(t[0])
-    return ssids
+    # what happens if there is a hidden network? would the ssid be an empty string?
+    # TODO: handle hidden networks
+    return [t[0] for t in tuples]
 
 def try_connect():
     """Tries connecting to wifi. Should be called during initialization or after applying new wifi configuration."""

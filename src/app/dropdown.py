@@ -61,8 +61,8 @@ class DropDown:
         except ValueError:
             self.selected_index = -1
 
-    def get_string_from_index(self, index):
-        return
+    # def get_string_from_index(self, index):
+    #     return
 
     # handles a serial message from the display
     def handle_message(self, message):

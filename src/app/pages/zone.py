@@ -48,5 +48,5 @@ def load_zone_page():
     dropdown.populate(names)
 
 
-def handle_zone_page_msg(message):
+def handle_msg(message):
     dropdown.handle_message(message)

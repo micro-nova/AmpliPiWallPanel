@@ -34,7 +34,7 @@ def load_ssid_page():
     dropdown.populate(ssids)
 
 
-def handle_ssid_page_msg(message):
+def handle_msg(message):
     """Receives a message from the ssid page (from the display) and processes it."""
     dropdown.handle_message(message)
 

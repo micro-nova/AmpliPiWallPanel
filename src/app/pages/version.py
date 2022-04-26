@@ -55,6 +55,6 @@ def reload_version_page_ui():
 
     dropdown.populate(release_names)
 
-def handle_version_page_msg(message):
+def handle_msg(message):
     """Handles messages from the display that are relevant to the version page."""
     dropdown.handle_message(message)

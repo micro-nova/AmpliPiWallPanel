@@ -41,11 +41,10 @@ def load_stream_page():
 
     print(f'{len(names)} streams: ')
     print(names)
-    # print(_streams)
 
     dropdown.populate(names)
 
 
-def handle_stream_page_msg(message):
+def handle_msg(message):
     """Handles messages from the display that are relevant to the stream page."""
     dropdown.handle_message(message)

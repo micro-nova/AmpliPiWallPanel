@@ -16,7 +16,7 @@ APPLY_BUTTON_ID = 3
 _tag_name = None
 _ota = None
 
-def handle_versioninfo_page_msg(message):
+def handle_msg(message):
     print('handling versioninfo page message')
     if message[0] == displayserial.BUTTON_MESSAGE and message[3] == 0x01:
         # valid press event

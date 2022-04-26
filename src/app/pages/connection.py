@@ -52,7 +52,7 @@ def update_connection_status():
         uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_DISCONNECTED_PIC_ID}')
     # TODO: update AmpliPi connectivity info
 
-def handle_connection_page_msg(message):
+def handle_msg(message):
     global ssid_field_txt
     global pass_field_txt
     print("handling connection page message")

@@ -108,7 +108,7 @@ def _on_vol(message):
     else:
         api.queue_call(call, droppable=True)
 
-def handle_main_page_msg(message):
+def handle_msg(message):
     """Receives a message from the main page (from the display) and processes it."""
     print("handling main page message")
     if message[0] == SLIDER_MESSAGE:

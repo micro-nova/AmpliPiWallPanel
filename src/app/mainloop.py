@@ -2,21 +2,11 @@ from machine import Pin
 
 from app import api, wifi, displayserial, dt
 from app.audioconfig import AudioConfig
-from app.pages.config import handle_config_page_msg
-from app.pages.connection import update_connection_status, load_connection_page, handle_connection_page_msg
-from app.pages.home import handle_main_page_msg
-from app.pages.ssid import handle_ssid_page_msg
-from app.pages.stream import handle_stream_page_msg
-from app.pages.version import handle_version_page_msg
-from app.pages.versioninfo import handle_versioninfo_page_msg
-from app.pages.zone import handle_zone_page_msg
+from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone
 from app.polling import poll
-
-# TODO: replace from x import y with just import x for pages. do this everywhere, not just main
 
 def run():
     tft_reset = Pin(4, Pin.OUT)
-
 
     # pages
     MAIN_PAGE_ID = 0
@@ -36,10 +26,10 @@ def run():
     print('resetting screen...')
     tft_reset.value(0)
 
-    load_connection_page()
+    connection.load_connection_page()
     audioconf = AudioConfig()
     wifi.try_connect()
-    update_connection_status()
+    connection.update_connection_status()
 
     initialized = False
 
@@ -87,29 +77,26 @@ def run():
                     message = message[0:-3]
                     if len(message) > 1:
                         # if message is a relay event,
-                        print(f'Received message: {message}')
-                        # if message[0] == b'#':
-                        #
-                        #     pass
+                        # print(f'Received message: {message}')
                         # if message is for the main page
                         # TODO: adopt input multiplexer idea for pages. put these into a list and use oop in python somehow
                         #  to call handle_ methods.
                         if message[1] == MAIN_PAGE_ID:
-                            handle_main_page_msg(message)
+                            home.handle_msg(message)
                         elif message[1] == CONFIG_PAGE_ID:
-                            handle_config_page_msg(message)
+                            config.handle_msg(message)
                         elif message[1] == SSID_PAGE_ID:
-                            handle_ssid_page_msg(message)
+                            ssid.handle_msg(message)
                         elif message[1] == STREAM_PAGE_ID:
-                            handle_stream_page_msg(message)
+                            stream.handle_msg(message)
                         elif message[1] == ZONE_PAGE_ID:
-                            handle_zone_page_msg(message)
+                            zone.handle_msg(message)
                         elif message[1] == VERSION_PAGE_ID:
-                            handle_version_page_msg(message)
+                            version.handle_msg(message)
                         elif message[1] == CONNECTION_PAGE_ID:
-                            handle_connection_page_msg(message)
+                            connection.handle_msg(message)
                         elif message[1] == VERSIONINFO_PAGE_ID:
-                            handle_versioninfo_page_msg(message)
+                            versioninfo.handle_msg(message)
 
                     # clear message only if it was properly terminated
                     message = b''

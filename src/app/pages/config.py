@@ -17,7 +17,7 @@ def _on_connection():
 def _on_update():
     version.load_version_page()
 
-def handle_config_page_msg(message):
+def handle_msg(message):
     print("handling config page message")
     if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
         id = message[2]
