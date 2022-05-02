@@ -2,11 +2,15 @@ import json
 import machine
 import os
 
+from machine import Pin
 from app import wifi
 from app.ota.ota_updater import OTAUpdater
+from app.ota.upload import NexUpload
 from app.utils import rmdir_all
 
 _TAG_FILE = 'version_queue.txt'
+_DISPLAY_FIRMWARE_DIR = 'app'
+_DISPLAY_FIRMWARE_FILE = 'amplipi_v2.tft'
 _MAX_RETRIES = 3
 
 def queue_update(tag):
@@ -43,9 +47,10 @@ def queue_update(tag):
 
 
 def handle_update():
-    _update_if_queued()
+    _update_app_if_queued()
+    _update_display_if_queued()
 
-def _update_if_queued():
+def _update_app_if_queued():
     if _TAG_FILE in os.listdir():
         # connect to wifi
         wifi.try_connect()
@@ -80,3 +85,11 @@ def _update_if_queued():
                 os.remove(_TAG_FILE)
                 # update failed so remove the update folder
                 rmdir_all('next')
+
+def _update_display_if_queued():
+    if _DISPLAY_FIRMWARE_FILE in os.listdir(_DISPLAY_FIRMWARE_DIR):
+        tft_reset = Pin(4, Pin.OUT)
+        tft_reset.value(0)
+        print("Starting display firmware update")
+        updater = NexUpload(f'{_DISPLAY_FIRMWARE_DIR}/{_DISPLAY_FIRMWARE_FILE}')
+        updater.upload()
