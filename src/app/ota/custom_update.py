@@ -1,4 +1,6 @@
 import json
+import time
+
 import machine
 import os
 
@@ -89,6 +91,8 @@ def _update_app_if_queued():
 def _update_display_if_queued():
     if _DISPLAY_FIRMWARE_FILE in os.listdir(_DISPLAY_FIRMWARE_DIR):
         tft_reset = Pin(4, Pin.OUT)
+        tft_reset.value(1)
+        time.sleep_ms(500)
         tft_reset.value(0)
         print("Starting display firmware update")
         updater = NexUpload(f'{_DISPLAY_FIRMWARE_DIR}/{_DISPLAY_FIRMWARE_FILE}')

@@ -1,6 +1,6 @@
 from machine import Pin
 
-from app import api, wifi, displayserial, dt
+from app import api, wifi, displayserial, dt, relay
 from app.audioconfig import AudioConfig
 from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone
 from app.polling import poll
@@ -23,7 +23,9 @@ def run():
 
 
     # initial startup stuff
-    print('resetting screen...')
+    print('loading relay state...')
+    relay.setup()
+    print('enabling screen...')
     tft_reset.value(0)
 
     connection.load_connection_page()
@@ -41,10 +43,15 @@ def run():
     while True:
         # handle api call queue
         api.update()
+
         # poll info from amplipi api
         curr_time = dt.time_sec()
         if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
             last_poll_time = dt.time_sec()
+
+            # handle relay file saving
+            relay.update()
+
             try:
                 if wifi.is_connected():
                     if not initialized:
@@ -54,7 +61,7 @@ def run():
                     if audioconf.zone_id >= 0:
                         api.queue_call(poll)
                         # poll()
-                        print("queued poll from amplipi")
+                        # print("queued poll from amplipi")
                     else:
                         print("didn't poll because zone is not configured")
             except OSError as e:

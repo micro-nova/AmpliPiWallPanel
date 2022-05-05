@@ -50,7 +50,7 @@ def poll():
             poll_playing(source)
         else:
             _skip_next_playing = False
-    print(f'polling took {dt.time_sec() - poll_start_time} seconds.')
+    # print(f'polling took {dt.time_sec() - poll_start_time} seconds.')
 
 def poll_vol_f(zone):
     global vol_f
