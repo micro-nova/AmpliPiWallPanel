@@ -49,10 +49,22 @@ class NexUpload:
         return True
 
     def __download_tft_file(self):
-        self.__tftUart.write(b"connect"+displayserial.TERM)
+        while self.__tftUart.any():
+            self.__tftUart.read()
+        # self.__tu
+        repeating = True
+        while repeating:
+            self.__tftUart.write(b"DRAKJHSUYDGBNCJHGJKSHBDN" + displayserial.TERM)
+            self.__tftUart.write(b"connect" + displayserial.TERM)
+            self.__tftUart.write(b"\xff\xffconnect" + displayserial.TERM)
+            time.sleep_ms(39)
+            if self.__tftUart.any():
+                repeating = False
+
         while not self.__tftUart.any():
             pass
-        self.__tftUart.read()
+        while self.__tftUart.any():
+            self.__tftUart.read()
         self.__tftUart.write(b"whmi-wri " + bytes(f'{self.__filesize},115200,a', 'UTF-8') + displayserial.TERM)
         self.__wait_for(b"\x05", 3.0)
 

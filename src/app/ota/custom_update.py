@@ -92,8 +92,9 @@ def _update_display_if_queued():
     if _DISPLAY_FIRMWARE_FILE in os.listdir(_DISPLAY_FIRMWARE_DIR):
         tft_reset = Pin(4, Pin.OUT)
         tft_reset.value(1)
-        time.sleep_ms(500)
+        time.sleep_ms(10)
         tft_reset.value(0)
+        time.sleep_ms(10000)
         print("Starting display firmware update")
         updater = NexUpload(f'{_DISPLAY_FIRMWARE_DIR}/{_DISPLAY_FIRMWARE_FILE}')
         updater.upload()
