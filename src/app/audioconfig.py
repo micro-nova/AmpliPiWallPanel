@@ -40,7 +40,7 @@ class AudioConfig:
     #         # get the current stream that is running on the source
     #         self.__update_stream_id_from_source()
 
-    # changes what stream the sources is playing
+    # changes what stream the source is playing
     def change_stream(self, new_stream_id):
         print('changing stream')
         print(f'current zone id is {self.zone_id}')

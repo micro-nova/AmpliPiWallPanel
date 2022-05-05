@@ -2,7 +2,7 @@ from machine import Pin
 
 from app import api, wifi, displayserial, dt, relay
 from app.audioconfig import AudioConfig
-from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone
+from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source
 from app.polling import poll
 
 def run():
@@ -17,6 +17,8 @@ def run():
     VERSION_PAGE_ID = 7
     CONNECTION_PAGE_ID = 8
     VERSIONINFO_PAGE_ID = 9
+    UPDATE_PAGE_ID = 10
+    SOURCE_PAGE_ID = 11
 
     # polling constants
     POLLING_INTERVAL_SECONDS = 1
@@ -104,6 +106,8 @@ def run():
                             connection.handle_msg(message)
                         elif message[1] == VERSIONINFO_PAGE_ID:
                             versioninfo.handle_msg(message)
+                        elif message[1] == SOURCE_PAGE_ID:
+                            source.handle_msg(message)
 
                     # clear message only if it was properly terminated
                     message = b''

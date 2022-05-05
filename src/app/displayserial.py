@@ -48,6 +48,7 @@ ZONE_PAGE_NAME = "zonepage"
 VERSION_PAGE_NAME = "versionpage"
 VERSIONINFO_PAGE_NAME = "vinfopage"
 CONNECTION_PAGE_NAME = "cpage"
+SOURCE_PAGE_NAME = "sourcepage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
