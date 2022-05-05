@@ -15,9 +15,8 @@ class NexUpload:
         self.__filesize = 0
 
     def upload(self):
-        time.sleep_ms(500)
         while self.__tftUart.any():
-            self.__tftUart.read()
+            print(self.__tftUart.read())
 
         gc.collect()
         if not self.__check_file():
@@ -50,22 +49,30 @@ class NexUpload:
 
     def __download_tft_file(self):
         while self.__tftUart.any():
-            self.__tftUart.read()
+            print(self.__tftUart.read())
         # self.__tu
         repeating = True
         while repeating:
+            self.__tftUart.write(displayserial.TERM)
+            time.sleep_ms(39)
             self.__tftUart.write(b"DRAKJHSUYDGBNCJHGJKSHBDN" + displayserial.TERM)
+            time.sleep_ms(39)
             self.__tftUart.write(b"connect" + displayserial.TERM)
+            time.sleep_ms(39)
             self.__tftUart.write(b"\xff\xffconnect" + displayserial.TERM)
             time.sleep_ms(39)
             if self.__tftUart.any():
                 repeating = False
 
+        time.sleep_ms(500)
         while not self.__tftUart.any():
             pass
         while self.__tftUart.any():
-            self.__tftUart.read()
-        self.__tftUart.write(b"whmi-wri " + bytes(f'{self.__filesize},115200,a', 'UTF-8') + displayserial.TERM)
+            print(self.__tftUart.read())
+
+        connect_str = b"whmi-wri " + bytes(f'{self.__filesize},115200,a', 'UTF-8') + displayserial.TERM
+        print(connect_str)
+        self.__tftUart.write(connect_str)
         self.__wait_for(b"\x05", 3.0)
 
 

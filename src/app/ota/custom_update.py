@@ -13,7 +13,7 @@ from app.utils import rmdir_all
 _TAG_FILE = 'version_queue.txt'
 _DISPLAY_FIRMWARE_DIR = 'app'
 _DISPLAY_FIRMWARE_FILE = 'amplipi_v2.tft'
-_MAX_RETRIES = 3
+_MAX_RETRIES = 6
 
 def queue_update(tag):
     if _TAG_FILE in os.listdir():
@@ -94,7 +94,7 @@ def _update_display_if_queued():
         tft_reset.value(1)
         time.sleep_ms(10)
         tft_reset.value(0)
-        time.sleep_ms(10000)
+        time.sleep_ms(1000)
         print("Starting display firmware update")
         updater = NexUpload(f'{_DISPLAY_FIRMWARE_DIR}/{_DISPLAY_FIRMWARE_FILE}')
         updater.upload()
