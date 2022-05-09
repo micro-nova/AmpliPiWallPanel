@@ -1,3 +1,4 @@
+from app.audioconfig import AudioConfig
 from app.displayserial import SOURCE_PAGE_NAME
 from app.dropdown import DropDown
 
@@ -15,16 +16,15 @@ dropdown = DropDown(SOURCE_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID,
                     _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
 
-_sources = []
+_sources = ['Source 1', 'Source 2', 'Source 3', 'Source 4']
 
 
 def _change_source_callback(index):
-    # TODO:
-    # from stream.py:
-    # audioconf = AudioConfig()
-    # new_stream = _streams[index]
-    # audioconf.change_stream(int(new_stream['id']))
-    pass
+    audioconf = AudioConfig()
+    new_source = _sources[index]
+    print(f'changing source to {new_source}')
+    audioconf.change_source(index)
+
 
 dropdown.add_item_index_callback(_change_source_callback)
 
@@ -32,9 +32,7 @@ dropdown.add_item_index_callback(_change_source_callback)
 # only call this when on this page
 # TODO: rename to load_page and change importing
 def load_source_page():
-    global _sources
-    dropdown.set_loading_state()
-    # get list of sources (???)
-    print('Loading source list')
-    _sources = api.get_sources() # TODO:
-    names = ...
+    dropdown.populate(_sources)
+
+def handle_msg(message):
+    dropdown.handle_message(message)

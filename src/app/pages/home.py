@@ -1,7 +1,7 @@
 from app import api, polling
 from app.audioconfig import AudioConfig
 from app.displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
-from app.pages import stream, zone
+from app.pages import stream, source
 from app.polling import get_is_playing, set_is_playing, get_muted, set_muted
 
 # component ids
@@ -11,15 +11,15 @@ PREV_BUTTON_ID = 3
 MUTE_BUTTON_ID = 13
 VOL_SLIDER_ID = 6
 STREAM_BUTTON_ID = 11
-ZONE_BUTTON_ID = 12
+SOURCE_BUTTON_ID = 12
 
 _audioconf = AudioConfig()
 
-def _on_source():
+def _on_stream():
     stream.load_stream_page()
 
-def _on_zone():
-    zone.load_zone_page()
+def _on_source():
+    source.load_source_page()
 
 def _on_play(stream_id):
     polling.skip_next_playing()
@@ -142,10 +142,10 @@ def handle_msg(message):
             _on_prev(_audioconf.stream_id)
 
         elif id == STREAM_BUTTON_ID:
-            _on_source()
+            _on_stream()
 
-        elif id == ZONE_BUTTON_ID:
-            _on_zone()
+        elif id == SOURCE_BUTTON_ID:
+            _on_source()
 
         elif id == MUTE_BUTTON_ID:
             try:

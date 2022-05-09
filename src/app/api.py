@@ -2,6 +2,7 @@ import time
 
 import urequests
 import json
+import gc
 
 from app import wifi
 from app import dt
@@ -69,6 +70,7 @@ def _patch_safe(request, content):
         try:
             urequests.patch(request, json=content)
             # TODO: get response and handle status_code similarly to _get_safe
+            # maybe not because its too big
             time.sleep_ms(_NET_SLEEP_TIME_MS)
         except OSError as e:
             print(e)
@@ -109,7 +111,7 @@ def set_stream(source_id, stream_id):
 
 def move_zone_to_source(zone_id, source_id):
     """API call to move a zone to a source"""
-    _patch_safe(f'http://{IP}/api/zones/{zone_id}', {"source-id": source_id})
+    _patch_safe(f'http://{IP}/api/zones/{zone_id}', {"source_id": source_id})
 
 def get_zones():
     """API call to get all zones. Returns it as a list or None if failed."""
@@ -150,7 +152,10 @@ def get_stream_id_from_source_dict(source):
     source_input = source['input']
     if source_input.startswith('local'):
         return None
-    return int(source_input.split("=")[1])
+    source_split = source_input.split("=")
+    if len(source_split) == 2:
+        return int(source_split[1])
+    return None
 
 # TODO: this should probably take in a dict instead of an id. I don't think these helper methods should be
 #  making api calls

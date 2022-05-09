@@ -5,7 +5,7 @@ from app import dt
 from app.api import get_source, get_zone
 from app.audioconfig import AudioConfig
 from app.displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
-    set_vol_slider_vol_f, send_stream_name, send_zone_name
+    set_vol_slider_vol_f, send_stream_name, send_zone_name, send_source_name
 
 track_name = ""
 album_name = ""
@@ -31,11 +31,14 @@ def poll():
     poll_start_time = dt.time_sec()
     zone = get_zone(_audioconf.zone_id)
     if zone is not None:
-        source = get_source(zone["source_id"])
+        source_id = zone["source_id"]
+        source = get_source(source_id)
+        _audioconf.stream_id = api.get_stream_id_from_source_dict(source)
         poll_track(source)
         poll_album(source)
         poll_zone_name(zone)
         poll_stream_name(_audioconf.stream_id)
+        poll_source_name(source_id)
         poll_artist(source)
 
         if not _skip_next_vol_f:
@@ -115,10 +118,16 @@ def poll_playing(source):
         is_playing = new_is_playing
         update_play_pause_button(is_playing)
 
-
 def poll_stream_name(stream_id):
-    stream = api.get_stream(stream_id)
-    send_stream_name(stream['name'])
+    if stream_id is not None:
+        stream = api.get_stream(stream_id)
+        send_stream_name(stream['name'])
+    else:
+        send_stream_name('')
+
+def poll_source_name(source_id):
+    if source_id is not None:
+        send_source_name(f'Source {source_id+1}')
 
 
 def poll_zone_name(zone):

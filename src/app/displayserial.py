@@ -22,6 +22,7 @@ SLIDER_UNMUTED_FOREGROUND_PIC_ID = 11
 # objnames related to polling
 STREAM_NAME_OBJNAME = "bstream"
 ZONE_NAME_OBJNAME = "bzone"
+SOURCE_NAME_OBJNAME = "bsource"
 PLAY_BUTTON_OBJNAME = "bplay"
 MUTE_BUTTON_OBJNAME = "bmute"
 SONG_NAME_OBJNAME = "tname"
@@ -82,6 +83,8 @@ def send_stream_name(stream_name):
         stream_name = stream_name[0:26] + "..."
     set_component_txt(HOME_PAGE_NAME, STREAM_NAME_OBJNAME, stream_name)
 
+def send_source_name(source_name):
+    set_component_txt(HOME_PAGE_NAME, SOURCE_NAME_OBJNAME, source_name)
 
 def send_zone_name(zone_name):
     if len(zone_name) > 30:

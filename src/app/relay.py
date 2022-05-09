@@ -61,8 +61,8 @@ def setup():
     state1 = RelayState(_relay1, loaded_state['relay1'])
     state2 = RelayState(_relay2, loaded_state['relay2'])
 
-    _button1.irq(trigger=Pin.IRQ_FALLING, handler=button1_rising_edge)
-    _button2.irq(trigger=Pin.IRQ_FALLING, handler=button2_rising_edge)
+    _button1.irq(trigger=Pin.IRQ_RISING, handler=button1_rising_edge)
+    _button2.irq(trigger=Pin.IRQ_RISING, handler=button2_rising_edge)
 
 def update():
     file_stale = state1.file_is_stale() or state2.file_is_stale()
