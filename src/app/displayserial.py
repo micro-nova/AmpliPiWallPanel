@@ -6,18 +6,27 @@ from math import floor
 TERM = b"\xff\xff\xff"
 
 # ui constants
-PLAY_UP_PIC_ID = 20
-PLAY_DOWN_PIC_ID = 19
+PLAY_UP_PIC_ID = 19
+PLAY_DOWN_PIC_ID = 18
 PAUSE_UP_PIC_ID = 4
 PAUSE_DOWN_PIC_ID = 3
 
-MUTED_PIC_ID = 16
-UNMUTED_PIC_ID = 17
+MUTED_PIC_ID = 15
+UNMUTED_PIC_ID = 16
 
 SLIDER_MUTED_CURSOR_PIC_ID = 12
 SLIDER_UNMUTED_CURSOR_PIC_ID = 13
 SLIDER_MUTED_FOREGROUND_PIC_ID = 10
 SLIDER_UNMUTED_FOREGROUND_PIC_ID = 11
+WIFI_CONNECTED_PIC_ID = 29
+WIFI_DISCONNECTED_PIC_ID = 31
+
+RELAY_OFF_PIC_ID = 7
+RELAY_ON_PIC_ID = 8
+
+RELAY_LEFT_OBJNAME = "prelay1"
+RELAY_RIGHT_OBJNAME = "prelay2"
+
 
 # objnames related to polling
 STREAM_NAME_OBJNAME = "bstream"
@@ -158,6 +167,6 @@ def uart_write(string):
     tftUart.write(string)
     # tftUart.write(f'{string}{TERM}')
     tftUart.write(TERM)  # message termination for nextion uart
-    time.sleep_ms(5)
+    time.sleep_ms(2)
 
 

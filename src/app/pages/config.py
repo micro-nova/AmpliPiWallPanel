@@ -7,7 +7,6 @@ CONNECTION_BUTTON_ID = 5
 UPDATE_BUTTON_ID = 6
 
 
-
 def _on_zone_():
     zone.load_zone_page()
 

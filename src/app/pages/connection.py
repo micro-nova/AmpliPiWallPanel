@@ -2,7 +2,7 @@ import time
 
 from app import wifi
 from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, BUTTON_MESSAGE, TEXT_MESSAGE, \
-    receive_text_message_str
+    receive_text_message_str, WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID
 from app.pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
@@ -10,9 +10,7 @@ _PASSWORD_FIELD_OBJNAME = 'tpassfield'
 _WIFI_STATUS_OBJNAME = 'pwifi'
 _AMPLIPI_STATUS_OBJNAME = 'pnet'
 
-# picture ids
-_WIFI_CONNECTED_PIC_ID = 30
-_WIFI_DISCONNECTED_PIC_ID = 32
+
 
 # component ids
 _CONNECT_BUTTON_ID = 7
@@ -47,9 +45,9 @@ def load_connection_page():
 def update_connection_status():
     """Updates the config page's WiFi and AmpliPi status symbols."""
     if wifi.is_connected():
-        uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_CONNECTED_PIC_ID}')
+        uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={WIFI_CONNECTED_PIC_ID}')
     else:
-        uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={_WIFI_DISCONNECTED_PIC_ID}')
+        uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={WIFI_DISCONNECTED_PIC_ID}')
     # TODO: update AmpliPi connectivity info
 
 def handle_msg(message):

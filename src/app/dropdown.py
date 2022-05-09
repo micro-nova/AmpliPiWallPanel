@@ -83,13 +83,13 @@ class DropDown:
                 self.__on_down()
 
     def __on_up(self):
-        self.start_index -= 1
+        self.start_index -= 3
         if self.start_index < 0:
             self.start_index = 0
         self.__update_fields()
 
     def __on_down(self):
-        self.start_index += 1
+        self.start_index += 3
         if self.start_index > len(self.items) - self.num_fields:
             self.start_index = len(self.items) - self.num_fields
         self.__update_fields()
