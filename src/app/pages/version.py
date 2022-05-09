@@ -1,3 +1,4 @@
+import gc
 import json
 
 from app.displayserial import VERSION_PAGE_NAME
@@ -19,35 +20,42 @@ dropdown = DropDown(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID,
                     _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
 
-_releases = [] # list of tag jsons (not just tag names)
-
-_ota = None
+_releases = []  # list of tag jsons (not just tag names)
 
 def _select_version_callback(index):
     # load version info page since nextion display should be there already
-    versioninfo.load_versioninfo_page(_ota, _releases[index])
+    versioninfo.load_versioninfo_page(_releases[index])
+
 
 dropdown.add_item_index_callback(_select_version_callback)
 
 def load_version_page():
     """Loads version page contents. Should only be called when the display is on the version page."""
     global _releases
-    global _ota
     dropdown.set_loading_state()
-    if _ota is None:
+    token = None
+    try:
         with open('temp-token.txt') as file:
             token = json.loads(file.read())
+    except OSError:
+        pass
 
-        if token is None:
-            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
-            print('OTAUpdater loaded without token.')
-        else:
-            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
-                              headers={'Authorization': 'token {}'.format(token['token'])})
-            print('OTAUpdater loaded with token.')
+    if token is None:
+        _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
+        print('OTAUpdater loaded without token.')
+    else:
+        _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
+                          headers={'Authorization': 'token {}'.format(token['token'])})
+        print('OTAUpdater loaded with token.')
 
     _releases = _ota.get_all_releases()
     reload_version_page_ui()
+
+    print(f'mem free before del: {gc.mem_free()}')
+    del _ota
+    _ota = None
+    gc.collect()
+    print(f'mem free after del: {gc.mem_free()}')
 
 def reload_version_page_ui():
     # take raw _releases data and extract just the names

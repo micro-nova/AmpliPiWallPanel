@@ -14,7 +14,6 @@ BACK_BUTTON_ID = 2
 APPLY_BUTTON_ID = 3
 
 _tag_name = None
-_ota = None
 
 def handle_msg(message):
     print('handling versioninfo page message')
@@ -26,10 +25,8 @@ def handle_msg(message):
         elif id == APPLY_BUTTON_ID:
             _on_apply()
 
-def load_versioninfo_page(ota, release):
-    global _ota
+def load_versioninfo_page(release):
     global _tag_name
-    _ota = ota
     _tag_name = release['tag_name']
     # display version info
     release_body = release['body']
@@ -43,17 +40,11 @@ def load_versioninfo_page(ota, release):
 def _on_apply():
     if _tag_name is not None:
         custom_update.queue_update(_tag_name)
-        # _ota.install_tagged_release(_tag_name)
-        # # TODO: turn off display?
-        # print('resetting machine...')
-        # time.sleep_ms(100)
         machine.reset()
 
 
 def _on_back():
     print('versioninfo back pressed')
-    global _ota
-    _ota = None # _ota should be deleted with del() elsewhere
     time.sleep_ms(50)
     version.reload_version_page_ui()
 

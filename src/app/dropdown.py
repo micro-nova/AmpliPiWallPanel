@@ -133,7 +133,8 @@ class DropDown:
         else:
             # make up button visible
             displayserial.set_visible(self.up_button_id, True)
-        if self.start_index == len(self.items) - self.num_fields:
+        # if self.start_index == len(self.items) - self.num_fields or len(self.items) <= self.num_fields:
+        if self.start_index >= len(self.items) - self.num_fields:
             # make down button invisible
             displayserial.set_visible(self.down_button_id, False)
         else:
