@@ -78,8 +78,8 @@ def setup():
 
     _button1.irq(trigger=Pin.IRQ_RISING, handler=button1_rising_edge)
     _button2.irq(trigger=Pin.IRQ_RISING, handler=button2_rising_edge)
-    _button1.irq(trigger=Pin.IRQ_FALLING, handler=button1_falling_edge)
-    _button2.irq(trigger=Pin.IRQ_FALLING, handler=button2_falling_edge)
+    # _button1.irq(trigger=Pin.IRQ_FALLING, handler=button1_falling_edge)
+    # _button2.irq(trigger=Pin.IRQ_FALLING, handler=button2_falling_edge)
     # TODO: reset timer on both rising and falling edge
 
 def update():
