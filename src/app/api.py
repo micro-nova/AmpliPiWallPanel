@@ -29,7 +29,7 @@ def queue_call(call, droppable=False):
     else:
         if len(_queue) < _QUEUE_MAX_SIZE:
             _queue.append(call)
-            print(f'queue length: {len(_queue)}')
+            # print(f'queue length: {len(_queue)}')
         else:
             # can't add to queue; it's full
             print('queue full!')

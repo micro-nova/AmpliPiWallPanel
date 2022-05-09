@@ -73,8 +73,8 @@ def poll_track(source):
     new_track_name = ''
     if 'track' in source['info']:
         new_track_name = source['info']['track']
-    else:
-        print("null track name!")
+    # else:
+    #     print("null track name!")
 
     if new_track_name != track_name:
         track_name = new_track_name
@@ -87,8 +87,8 @@ def poll_album(source):
     new_album_name = ''
     if 'album' in source['info']:
         new_album_name = source['info']['album']
-    else:
-        print("null album name!")
+    # else:
+    #     print("null album name!")
 
     if new_album_name != album_name:
         album_name = new_album_name
@@ -101,8 +101,8 @@ def poll_artist(source):
     new_artist_name = ''
     if 'artist' in source['info']:
         new_artist_name = source['info']['artist']
-    else:
-        print("null artist name!")
+    # else:
+    #     print("null artist name!")
     if new_artist_name != artist_name:
         artist_name = new_artist_name
         send_artist(artist_name)
