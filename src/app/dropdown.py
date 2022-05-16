@@ -11,6 +11,7 @@ class DropDown:
     down_button_id: the id of the down button
     num_fields: the number of fields on the page for the dropdown menu
     """
+    __BUTTON_INCREMENT_AMOUNT = 4
     def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, loading_text_id, num_fields, first_image_id=None, image_objname_prefix=None):
         self.page_name = page_name
         self.first_field_id = first_field_id
@@ -94,13 +95,13 @@ class DropDown:
                 self.__on_down()
 
     def __on_up(self):
-        self.start_index -= 3
+        self.start_index -= self.__BUTTON_INCREMENT_AMOUNT
         if self.start_index < 0:
             self.start_index = 0
         self.__update_fields()
 
     def __on_down(self):
-        self.start_index += 3
+        self.start_index += self.__BUTTON_INCREMENT_AMOUNT
         if self.start_index > len(self.items) - self.num_fields:
             self.start_index = len(self.items) - self.num_fields
         self.__update_fields()

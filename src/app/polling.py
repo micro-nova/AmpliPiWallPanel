@@ -1,6 +1,6 @@
 # note: track and song are the same thing
 
-from app import api
+from app import api, displayserial
 from app import dt
 from app.api import get_source, get_zone
 from app.audioconfig import AudioConfig
@@ -110,7 +110,6 @@ def poll_artist(source):
         artist_name = new_artist_name
         send_artist(artist_name)
 
-
 def poll_playing(source):
     global is_playing
     new_is_playing = source["info"]["state"] == "playing"
@@ -122,31 +121,34 @@ def poll_stream_name(stream_id):
     if stream_id is not None:
         stream = api.get_stream(stream_id)
         send_stream_name(stream['name'])
+        type = stream['type']
+        image_id = displayserial.stream_type_to_pic_id(type)
+        if image_id is not None:
+            pass
+        else:
+            # make it invisible i guess
+            pass
     else:
         send_stream_name('')
+
 
 def poll_source_name(source_id):
     if source_id is not None:
         send_source_name(f'Source {source_id+1}')
 
-
 def poll_zone_name(zone):
     send_zone_name(zone['name'])
 
-
 def get_is_playing():
     return is_playing
-
 
 def set_is_playing(is_p):
     global is_playing
     is_playing = is_p
     update_play_pause_button(is_playing)
 
-
 def get_muted():
     return is_muted
-
 
 def set_muted(muted):
     global is_muted

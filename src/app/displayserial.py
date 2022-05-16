@@ -113,7 +113,6 @@ def send_artist(artist):
         artist = artist[0:26] + "..."
     set_component_txt(HOME_PAGE_NAME, ARTIST_NAME_OBJNAME, artist)
 
-
 def send_stream_name(stream_name):
     if len(stream_name) > 30:
         stream_name = stream_name[0:26] + "..."
