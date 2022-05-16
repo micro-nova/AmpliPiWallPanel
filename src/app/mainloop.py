@@ -1,28 +1,57 @@
+import traceback
+
+import machine
 from machine import Pin
 
 from app import api, wifi, displayserial, dt, relay
 from app.audioconfig import AudioConfig
+from app.displayserial import BUTTON_MESSAGE
 from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source
 from app.polling import poll
 
-def run():
-    tft_reset = Pin(4, Pin.OUT)
+# pages
+MAIN_PAGE_ID = 0
+CONFIG_PAGE_ID = 2
+SSID_PAGE_ID = 3
+STREAM_PAGE_ID = 5
+ZONE_PAGE_ID = 6
+VERSION_PAGE_ID = 7
+CONNECTION_PAGE_ID = 8
+VERSIONINFO_PAGE_ID = 9
+UPDATE_PAGE_ID = 10
+SOURCE_PAGE_ID = 11
+DEBUG_PAGE_ID = 12
 
-    # pages
-    MAIN_PAGE_ID = 0
-    CONFIG_PAGE_ID = 2
-    SSID_PAGE_ID = 3
-    STREAM_PAGE_ID = 5
-    ZONE_PAGE_ID = 6
-    VERSION_PAGE_ID = 7
-    CONNECTION_PAGE_ID = 8
-    VERSIONINFO_PAGE_ID = 9
-    UPDATE_PAGE_ID = 10
-    SOURCE_PAGE_ID = 11
+REBOOT_BUTTON_ID = 3
+
+def run():
+    try:
+        run_h()
+    except:
+        tr = traceback.format_exc()
+        displayserial.change_page('debugpage')
+        displayserial.set_component_txt('debugpage', 'tmessage', tr)
+        message = b''
+        while True:
+            if displayserial.uart_any():
+                message_part = displayserial.uart_read()
+                byte_list = [message_part[i:i+1] for i in range(len(message_part))]
+                for i in byte_list:
+                    message += i
+                    if message[-3:] == bytes([0xff, 0xff, 0xff]):
+                        message = message[0:-3]
+                        if len(message) > 1:
+                            if message[1] ==DEBUG_PAGE_ID:
+                                if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
+                                    if message[2] == REBOOT_BUTTON_ID:
+                                        machine.reset()
+
+
+def run_h():
+    tft_reset = Pin(4, Pin.OUT)
 
     # polling constants
     POLLING_INTERVAL_SECONDS = 1
-
 
     # initial startup stuff
     print('loading relay state...')

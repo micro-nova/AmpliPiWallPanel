@@ -1,21 +1,24 @@
-from app import api
+from app import api, displayserial
 from app.audioconfig import AudioConfig
 from app.displayserial import STREAM_PAGE_NAME
 from app.dropdown import DropDown
 
 _ITEM_OBJNAME = "titem"  # num
+_IMAGE_OBJNAME = "picon"
 
 # component ids
 _ITEM_FIRST_ID = 1
 _UP_BUTTON_ID = 5
 _DOWN_BUTTON_ID = 6
 _LOADING_TEXT_ID = 9
+_IMAGE_FIRST_ID = 10
 
 _NUM_ITEM_FIELDS = 4
 
 dropdown = DropDown(STREAM_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID,
-                    _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
+                    _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS,
+                    first_image_id=_IMAGE_FIRST_ID, image_objname_prefix=_IMAGE_OBJNAME)
 
 _streams = []
 
@@ -38,11 +41,12 @@ def load_stream_page():
     print("Loading stream list")
     _streams = api.get_streams()
     names = [stream['name'] for stream in _streams]  # if 'name' in stream
+    types = [displayserial.stream_type_to_pic_id(stream['type']) for stream in _streams]
 
     print(f'{len(names)} streams: ')
     print(names)
 
-    dropdown.populate(names)
+    dropdown.populate(names, types)
 
 
 def handle_msg(message):

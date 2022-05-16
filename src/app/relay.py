@@ -20,7 +20,7 @@ _relay1 = Pin(_RELAY_1_PIN, Pin.OUT)
 _relay2 = Pin(_RELAY_2_PIN, Pin.OUT)
 
 class RelayState:
-    _DEBOUNCE_TIME_NS = 20000000 # nanoseconds
+    _DEBOUNCE_TIME_NS = 20000000  # nanoseconds
 
     def __init__(self, relay_pin, init_state, button_objname):
         self._state = init_state

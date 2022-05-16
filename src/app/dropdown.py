@@ -11,7 +11,7 @@ class DropDown:
     down_button_id: the id of the down button
     num_fields: the number of fields on the page for the dropdown menu
     """
-    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, loading_text_id, num_fields):
+    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, loading_text_id, num_fields, first_image_id=None, image_objname_prefix=None):
         self.page_name = page_name
         self.first_field_id = first_field_id
         self.field_objname_prefix = field_objname_prefix
@@ -19,20 +19,28 @@ class DropDown:
         self.down_button_id = down_button_id
         self.loading_text_id = loading_text_id
         self.num_fields = num_fields
+        self.first_image_id = first_image_id
+        self.image_objname_prefix = image_objname_prefix
 
         self.callbacks = []
         self.items = []
+        self.pic_ids = []
         self.selected_index = -1
         self.selected_string = ''
         self.start_index = 0
 
     # clears and populates the items list
     # items must be a list of strings
-    def populate(self, items):
+    def populate(self, items, pic_ids=None):
         """Clears and populates the items list. Items must be a list of strings."""
         self.start_index = 0
         self.items.clear()
         self.items.extend(items)
+
+        if pic_ids is not None:
+            self.pic_ids.clear()
+            self.pic_ids.extend(pic_ids)
+
         self.__update_fields()
 
     def set_loading_state(self):
@@ -40,6 +48,9 @@ class DropDown:
         # make all fields invisible
         for i in range(self.num_fields):
             displayserial.set_visible(i + self.first_field_id, False)
+        if self.first_image_id is not None:
+            for i in range(self.num_fields):
+                displayserial.set_visible(i + self.first_image_id, False)
 
         # make buttons invisible
         displayserial.set_visible(self.up_button_id, False)
@@ -105,8 +116,12 @@ class DropDown:
         for i in range(self.num_fields):
             if i in range(num_items, self.num_fields):
                 displayserial.set_visible(i + self.first_field_id, False)
+                if self.first_image_id is not None:
+                    displayserial.set_visible(i + self.first_image_id, False)
             else:
                 displayserial.set_visible(i + self.first_field_id, True)
+                if self.first_image_id is not None:
+                    displayserial.set_visible(i + self.first_image_id, True)
 
         # # make sure all fields are visible
         # for i in range(self.num_fields):
@@ -121,6 +136,13 @@ class DropDown:
         for i in range(min(self.num_fields, num_items)):
             field_string = self.items[i + self.start_index]
             self.__set_field_txt(i, field_string)
+            if self.first_image_id is not None:
+                image_id = self.pic_ids[i + self.start_index]
+                if image_id is not None:
+                    self.__set_image(i, image_id)
+                else:
+                    displayserial.set_visible(i + self.first_image_id, False)
+
 
         # since we just changed the state of the displayed dropdown,
         # we need to update the up/down button visibilities
@@ -144,7 +166,13 @@ class DropDown:
     def __field_name_from_index(self, index):
         return f'{self.field_objname_prefix}{index}'
 
+    def __image_name_from_index(self, index):
+        return f'{self.image_objname_prefix}{index}'
+
     def __set_field_txt(self, index, txt):
         displayserial.set_component_txt(self.page_name, self.__field_name_from_index(index), txt)
+
+    def __set_image(self, index, image_id):
+        displayserial.set_image(self.page_name, self.__image_name_from_index(index), image_id)
 
 
