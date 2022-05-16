@@ -85,6 +85,8 @@ def stream_type_to_pic_id(stream_type):
         return INTERNET_RADIO_PIC_ID
     elif stream_type == 'plexamp':
         return PLEXAMP_PIC_ID
+    elif stream_type == 'spotify':
+        return SPOTIFY_PIC_ID
     else:
         return None
 
