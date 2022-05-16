@@ -173,6 +173,5 @@ class DropDown:
         displayserial.set_component_txt(self.page_name, self.__field_name_from_index(index), txt)
 
     def __set_image(self, index, image_id):
+        print(f'setting {index}th image to {image_id}')
         displayserial.set_image(self.page_name, self.__image_name_from_index(index), image_id)
-
-

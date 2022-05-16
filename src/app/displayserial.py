@@ -73,13 +73,20 @@ tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
 
 def stream_type_to_pic_id(stream_type):
-    if stream_type == 'rca': return RCA_PIC_ID
-    elif stream_type == 'airplay': return SHAIRPORT_PIC_ID
-    elif stream_type == 'pandora': return PANDORA_PIC_ID
-    elif stream_type == 'dlna': return DLNA_PIC_ID
-    elif stream_type == 'internetradio': return INTERNET_RADIO_PIC_ID
-    elif stream_type == 'plexamp': return PLEXAMP_PIC_ID
-    else: return None
+    if stream_type == 'rca':
+        return RCA_PIC_ID
+    elif stream_type == 'airplay':
+        return SHAIRPORT_PIC_ID
+    elif stream_type == 'pandora':
+        return PANDORA_PIC_ID
+    elif stream_type == 'dlna':
+        return DLNA_PIC_ID
+    elif stream_type == 'internetradio':
+        return INTERNET_RADIO_PIC_ID
+    elif stream_type == 'plexamp':
+        return PLEXAMP_PIC_ID
+    else:
+        return None
 
 def change_page(pagename):
     uart_write(f'page {pagename}')
@@ -123,7 +130,10 @@ def set_component_txt(pagename, componentname, txt):
     uart_write(f'{pagename}.{componentname}.txt="{txt}"')
 
 def set_image(pagename, componentname, pic):
-    uart_write(f'{pagename}.{componentname}.pic="{pic}"')
+    uart_write(f'{pagename}.{componentname}.pic={pic}')
+
+# def set_image_local(componentname, pic):
+#     uart_write(f'{componentname}.pic="{pic}')
 
 
 def set_visible(id, visible):

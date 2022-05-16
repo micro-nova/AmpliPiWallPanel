@@ -1,4 +1,4 @@
-import traceback
+# import traceback
 
 import machine
 from machine import Pin
@@ -27,8 +27,8 @@ REBOOT_BUTTON_ID = 3
 def run():
     try:
         run_h()
-    except:
-        tr = traceback.format_exc()
+    except Exception as e:
+        tr = str(e)
         displayserial.change_page('debugpage')
         displayserial.set_component_txt('debugpage', 'tmessage', tr)
         message = b''
