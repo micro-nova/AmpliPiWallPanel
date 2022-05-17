@@ -5,7 +5,7 @@ from app import dt
 from app.api import get_source, get_zone
 from app.audioconfig import AudioConfig
 from app.displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
-    set_vol_slider_vol_f, send_stream_name, send_zone_name, send_source_name
+    set_vol_slider_vol_f, send_stream_name, send_zone_name, send_source_name, HOME_PAGE_NAME, send_stream_type
 
 track_name = ""
 album_name = ""
@@ -28,7 +28,7 @@ def poll():
     global _skip_next_playing
     global _skip_next_mute
 
-    poll_start_time = dt.time_sec()
+    # poll_start_time = dt.time_sec()
     zone = get_zone(_audioconf.zone_id)
     if zone is not None:
         source_id = zone["source_id"]
@@ -122,12 +122,7 @@ def poll_stream_name(stream_id):
         stream = api.get_stream(stream_id)
         send_stream_name(stream['name'])
         type = stream['type']
-        image_id = displayserial.stream_type_to_pic_id(type)
-        if image_id is not None:
-            pass
-        else:
-            # make it invisible i guess
-            pass
+        send_stream_type(type)
     else:
         send_stream_name('')
 

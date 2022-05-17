@@ -39,6 +39,7 @@ RELAY_RIGHT_OBJNAME = "prelay2"
 
 # objnames related to polling
 STREAM_NAME_OBJNAME = "bstream"
+STREAM_ICON_OBJNAME = "picon"
 ZONE_NAME_OBJNAME = "bzone"
 SOURCE_NAME_OBJNAME = "bsource"
 PLAY_BUTTON_OBJNAME = "bplay"
@@ -48,6 +49,7 @@ ALBUM_NAME_OBJNAME = "talbum"
 ARTIST_NAME_OBJNAME = "tartist"
 VOL_OBJNAME = "hvol"
 VOL_SLIDER_MAX = 1024.0
+STREAM_ICON_ID = 14
 
 # serial constants
 BUTTON_MESSAGE = 0x65
@@ -117,6 +119,15 @@ def send_stream_name(stream_name):
     if len(stream_name) > 30:
         stream_name = stream_name[0:26] + "..."
     set_component_txt(HOME_PAGE_NAME, STREAM_NAME_OBJNAME, stream_name)
+
+def send_stream_type(stream_type):
+    image_id = stream_type_to_pic_id(stream_type)
+    if image_id is not None:
+        set_image(HOME_PAGE_NAME, STREAM_ICON_OBJNAME, image_id)
+        set_visible(STREAM_ICON_ID, True)
+    else:
+        set_visible(STREAM_ICON_ID, False)
+
 
 def send_source_name(source_name):
     set_component_txt(HOME_PAGE_NAME, SOURCE_NAME_OBJNAME, source_name)
