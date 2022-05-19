@@ -25,11 +25,11 @@ class AudioConfig:
             self.source_id = -1
             self.stream_id = -1
 
-    def load_settings(self):
+    def load_settings(self) -> bool:
         print("loading AudioConfig settings")
         self.__load_zone()
         # calling this will give real values to source_id and stream_id (if it has a stream)
-        self.change_zone(self.zone_id)
+        return self.change_zone(self.zone_id)
 
     # def poll_source_and_stream_id(self):
     #     if self.zone_id >= 0:
@@ -51,7 +51,8 @@ class AudioConfig:
         api.set_stream(self.source_id, new_stream_id)
 
     # changing the zone may also change the source and stream
-    def change_zone(self, new_zone_id):
+    def change_zone(self, new_zone_id) -> bool:
+        # if wifi
         print('changing zone')
         print(f'current zone id is {self.zone_id}')
         print(f'current stream id is {self.stream_id}')
@@ -60,11 +61,14 @@ class AudioConfig:
         if new_zone_id >= 0:
             # get id of source that this new zone belongs to
             zone = api.get_zone(self.zone_id)
+            if zone is None:
+                return False
             self.source_id = zone['source_id']
 
             # get the current stream that is running on the source
             self.__update_stream_id_from_source()
             self.__save_zone()
+        return True
 
     # moves the current zone to a different source
     # this may also change the stream

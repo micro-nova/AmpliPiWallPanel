@@ -1,4 +1,5 @@
 # import traceback
+import sys
 
 import machine
 from machine import Pin
@@ -28,10 +29,10 @@ def run():
     try:
         run_h()
     except Exception as e:
-        tr = str(e)
         displayserial.change_page('debugpage')
-        displayserial.set_component_txt('debugpage', 'tmessage', tr)
+        displayserial.set_component_txt('debugpage', 'tmessage', str(e))
         message = b''
+        # raise e # temp
         while True:
             if displayserial.uart_any():
                 message_part = displayserial.uart_read()
@@ -41,7 +42,7 @@ def run():
                     if message[-3:] == bytes([0xff, 0xff, 0xff]):
                         message = message[0:-3]
                         if len(message) > 1:
-                            if message[1] ==DEBUG_PAGE_ID:
+                            if message[1] == DEBUG_PAGE_ID:
                                 if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
                                     if message[2] == REBOOT_BUTTON_ID:
                                         machine.reset()
@@ -86,13 +87,11 @@ def run_h():
             try:
                 if wifi.is_connected():
                     if not initialized:
-                        initialized = True
                         # init audioconf
-                        audioconf.load_settings()
+                        if audioconf.load_settings():
+                            initialized = True
                     if audioconf.zone_id >= 0:
                         api.queue_call(poll)
-                        # poll()
-                        # print("queued poll from amplipi")
                     else:
                         print("didn't poll because zone is not configured")
             except OSError as e:

@@ -7,6 +7,7 @@ from app.pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
 _PASSWORD_FIELD_OBJNAME = 'tpassfield'
+_IP_FIELD_OBJNAME = 'tipfield'
 _WIFI_STATUS_OBJNAME = 'pwifi'
 _AMPLIPI_STATUS_OBJNAME = 'pnet'
 
@@ -17,10 +18,12 @@ _CONNECT_BUTTON_ID = 7
 _BACK_BUTTON_ID = 8
 _SSID_FIELD_ID = 3
 _PASSWORD_FIELD_ID = 4 # might not be needed
+_IP_FIELD_ID = 9
 
 ssid_list = []
 ssid_field_txt = ''
 pass_field_txt = ''
+ip_field_txt = ''
 
 def load_connection_page():
     """Loads connection page contents. Can be called whenever since all relevant components are global in the
@@ -29,17 +32,21 @@ def load_connection_page():
     wifi_info = wifi.load_wifi_info()
     wifi_ssid = wifi_info['ssid']
     wifi_password = wifi_info['password']
+    amplipi_ip = None
+    if 'ip' in wifi_info:
+        amplipi_ip = wifi_info['ip']
 
     # update page components
     print(f'updating ssid and password fields to {wifi_ssid} and {wifi_password}')
-    time.sleep_ms(10)
     # TODO: investigate effectiveness of delaying on improving the chances of the message being
     #  successfully sent to the display. if it actually helps, might make more sense to put the delay in
     #  every display update function
     set_component_txt(CONNECTION_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
-    time.sleep_ms(10)
     set_component_txt(CONNECTION_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
-    time.sleep_ms(10)
+    if amplipi_ip is not None:
+        set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, amplipi_ip)
+    else:
+        set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, '')
     update_connection_status()
 
 def update_connection_status():
@@ -53,6 +60,7 @@ def update_connection_status():
 def handle_msg(message):
     global ssid_field_txt
     global pass_field_txt
+    global ip_field_txt
     print("handling connection page message")
     if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
         id = message[2]
@@ -61,7 +69,7 @@ def handle_msg(message):
             # TODO: indicate that device is trying to connect here somehow
             print("Connect button pressed")
             wifi.disconnect()
-            wifi.save_wifi_info(ssid_field_txt, pass_field_txt)
+            wifi.save_wifi_info(ssid_field_txt, pass_field_txt, ip_field_txt)
             wifi.try_connect()
             update_connection_status()
 
@@ -79,4 +87,6 @@ def handle_msg(message):
             ssid_field_txt = text
         elif id == _PASSWORD_FIELD_ID:
             pass_field_txt = text
+        elif id == _IP_FIELD_ID:
+            ip_field_txt = text
         print(f'Received string: {text}')

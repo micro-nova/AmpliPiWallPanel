@@ -40,6 +40,8 @@ def load_stream_page():
     # get list of streams
     print("Loading stream list")
     _streams = api.get_streams()
+    if _streams is None:
+        _streams = []
     names = [stream['name'] for stream in _streams]  # if 'name' in stream
     types = [displayserial.stream_type_to_pic_id(stream['type']) for stream in _streams]
 

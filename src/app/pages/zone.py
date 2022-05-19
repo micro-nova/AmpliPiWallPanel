@@ -39,6 +39,8 @@ def load_zone_page():
     # get list of zones
     print("Loading zone list")
     _zones = api.get_zones()
+    if _zones is None:
+        _zones = []
     names = [zone['name'] for zone in _zones]
 
     print(f'{len(names)} zones: ')

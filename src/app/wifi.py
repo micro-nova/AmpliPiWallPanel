@@ -2,7 +2,7 @@ import json
 import network
 import time
 
-from app.displayserial import change_page, CONFIG_PAGE_NAME
+from app.displayserial import change_page, CONFIG_PAGE_NAME, CONNECTION_PAGE_NAME
 from app.pages.connection import load_connection_page
 
 _WIFI_CONFIG_FILENAME = '../../wifi.txt'
@@ -12,23 +12,26 @@ _wlan = network.WLAN(network.STA_IF)
 _wlan.active(True)
 _set_page_config = False
 
-
+_amplipi_ip = ''
 def load_wifi_info():
+    global _amplipi_ip
     """Loads wifi info from file (creates file if it doesn't exist). Returns wifi dict with ssid and password"""
-    wifi_file_dict = {'ssid': '', 'password': ''}
+    wifi_file_dict = {'ssid': '', 'password': '', 'ip': ''}
     try:
         with open(_WIFI_CONFIG_FILENAME) as wifi_file:
             wifi_file_str = wifi_file.read()
             wifi_file_dict = json.loads(wifi_file_str)
+            if 'ip' in wifi_file_dict:
+                _amplipi_ip = wifi_file_dict['ip']
     except OSError:
         # open failed, make file
         _save_wifi_info(wifi_file_dict)
     return wifi_file_dict
 
 
-def save_wifi_info(ssid, password):
+def save_wifi_info(ssid, password, ip):
     """Saves wifi info to file"""
-    _save_wifi_info({'ssid': ssid, 'password': password})
+    _save_wifi_info({'ssid': ssid, 'password': password, 'ip': ip})
 
 
 def _save_wifi_info(wifi_file_dict):
@@ -73,16 +76,15 @@ def try_connect():
         if _wlan.isconnected():
             print(f"Connected to {wifi_info_dict['ssid']}")
             return True
-        else:
-            print(f"Failed to connect to {wifi_info_dict['ssid']}")
-            needs_config = True
+        print(f"Failed to connect to {wifi_info_dict['ssid']}")
+        needs_config = True
     else:
         needs_config = True
 
     if needs_config:
         if not _set_page_config:
             print("Please configure wifi settings.")
-            change_page(CONFIG_PAGE_NAME)
+            change_page(CONNECTION_PAGE_NAME)
             load_connection_page()
             _set_page_config = True
         return False
@@ -103,3 +105,6 @@ def is_connected():
 def disconnect():
     """Disconnects from the currently connected wireless network."""
     _wlan.disconnect()
+
+def get_amplipi_ip():
+    return _amplipi_ip

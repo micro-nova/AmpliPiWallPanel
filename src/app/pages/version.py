@@ -1,6 +1,7 @@
 import gc
 import json
 
+from app import wifi
 from app.displayserial import VERSION_PAGE_NAME
 from app.dropdown import DropDown
 from app.ota.ota_updater import OTAUpdater
@@ -32,30 +33,31 @@ dropdown.add_item_index_callback(_select_version_callback)
 def load_version_page():
     """Loads version page contents. Should only be called when the display is on the version page."""
     global _releases
-    dropdown.set_loading_state()
-    token = None
-    try:
-        with open('temp-token.txt') as file:
-            token = json.loads(file.read())
-    except OSError:
-        pass
+    if wifi.is_connected():
+        dropdown.set_loading_state()
+        token = None
+        try:
+            with open('temp-token.txt') as file:
+                token = json.loads(file.read())
+        except OSError:
+            pass
 
-    if token is None:
-        _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
-        print('OTAUpdater loaded without token.')
-    else:
-        _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
-                          headers={'Authorization': 'token {}'.format(token['token'])})
-        print('OTAUpdater loaded with token.')
+        if token is None:
+            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
+            print('OTAUpdater loaded without token.')
+        else:
+            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
+                              headers={'Authorization': 'token {}'.format(token['token'])})
+            print('OTAUpdater loaded with token.')
 
-    _releases = _ota.get_all_releases()
-    reload_version_page_ui()
+        _releases = _ota.get_all_releases()
+        reload_version_page_ui()
 
-    print(f'mem free before del: {gc.mem_free()}')
-    del _ota
-    _ota = None
-    gc.collect()
-    print(f'mem free after del: {gc.mem_free()}')
+        print(f'mem free before del: {gc.mem_free()}')
+        del _ota
+        _ota = None
+        gc.collect()
+        print(f'mem free after del: {gc.mem_free()}')
 
 def reload_version_page_ui():
     # take raw _releases data and extract just the names

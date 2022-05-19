@@ -32,6 +32,7 @@ dropdown.add_item_index_callback(_change_source_callback)
 # only call this when on this page
 # TODO: rename to load_page and change importing
 def load_source_page():
+    dropdown.set_loading_state()
     dropdown.populate(_sources)
 
 def handle_msg(message):
