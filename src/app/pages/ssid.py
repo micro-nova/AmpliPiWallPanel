@@ -8,13 +8,16 @@ _SSID_OBJNAME = "tssid"  # num
 _SSID_FIRST_ID = 1  # + index
 _UP_BUTTON_ID = 5
 _DOWN_BUTTON_ID = 6
-_LOADING_TEXT_ID = 9
+_LOADING_TEXT_OBJNAME = 'tloading'
+
+_UP_BUTTON_OBJNAME = 'bup'
+_DOWN_BUTTON_OBJNAME = 'bdown'
 
 _NUM_SSID_FIELDS = 4
 
 dropdown = DropDown(SSID_PAGE_NAME, _SSID_FIRST_ID,
-                    _SSID_OBJNAME, _UP_BUTTON_ID,
-                    _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_SSID_FIELDS)
+                    _SSID_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_SSID_FIELDS)
 
 def load_ssid_page():
     """Loads the contents of the SSID page. Should only be called when the display is on this page."""

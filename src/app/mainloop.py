@@ -1,4 +1,5 @@
 # import traceback
+import gc
 import sys
 
 import machine
@@ -80,6 +81,7 @@ def run_h():
         curr_time = dt.time_sec()
         if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
             last_poll_time = dt.time_sec()
+            gc.collect()
 
             # handle relay file saving
             relay.update()

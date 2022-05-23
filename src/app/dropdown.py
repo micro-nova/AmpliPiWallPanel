@@ -12,13 +12,15 @@ class DropDown:
     num_fields: the number of fields on the page for the dropdown menu
     """
     __BUTTON_INCREMENT_AMOUNT = 4
-    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, down_button_id, loading_text_id, num_fields, first_image_id=None, image_objname_prefix=None):
+    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, up_button_objname, down_button_id, down_button_objname, loading_text_objname, num_fields, first_image_id=None, image_objname_prefix=None):
         self.page_name = page_name
         self.first_field_id = first_field_id
         self.field_objname_prefix = field_objname_prefix
         self.up_button_id = up_button_id
+        self.up_button_objname = up_button_objname
         self.down_button_id = down_button_id
-        self.loading_text_id = loading_text_id
+        self.down_button_objname = down_button_objname
+        self.loading_text_objname = loading_text_objname
         self.num_fields = num_fields
         self.first_image_id = first_image_id
         self.image_objname_prefix = image_objname_prefix
@@ -46,19 +48,20 @@ class DropDown:
 
     def set_loading_state(self):
         """Manipulates the display to show a loading state."""
-        # make all fields invisible
-        for i in range(self.num_fields):
-            displayserial.set_visible(i + self.first_field_id, False)
-        if self.first_image_id is not None:
-            for i in range(self.num_fields):
-                displayserial.set_visible(i + self.first_image_id, False)
-
-        # make buttons invisible
-        displayserial.set_visible(self.up_button_id, False)
-        displayserial.set_visible(self.down_button_id, False)
-
-        # make loading text visible
-        displayserial.set_visible(self.loading_text_id, True)
+        # # make all fields invisible
+        # for i in range(self.num_fields):
+        #     displayserial.set_visible(i + self.first_field_id, False)
+        # if self.first_image_id is not None:
+        #     for i in range(self.num_fields):
+        #         displayserial.set_visible(i + self.first_image_id, False)
+        #
+        # # make buttons invisible
+        # displayserial.set_visible(self.up_button_id, False)
+        # displayserial.set_visible(self.down_button_id, False)
+        #
+        # # make loading text visible
+        # displayserial.set_visible(self.loading_text_id, True)
+        pass
 
     def add_item_index_callback(self, callb):
         """callb is a lambda one argument and no return value. Adds callb to a list of callbacks that is called
@@ -111,18 +114,19 @@ class DropDown:
         print(f'{num_items} items in dropdown list.')
 
         # make loading text invisible
-        displayserial.set_visible(self.loading_text_id, False)
+        displayserial.set_visible(self.loading_text_objname, False)
 
         # update field visibility
         for i in range(self.num_fields):
+            field_objname = f'{self.field_objname_prefix}{i}'
             if i in range(num_items, self.num_fields):
-                displayserial.set_visible(i + self.first_field_id, False)
-                if self.first_image_id is not None:
-                    displayserial.set_visible(i + self.first_image_id, False)
+                displayserial.set_visible(field_objname, False)
+                if self.image_objname_prefix is not None:
+                    displayserial.set_visible(f'{self.image_objname_prefix}{i}', False)
             else:
-                displayserial.set_visible(i + self.first_field_id, True)
-                if self.first_image_id is not None:
-                    displayserial.set_visible(i + self.first_image_id, True)
+                displayserial.set_visible(field_objname, True)
+                if self.image_objname_prefix is not None:
+                    displayserial.set_visible(f'{self.image_objname_prefix}{i}', True)
 
         # # make sure all fields are visible
         # for i in range(self.num_fields):
@@ -142,7 +146,7 @@ class DropDown:
                 if image_id is not None:
                     self.__set_image(i, image_id)
                 else:
-                    displayserial.set_visible(i + self.first_image_id, False)
+                    displayserial.set_visible(f'{self.image_objname_prefix}{i}', False)
 
 
         # since we just changed the state of the displayed dropdown,
@@ -152,17 +156,17 @@ class DropDown:
     def __update_button_vis(self):
         if self.start_index == 0:
             # make up button invisible
-            displayserial.set_visible(self.up_button_id, False)
+            displayserial.set_visible(self.up_button_objname, False)
         else:
             # make up button visible
-            displayserial.set_visible(self.up_button_id, True)
+            displayserial.set_visible(self.up_button_objname, True)
         # if self.start_index == len(self.items) - self.num_fields or len(self.items) <= self.num_fields:
         if self.start_index >= len(self.items) - self.num_fields:
             # make down button invisible
-            displayserial.set_visible(self.down_button_id, False)
+            displayserial.set_visible(self.down_button_objname, False)
         else:
             # make down button visible
-            displayserial.set_visible(self.down_button_id, True)
+            displayserial.set_visible(self.down_button_objname, True)
 
     def __field_name_from_index(self, index):
         return f'{self.field_objname_prefix}{index}'

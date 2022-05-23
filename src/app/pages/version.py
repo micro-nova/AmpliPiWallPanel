@@ -1,7 +1,7 @@
 import gc
 import json
 
-from app import wifi
+from app import wifi, sysconsts
 from app.displayserial import VERSION_PAGE_NAME
 from app.dropdown import DropDown
 from app.ota.ota_updater import OTAUpdater
@@ -13,13 +13,15 @@ _ITEM_OBJNAME = "titem"  # num
 _ITEM_FIRST_ID = 1
 _UP_BUTTON_ID = 5
 _DOWN_BUTTON_ID = 6
-_LOADING_TEXT_ID = 9
+_LOADING_TEXT_OBJNAME = 'tloading'
+_UP_BUTTON_OBJNAME = 'bup'
+_DOWN_BUTTON_OBJNAME = 'bdown'
 
 _NUM_ITEM_FIELDS = 4
 
 dropdown = DropDown(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
-                    _ITEM_OBJNAME, _UP_BUTTON_ID,
-                    _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
+                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
 
 _releases = []  # list of tag jsons (not just tag names)
 
@@ -43,10 +45,10 @@ def load_version_page():
             pass
 
         if token is None:
-            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
+            _ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
             print('OTAUpdater loaded without token.')
         else:
-            _ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
+            _ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
                               headers={'Authorization': 'token {}'.format(token['token'])})
             print('OTAUpdater loaded with token.')
 

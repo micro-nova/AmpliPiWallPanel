@@ -49,7 +49,6 @@ ALBUM_NAME_OBJNAME = "talbum"
 ARTIST_NAME_OBJNAME = "tartist"
 VOL_OBJNAME = "hvol"
 VOL_SLIDER_MAX = 1024.0
-STREAM_ICON_ID = 14
 
 # serial constants
 BUTTON_MESSAGE = 0x65
@@ -124,9 +123,9 @@ def send_stream_type(stream_type):
     image_id = stream_type_to_pic_id(stream_type)
     if image_id is not None:
         set_image(HOME_PAGE_NAME, STREAM_ICON_OBJNAME, image_id)
-        set_visible(STREAM_ICON_ID, True)
+        set_visible(STREAM_ICON_OBJNAME, True)
     else:
-        set_visible(STREAM_ICON_ID, False)
+        set_visible(STREAM_ICON_OBJNAME, False)
 
 
 def send_source_name(source_name):
@@ -148,8 +147,8 @@ def set_image(pagename, componentname, pic):
 #     uart_write(f'{componentname}.pic="{pic}')
 
 
-def set_visible(id, visible):
-    uart_write(f'vis {id},{1 if visible else 0}')
+def set_visible(id_or_name, visible):
+    uart_write(f'vis {id_or_name},{1 if visible else 0}')
 
 
 def update_play_pause_button(playing):

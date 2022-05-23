@@ -10,14 +10,17 @@ _IMAGE_OBJNAME = "picon"
 _ITEM_FIRST_ID = 1
 _UP_BUTTON_ID = 5
 _DOWN_BUTTON_ID = 6
-_LOADING_TEXT_ID = 9
+_LOADING_TEXT_OBJNAME = 'tloading'
 _IMAGE_FIRST_ID = 10
+_UP_BUTTON_OBJNAME = 'bup'
+_DOWN_BUTTON_OBJNAME = 'bdown'
+
 
 _NUM_ITEM_FIELDS = 4
 
 dropdown = DropDown(STREAM_PAGE_NAME, _ITEM_FIRST_ID,
-                    _ITEM_OBJNAME, _UP_BUTTON_ID,
-                    _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS,
+                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS,
                     first_image_id=_IMAGE_FIRST_ID, image_objname_prefix=_IMAGE_OBJNAME)
 
 _streams = []

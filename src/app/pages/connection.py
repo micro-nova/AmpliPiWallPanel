@@ -32,7 +32,7 @@ def load_connection_page():
     wifi_info = wifi.load_wifi_info()
     wifi_ssid = wifi_info['ssid']
     wifi_password = wifi_info['password']
-    amplipi_ip = None
+    amplipi_ip = ''
     if 'ip' in wifi_info:
         amplipi_ip = wifi_info['ip']
 
@@ -43,10 +43,7 @@ def load_connection_page():
     #  every display update function
     set_component_txt(CONNECTION_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
     set_component_txt(CONNECTION_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
-    if amplipi_ip is not None:
-        set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, amplipi_ip)
-    else:
-        set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, '')
+    set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, amplipi_ip)
     update_connection_status()
 
 def update_connection_status():

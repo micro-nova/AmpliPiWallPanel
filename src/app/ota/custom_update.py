@@ -5,7 +5,7 @@ import machine
 import os
 
 from machine import Pin
-from app import wifi
+from app import wifi, sysconsts
 from app.ota.ota_updater import OTAUpdater
 from app.ota.upload import NexUpload
 from app.utils import rmdir_all
@@ -71,10 +71,10 @@ def _update_app_if_queued():
                     token = json.loads(file.read())
 
                 if token is None:
-                    ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='')
+                    ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
                     print('OTAUpdater loaded without token.')
                 else:
-                    ota = OTAUpdater('micro-nova/WallPanel', main_dir='app', github_src_dir='src', module='',
+                    ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
                                       headers={'Authorization': 'token {}'.format(token['token'])})
                     print('OTAUpdater loaded with token.')
 

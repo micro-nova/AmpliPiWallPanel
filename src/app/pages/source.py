@@ -7,14 +7,16 @@ _ITEM_OBJNAME = "titem"  # num
 # component ids
 _ITEM_FIRST_ID = 1
 _UP_BUTTON_ID = 5
+_UP_BUTTON_OBJNAME = 'bup'
 _DOWN_BUTTON_ID = 6
-_LOADING_TEXT_ID = 9
+_DOWN_BUTTON_OBJNAME = 'bdown'
+_LOADING_TEXT_OBJNAME = 'tloading'
 
 _NUM_ITEM_FIELDS = 4
 
 dropdown = DropDown(SOURCE_PAGE_NAME, _ITEM_FIRST_ID,
-                    _ITEM_OBJNAME, _UP_BUTTON_ID,
-                    _DOWN_BUTTON_ID, _LOADING_TEXT_ID, _NUM_ITEM_FIELDS)
+                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
 
 _sources = ['Source 1', 'Source 2', 'Source 3', 'Source 4']
 
