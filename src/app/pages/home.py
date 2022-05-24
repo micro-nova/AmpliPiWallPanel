@@ -45,11 +45,14 @@ def _on_pause(stream_id):
     if api.queue_call(call):
         set_is_playing(False)
 
-def _on_mute(zone_id):
+def _on_mute():
     polling.skip_next_mute()
 
     def call():
-        api.set_mute(zone_id, True)
+        if _audioconf.using_group:
+            api.set_mute(_audioconf.group_id, True, using_group=_audioconf.using_group)
+        else:
+            api.set_mute(_audioconf.zone_id, True, using_group=_audioconf.using_group)
         polling.skip_next_mute()
         print("muting...")
 
@@ -58,12 +61,15 @@ def _on_mute(zone_id):
         # update mute button graphic
         set_muted(True)
 
-def _on_unmute(zone_id):
+def _on_unmute():
     polling.skip_next_mute()
 
     def call():
         # set muted state using amplipi API
-        api.set_mute(zone_id, False)
+        if _audioconf.using_group:
+            api.set_mute(_audioconf.group_id, False, using_group=_audioconf.using_group)
+        else:
+            api.set_mute(_audioconf.zone_id, False, using_group=_audioconf.using_group)
         polling.skip_next_mute()
         print("unmuting...")
 
@@ -91,16 +97,17 @@ def _on_vol(message):
 
     # define the call to be queued
     # using function def instead of lambda so that multiple statements can be used
+    id = _audioconf.group_id if _audioconf.using_group else _audioconf.zone_id
 
     def unmute_call():
         polling.skip_next_vol_f()
         polling.skip_next_mute()
-        api.set_vol_f_mute(_audioconf.zone_id, vol_f, False)
+        api.set_vol_f_mute(id, vol_f, False, using_group=_audioconf.using_group)
 
     def call():
         polling.skip_next_vol_f()
         polling.skip_next_mute()
-        api.set_vol_f(_audioconf.zone_id, vol_f)
+        api.set_vol_f(id, vol_f, using_group=_audioconf.using_group)
 
     if get_muted():
         if api.queue_call(unmute_call):
@@ -150,8 +157,8 @@ def handle_msg(message):
         elif id == MUTE_BUTTON_ID:
             try:
                 if get_muted():
-                    _on_unmute(_audioconf.zone_id)
+                    _on_unmute()
                 else:
-                    _on_mute(_audioconf.zone_id)
+                    _on_mute()
             except OSError:
                 print("mute/unmute button event failed due to internet probably")

@@ -2,10 +2,10 @@
 
 from app import api, displayserial
 from app import dt
-from app.api import get_source, get_zone
+from app.api import get_source, get_zone, get_group
 from app.audioconfig import AudioConfig
 from app.displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
-    set_vol_slider_vol_f, send_stream_name, send_zone_name, send_source_name, HOME_PAGE_NAME, send_stream_type
+    set_vol_slider_vol_f, send_stream_name, send_zone_or_group_name, send_source_name, HOME_PAGE_NAME, send_stream_type
 
 track_name = " "
 album_name = " "
@@ -21,22 +21,34 @@ _skip_next_vol_f = False
 _skip_next_playing = False
 _skip_next_mute = False
 
+_awaiting_user_input=False
+
 
 _audioconf = AudioConfig()
 
+
+def invalid_group_handled():
+    global _awaiting_user_input
+    _awaiting_user_input = False
 
 def poll():
     global _skip_next_vol_f
     global _skip_next_playing
     global _skip_next_mute
+    global _awaiting_user_input
 
     # poll_start_time = dt.time_sec()
-    zone = get_zone(_audioconf.zone_id)
+    zone = None
+    group = None
+    if _audioconf.using_group:
+        group = get_group(_audioconf.group_id)
+    else:
+        zone = get_zone(_audioconf.zone_id)
     source_id = None
     source = None
     stream = None
     if zone is not None:
-        source_id = zone["source_id"]
+        source_id = zone['source_id']
         source = get_source(source_id)
         _audioconf.stream_id = api.get_stream_id_from_source_dict(source)
         stream = api.get_stream(_audioconf.stream_id)
@@ -52,24 +64,62 @@ def poll():
             poll_playing(source)
         else:
             _skip_next_playing = False
+        poll_zone_or_group_name(zone)
+    elif group is not None:
+        try:
+            source_id = group['source_id']
+            source = get_source(source_id)
+            # if success, we are no longer waiting on the user to fix the invalid group
+            _awaiting_user_input = False
+            print('group valid')
+            # print(source_id)
+            # print(source)
+        except Exception:
+            # go to the ginvalid page once if the group is invalid
+            print('group invalid')
+            if not _awaiting_user_input:
+                # the source_id isn't present, so the group is invalid
+                displayserial.change_page(displayserial.GROUP_INVALID_PAGE_NAME)
+                _awaiting_user_input = True
+
+        if source is not None:
+            new_stream_id = api.get_stream_id_from_source_dict(source)
+            if new_stream_id is not None:
+                _audioconf.stream_id = new_stream_id
+                stream = api.get_stream(_audioconf.stream_id)
+            else:
+                _audioconf.stream_id = -1
+
+        if not _skip_next_vol_f:
+            poll_vol_f(group)
+        else:
+            _skip_next_vol_f = False
+        if not _skip_next_mute:
+            poll_muted(group)
+        else:
+            _skip_next_mute = False
+        if not _skip_next_playing:
+            poll_playing(source)
+        else:
+            _skip_next_playing = False
+        poll_zone_or_group_name(group)
     poll_track(source)
     poll_album(source)
-    poll_zone_name(zone)
     poll_stream_name(stream)
     poll_source_name(source_id)
     poll_artist(source)
 
-def poll_vol_f(zone):
+def poll_vol_f(zoneorgroup):
     global vol_f
-    new_vol_f = zone["vol_f"]
+    new_vol_f = zoneorgroup["vol_f"]
     if new_vol_f != vol_f:
         vol_f = new_vol_f
         set_vol_slider_vol_f(vol_f)
 
 
-def poll_muted(zone):
+def poll_muted(zoneorgroup):
     global is_muted
-    new_is_muted = zone["mute"]
+    new_is_muted = zoneorgroup["mute"]
     if new_is_muted != is_muted:
         is_muted = new_is_muted
         update_mute_button(is_muted)
@@ -142,11 +192,11 @@ def poll_source_name(source_id):
     else:
         send_source_name('')
 
-def poll_zone_name(zone):
-    if zone is not None:
-        send_zone_name(zone['name'])
+def poll_zone_or_group_name(zonegroup):
+    if zonegroup is not None:
+        send_zone_or_group_name(zonegroup['name'])
     else:
-        send_zone_name('')
+        send_zone_or_group_name('')
 
 def get_is_playing():
     return is_playing

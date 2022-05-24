@@ -68,6 +68,9 @@ class DropDown:
         when the user selects an option from the list."""
         self.callbacks.append(callb)
 
+    def clear_item_index_callbacks(self):
+        self.callbacks.clear()
+
     def set_selected_string(self, selected_string):
         self.selected_string = selected_string
         # compute index of selected string

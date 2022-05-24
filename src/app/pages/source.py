@@ -1,5 +1,6 @@
+from app import polling
 from app.audioconfig import AudioConfig
-from app.displayserial import SOURCE_PAGE_NAME
+from app.displayserial import SOURCE_PAGE_NAME, BUTTON_MESSAGE
 from app.dropdown import DropDown
 
 _ITEM_OBJNAME = "titem"  # num
@@ -13,6 +14,7 @@ _DOWN_BUTTON_OBJNAME = 'bdown'
 _LOADING_TEXT_OBJNAME = 'tloading'
 
 _NUM_ITEM_FIELDS = 4
+_BACK_BUTTON_ID = 7
 
 dropdown = DropDown(SOURCE_PAGE_NAME, _ITEM_FIRST_ID,
                     _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
@@ -26,6 +28,7 @@ def _change_source_callback(index):
     new_source = _sources[index]
     print(f'changing source to {new_source}')
     audioconf.change_source(index)
+    polling.invalid_group_handled()
 
 
 dropdown.add_item_index_callback(_change_source_callback)
@@ -38,4 +41,6 @@ def load_source_page():
     dropdown.populate(_sources)
 
 def handle_msg(message):
+    if message[0] == BUTTON_MESSAGE and message[3] == 0x01 and message[2] == _BACK_BUTTON_ID:
+        polling.invalid_group_handled()
     dropdown.handle_message(message)

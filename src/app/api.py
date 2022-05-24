@@ -7,7 +7,6 @@ import gc
 from app import wifi
 from app import dt
 
-# amplipi_ip = "192.168.0.195"
 _amplipi_ip = ''
 
 _NET_SLEEP_TIME_MS = 5
@@ -116,6 +115,10 @@ def move_zone_to_source(zone_id, source_id):
     """API call to move a zone to a source"""
     _patch_safe(f'http://{_amplipi_ip}/api/zones/{zone_id}', {"source_id": source_id})
 
+def move_group_to_source(group_id, source_id):
+    """API call to move a group to a source"""
+    _patch_safe(f'http://{_amplipi_ip}/api/groups/{group_id}', {"source_id": source_id})
+
 def get_zones():
     """API call to get all zones. Returns it as a list or None if failed."""
     response = _get_safe(f'http://{_amplipi_ip}/api/zones')
@@ -123,32 +126,58 @@ def get_zones():
         return response['zones']
     return None
 
+def get_groups():
+    """API call to get all groups. Returns it as a list or None if failed."""
+    response = _get_safe(f'http://{_amplipi_ip}/api/groups')
+    if response is not None:
+        return response['groups']
+    return None
+
 def get_zone(zone_id):
     """API call to get a zone. Returns it as a dict or None if failed."""
     return _get_safe(f'http://{_amplipi_ip}/api/zones/{zone_id}')
+
+def get_group(group_id):
+    """API call to get a group. Returns it as a dict or None if failed."""
+    return _get_safe(f'http://{_amplipi_ip}/api/groups/{group_id}')
 
 def send_stream_command(stream_id, cmd):
     """API call to post a command to a stream. Takes in the stream_id and command as cmd."""
     _post_safe(f'http://{_amplipi_ip}/api/streams/{stream_id}/{cmd}')
 
-def set_vol_f(zone_id, vol_f):
+def set_vol_f(id, vol_f, using_group=False):
     """API call to set vol_f. Takes in zone_id and vol_f where vol_f is within the range [0, 1]"""
-    _patch_safe(f'http://{_amplipi_ip}/api/zones/{zone_id}', {"vol_f": vol_f})
+    if using_group:
+        _patch_safe(f'http://{_amplipi_ip}/api/groups/{id}', {"vol_f": vol_f})
+    else:
+        _patch_safe(f'http://{_amplipi_ip}/api/zones/{id}', {"vol_f": vol_f})
 
-def set_mute(zone_id, muted):
+def set_mute(id, muted, using_group=False):
     """API call to set muted state. Takes in zone_id and muted"""
-    _patch_safe(f'http://{_amplipi_ip}/api/zones/{zone_id}', {"mute": muted})
+    if using_group:
+        _patch_safe(f'http://{_amplipi_ip}/api/groups/{id}', {"mute": muted})
+    else:
+        _patch_safe(f'http://{_amplipi_ip}/api/zones/{id}', {"mute": muted})
 
-def set_vol_f_mute(zone_id, vol_f, muted):
+def set_vol_f_mute(id, vol_f, muted, using_group=False):
     """API call combining mute and vol_f assignment."""
-    _patch_safe(f'http://{_amplipi_ip}/api/zones/{zone_id}', {"vol_f": vol_f, "mute": muted})
+    if using_group:
+        _patch_safe(f'http://{_amplipi_ip}/api/groups/{id}', {"vol_f": vol_f, "mute": muted})
+    else:
+        _patch_safe(f'http://{_amplipi_ip}/api/zones/{id}', {"vol_f": vol_f, "mute": muted})
 
-def get_vol_f(zone_id):
+def get_vol_f(id, using_group=False):
     """API call to get vol_f from a zone_id"""
-    zone_response = get_zone(zone_id)
-    if zone_response is None:
-        return None
-    return zone_response["vol_f"]
+    if using_group:
+        group_response = get_group(id)
+        if group_response is None:
+            return None
+        return group_response["vol_f"]
+    else:
+        zone_response = get_zone(id)
+        if zone_response is None:
+            return None
+        return zone_response["vol_f"]
 
 def get_stream_id_from_source_dict(source):
     """Takes in a source dict and pulls out the stream id and returns it if it has one, or returns None if not"""
@@ -165,11 +194,21 @@ def get_stream_id_from_source_dict(source):
 # TODO: this should probably take in a dict instead of an id. I don't think these helper methods should be
 #  making api calls
 def get_stream_id_from_zone_id(zone_id):
-    """Makes an API call to grab the zone from zone_id. Returns the source id from zone, or returns None if failed."""
+    """Makes an API call to grab the stream id from zone_id. Returns the stream id from zone, or returns None if failed."""
     zone = get_zone(zone_id)
     if zone is None:
         return None
     source = get_source(zone["source_id"])
+    if source is None:
+        return None
+    return get_stream_id_from_source_dict(source)
+
+def get_stream_id_from_group_id(group_id):
+    """Makes an API call to grab the stream_id from group_id. Returns the stream id from group, or returns None if failed."""
+    group = get_group(group_id)
+    if group is None:
+        return None
+    source = get_source(group['source_id'])
     if source is None:
         return None
     return get_stream_id_from_source_dict(source)

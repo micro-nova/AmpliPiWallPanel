@@ -1,6 +1,6 @@
-from app import api, displayserial
+from app import api, displayserial, polling
 from app.audioconfig import AudioConfig
-from app.displayserial import STREAM_PAGE_NAME
+from app.displayserial import STREAM_PAGE_NAME, BUTTON_MESSAGE
 from app.dropdown import DropDown
 
 _ITEM_OBJNAME = "titem"  # num
@@ -14,6 +14,7 @@ _LOADING_TEXT_OBJNAME = 'tloading'
 _IMAGE_FIRST_ID = 10
 _UP_BUTTON_OBJNAME = 'bup'
 _DOWN_BUTTON_OBJNAME = 'bdown'
+_BACK_BUTTON_ID = 7
 
 
 _NUM_ITEM_FIELDS = 4
@@ -30,6 +31,7 @@ def _change_stream_callback(index):
     audioconf = AudioConfig()
     new_stream = _streams[index]
     audioconf.change_stream(int(new_stream['id']))
+    polling.invalid_group_handled()
 
 
 dropdown.add_item_index_callback(_change_stream_callback)
@@ -56,4 +58,6 @@ def load_stream_page():
 
 def handle_msg(message):
     """Handles messages from the display that are relevant to the stream page."""
+    if message[0] == BUTTON_MESSAGE and message[3] == 0x01 and message[2] == _BACK_BUTTON_ID:
+        polling.invalid_group_handled()
     dropdown.handle_message(message)

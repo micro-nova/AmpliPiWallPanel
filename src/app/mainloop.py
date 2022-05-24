@@ -8,7 +8,7 @@ from machine import Pin
 from app import api, wifi, displayserial, dt, relay
 from app.audioconfig import AudioConfig
 from app.displayserial import BUTTON_MESSAGE
-from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source
+from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source, ginvalid
 from app.polling import poll
 
 # pages
@@ -23,6 +23,7 @@ VERSIONINFO_PAGE_ID = 9
 UPDATE_PAGE_ID = 10
 SOURCE_PAGE_ID = 11
 DEBUG_PAGE_ID = 12
+GINVALID_PAGE_ID = 13
 
 REBOOT_BUTTON_ID = 3
 
@@ -138,6 +139,9 @@ def run_h():
                             versioninfo.handle_msg(message)
                         elif message[1] == SOURCE_PAGE_ID:
                             source.handle_msg(message)
+                        elif message[1] == GINVALID_PAGE_ID:
+                            ginvalid.handle_msg(message)
+
 
                     # clear message only if it was properly terminated
                     message = b''

@@ -69,6 +69,7 @@ VERSION_PAGE_NAME = "versionpage"
 VERSIONINFO_PAGE_NAME = "vinfopage"
 CONNECTION_PAGE_NAME = "cpage"
 SOURCE_PAGE_NAME = "sourcepage"
+GROUP_INVALID_PAGE_NAME = "ginvalidpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
@@ -131,7 +132,7 @@ def send_stream_type(stream_type):
 def send_source_name(source_name):
     set_component_txt(HOME_PAGE_NAME, SOURCE_NAME_OBJNAME, source_name)
 
-def send_zone_name(zone_name):
+def send_zone_or_group_name(zone_name):
     if len(zone_name) > 30:
         zone_name = zone_name[0:26] + "..."
     set_component_txt(CONFIG_PAGE_NAME, ZONE_NAME_OBJNAME, zone_name)
