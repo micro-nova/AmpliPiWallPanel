@@ -47,11 +47,14 @@ def run():
                             if message[1] == DEBUG_PAGE_ID:
                                 if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
                                     if message[2] == REBOOT_BUTTON_ID:
+                                        displayserial.change_page(displayserial.BOOT_PAGE_NAME)
                                         machine.reset()
 
 
 def run_h():
     tft_reset = Pin(4, Pin.OUT)
+    print('enabling screen...')
+    tft_reset.value(0)
 
     # polling constants
     POLLING_INTERVAL_SECONDS = 1
@@ -59,8 +62,7 @@ def run_h():
     # initial startup stuff
     print('loading relay state...')
     relay.setup()
-    print('enabling screen...')
-    tft_reset.value(0)
+
 
     connection.load_connection_page()
     audioconf = AudioConfig()

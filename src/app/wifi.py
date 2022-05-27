@@ -1,11 +1,14 @@
 import json
 import network
 import time
+import usocket
 
 from app.displayserial import change_page, CONFIG_PAGE_NAME, CONNECTION_PAGE_NAME
 from app.pages.connection import load_connection_page
+from app.sysconsts import AMPLIPI_LOCAL_DOMAIN
 
 _WIFI_CONFIG_FILENAME = '../../wifi.txt'
+
 
 # create wlan for connecting to router
 _wlan = network.WLAN(network.STA_IF)
@@ -16,26 +19,35 @@ _amplipi_ip = ''
 def load_wifi_info():
     global _amplipi_ip
     """Loads wifi info from file (creates file if it doesn't exist). Returns wifi dict with ssid and password"""
-    wifi_file_dict = {'ssid': '', 'password': '', 'ip': ''}
+
+    wifi_file_dict = {'ssid': '', 'password': '', 'ip': _amplipi_ip, 'autodetect': True}
+
     try:
         with open(_WIFI_CONFIG_FILENAME) as wifi_file:
             wifi_file_str = wifi_file.read()
             wifi_file_dict = json.loads(wifi_file_str)
-            if 'ip' in wifi_file_dict:
-                _amplipi_ip = wifi_file_dict['ip']
+            _amplipi_ip = wifi_file_dict.get('ip', '')
     except OSError:
         # open failed, make file
         _save_wifi_info(wifi_file_dict)
+
     return wifi_file_dict
 
 
-def save_wifi_info(ssid, password, ip):
+def save_wifi_info(ssid, password, ip, autodetect):
     """Saves wifi info to file"""
-    _save_wifi_info({'ssid': ssid, 'password': password, 'ip': ip})
+    print(f'saving wifi info. ssid: {ssid}, password: {password}, ip: {ip}, autodetect: {autodetect}')
+    _save_wifi_info({'ssid': ssid, 'password': password, 'ip': ip, 'autodetect': autodetect})
 
+def patch_wifi_info(ssid=None, password=None, ip=None, autodetect=None):
+    new_info = load_wifi_info()
+    new_ssid = ssid if ssid else new_info.get('ssid', '')
+    new_password = password if password else new_info.get('password', '')
+    new_ip = ip if ip else new_info.get('ip', '')
+    new_autodetect = autodetect if autodetect else new_info.get('autodetect', True)
+    save_wifi_info(new_ssid, new_password, new_ip, new_autodetect)
 
 def _save_wifi_info(wifi_file_dict):
-    # TODO: specify encoding??? works fine without it
     with open(_WIFI_CONFIG_FILENAME, 'w') as wifi_file:
         wifi_file_str = json.dumps(wifi_file_dict)
         wifi_file.write(wifi_file_str)
@@ -72,6 +84,18 @@ def try_connect():
         while time.time() - start_time <= 3 and not _wlan.isconnected():
             # TODO: try connecting more. it often fails to connect where it should be able to.
             pass
+
+        detected_ip = ''
+        try:
+            detected_ip = usocket.getaddrinfo(AMPLIPI_LOCAL_DOMAIN, 80)[0][4][0]
+        except Exception:
+            pass
+        print(f'connected: {is_connected()}')
+        print(f'mDNS detected IP: {detected_ip}')
+
+        if wifi_info_dict.get('autodetect', True):
+            # wifi_info_dict['ip'] = detected_ip
+            patch_wifi_info(ip=detected_ip)
 
         if _wlan.isconnected():
             print(f"Connected to {wifi_info_dict['ssid']}")

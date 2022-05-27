@@ -1,3 +1,6 @@
+import machine
+
+from app import displayserial
 from app.displayserial import BUTTON_MESSAGE
 from app.pages import connection, zone, version
 
@@ -5,6 +8,7 @@ from app.pages import connection, zone, version
 ZONE_BUTTON_ID = 3
 CONNECTION_BUTTON_ID = 5
 UPDATE_BUTTON_ID = 6
+REBOOT_BUTTON_ID = 7
 
 
 def _on_zone_():
@@ -16,6 +20,10 @@ def _on_connection():
 def _on_update():
     version.load_version_page()
 
+def _on_reboot():
+    displayserial.change_page(displayserial.BOOT_PAGE_NAME)
+    machine.reset()
+
 def handle_msg(message):
     print("handling config page message")
     if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
@@ -26,3 +34,5 @@ def handle_msg(message):
             _on_connection()
         elif id == UPDATE_BUTTON_ID:
             _on_update()
+        elif id == REBOOT_BUTTON_ID:
+            _on_reboot()

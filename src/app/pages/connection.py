@@ -1,6 +1,6 @@
 import time
 
-from app import wifi
+from app import wifi, displayserial
 from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, BUTTON_MESSAGE, TEXT_MESSAGE, \
     receive_text_message_str, WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID
 from app.pages import ssid
@@ -10,13 +10,17 @@ _PASSWORD_FIELD_OBJNAME = 'tpassfield'
 _IP_FIELD_OBJNAME = 'tipfield'
 _WIFI_STATUS_OBJNAME = 'pwifi'
 _AMPLIPI_STATUS_OBJNAME = 'pnet'
+_AUTODETECT_BUTTON_OBJNAME = 'bautodetect'
 
-
+_WHITE = 65535
+_GRAY = 35953
+_BLACK = 0
 
 # component ids
 _CONNECT_BUTTON_ID = 7
 _BACK_BUTTON_ID = 8
 _SSID_FIELD_ID = 3
+_AUTODETECT_BUTTON_ID = 12
 _PASSWORD_FIELD_ID = 4 # might not be needed
 _IP_FIELD_ID = 9
 
@@ -24,17 +28,18 @@ ssid_list = []
 ssid_field_txt = ''
 pass_field_txt = ''
 ip_field_txt = ''
+autodetect = True
 
 def load_connection_page():
+    global autodetect
     """Loads connection page contents. Can be called whenever since all relevant components are global in the
     connection page. Although, it shouldn't be called when the user is entering new wifi info since it would override it."""
     # load wifi info
     wifi_info = wifi.load_wifi_info()
-    wifi_ssid = wifi_info['ssid']
-    wifi_password = wifi_info['password']
-    amplipi_ip = ''
-    if 'ip' in wifi_info:
-        amplipi_ip = wifi_info['ip']
+    wifi_ssid = wifi_info.get('ssid', '')
+    wifi_password = wifi_info.get('password', '')
+    amplipi_ip = wifi_info.get('ip', '')
+    autodetect = wifi_info.get('autodetect', True)
 
     # update page components
     print(f'updating ssid and password fields to {wifi_ssid} and {wifi_password}')
@@ -44,7 +49,27 @@ def load_connection_page():
     set_component_txt(CONNECTION_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
     set_component_txt(CONNECTION_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
     set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, amplipi_ip)
+    update_autodetect_graphics()
     update_connection_status()
+
+def update_autodetect_graphics():
+    if autodetect:
+        # make autodetect button toggled in???
+        displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco',
+                                             _GRAY)
+        displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco2',
+                                             _GRAY)
+        # make pi text field gray
+        displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, 'pco', _GRAY)
+        pass
+    else:
+        # make autodetect button toggled in???
+        displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco',
+                                             _WHITE)
+        displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco2',
+                                             _WHITE)
+        # make pi text field gray
+        displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, 'pco', _BLACK)
 
 def update_connection_status():
     """Updates the config page's WiFi and AmpliPi status symbols."""
@@ -54,10 +79,19 @@ def update_connection_status():
         uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={WIFI_DISCONNECTED_PIC_ID}')
     # TODO: update AmpliPi connectivity info
 
+def _on_autodetect():
+    global autodetect
+    autodetect = True
+    temp_info = wifi.load_wifi_info()
+    wifi.save_wifi_info(temp_info.get('ssid', ''), temp_info.get('password', ''),
+                        temp_info.get('ip', ''), autodetect)
+    update_autodetect_graphics()
+
 def handle_msg(message):
     global ssid_field_txt
     global pass_field_txt
     global ip_field_txt
+    global autodetect
     print("handling connection page message")
     if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
         id = message[2]
@@ -66,7 +100,8 @@ def handle_msg(message):
             # TODO: indicate that device is trying to connect here somehow
             print("Connect button pressed")
             wifi.disconnect()
-            wifi.save_wifi_info(ssid_field_txt, pass_field_txt, ip_field_txt)
+            print(f'hopefully autodetect is on. autodetect:{autodetect}')
+            wifi.save_wifi_info(ssid_field_txt, pass_field_txt, ip_field_txt, autodetect)
             wifi.try_connect()
             update_connection_status()
 
@@ -77,6 +112,14 @@ def handle_msg(message):
         elif id == _SSID_FIELD_ID:
             # nextion will switch to ssidpage, so we need to init that page
             ssid.load_ssid_page()
+        elif id == _AUTODETECT_BUTTON_ID:
+            print('autodetect button pressed')
+            _on_autodetect()
+        elif id == _IP_FIELD_ID:
+            # the user entered an IP manually, so disable autodetect
+            autodetect = False
+            print('setting autodetect to false')
+            update_autodetect_graphics()
     elif message[0] == TEXT_MESSAGE:
         id = message[2]
         text = receive_text_message_str(message)
@@ -86,4 +129,5 @@ def handle_msg(message):
             pass_field_txt = text
         elif id == _IP_FIELD_ID:
             ip_field_txt = text
+
         print(f'Received string: {text}')

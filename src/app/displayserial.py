@@ -70,6 +70,7 @@ VERSIONINFO_PAGE_NAME = "vinfopage"
 CONNECTION_PAGE_NAME = "cpage"
 SOURCE_PAGE_NAME = "sourcepage"
 GROUP_INVALID_PAGE_NAME = "ginvalidpage"
+BOOT_PAGE_NAME = "bootpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
@@ -140,6 +141,9 @@ def send_zone_or_group_name(zone_name):
 
 def set_component_txt(pagename, componentname, txt):
     uart_write(f'{pagename}.{componentname}.txt="{txt}"')
+
+def set_component_property(pagename, componentname, propertyname, value):
+    uart_write(f'{pagename}.{componentname}.{propertyname}={value}')
 
 def set_image(pagename, componentname, pic):
     uart_write(f'{pagename}.{componentname}.pic={pic}')

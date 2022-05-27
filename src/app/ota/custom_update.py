@@ -5,7 +5,7 @@ import machine
 import os
 
 from machine import Pin
-from app import wifi, sysconsts
+from app import wifi, sysconsts, displayserial
 from app.ota.ota_updater import OTAUpdater
 from app.ota.upload import NexUpload
 from app.utils import rmdir_all
@@ -82,6 +82,7 @@ def _update_app_if_queued():
                 ota.install_tagged_release(version['tag'])
                 print('removing version_queue.txt and resetting machine...')
                 os.remove(_TAG_FILE)
+                displayserial.change_page(displayserial.BOOT_PAGE_NAME)
                 machine.reset()
             else:
                 os.remove(_TAG_FILE)
