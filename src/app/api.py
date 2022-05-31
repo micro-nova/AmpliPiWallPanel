@@ -11,10 +11,6 @@ _amplipi_ip = ''
 
 _NET_SLEEP_TIME_MS = 5
 _QUEUE_DELAY_SECONDS = 0.1
-
-# TODO: add state machine for handling stuff. need it to handle error states. maybe keep track of screen states
-# TODO: try replacing json library with urequests.json (where .text is normally)
-
 _QUEUE_MAX_SIZE = 4
 
 _queue = []
