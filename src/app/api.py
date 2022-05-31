@@ -71,8 +71,6 @@ def _patch_safe(request, content):
     if wifi.is_connected() and _amplipi_ip:
         try:
             urequests.patch(request, json=content)
-            # TODO: get response and handle status_code similarly to _get_safe
-            # maybe not because its too big
             time.sleep_ms(_NET_SLEEP_TIME_MS)
         except OSError as e:
             print(e)
@@ -82,7 +80,9 @@ def _post_safe(request):
     if wifi.is_connected() and _amplipi_ip:
         try:
             urequests.post(request)
-            # TODO: get response and handle status_code similarly to _get_safe
+            # can't handle status_code from response because response can be very large,
+            # consuming lots of memory. i think the gc collects it if the return is not
+            # handled
             time.sleep_ms(_NET_SLEEP_TIME_MS)
         except OSError as e:
             print(e)
@@ -190,25 +190,3 @@ def get_stream_id_from_source_dict(source):
     if len(source_split) == 2:
         return int(source_split[1])
     return None
-
-# TODO: this should probably take in a dict instead of an id. I don't think these helper methods should be
-#  making api calls
-def get_stream_id_from_zone_id(zone_id):
-    """Makes an API call to grab the stream id from zone_id. Returns the stream id from zone, or returns None if failed."""
-    zone = get_zone(zone_id)
-    if zone is None:
-        return None
-    source = get_source(zone["source_id"])
-    if source is None:
-        return None
-    return get_stream_id_from_source_dict(source)
-
-def get_stream_id_from_group_id(group_id):
-    """Makes an API call to grab the stream_id from group_id. Returns the stream id from group, or returns None if failed."""
-    group = get_group(group_id)
-    if group is None:
-        return None
-    source = get_source(group['source_id'])
-    if source is None:
-        return None
-    return get_stream_id_from_source_dict(source)
