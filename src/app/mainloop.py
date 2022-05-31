@@ -119,10 +119,6 @@ def run_h():
                     message = message[0:-3]
                     if len(message) > 1:
                         # if message is a relay event,
-                        # print(f'Received message: {message}')
-                        # if message is for the main page
-                        # TODO: adopt input multiplexer idea for pages. put these into a list and use oop in python somehow
-                        #  to call handle_ methods.
                         if message[1] == MAIN_PAGE_ID:
                             home.handle_msg(message)
                         elif message[1] == CONFIG_PAGE_ID:
