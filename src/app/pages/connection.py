@@ -43,9 +43,6 @@ def load_connection_page():
 
     # update page components
     print(f'updating ssid and password fields to {wifi_ssid} and {wifi_password}')
-    # TODO: investigate effectiveness of delaying on improving the chances of the message being
-    #  successfully sent to the display. if it actually helps, might make more sense to put the delay in
-    #  every display update function
     set_component_txt(CONNECTION_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
     set_component_txt(CONNECTION_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
     set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, amplipi_ip)
