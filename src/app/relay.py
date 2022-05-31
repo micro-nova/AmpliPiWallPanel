@@ -37,7 +37,6 @@ class RelayState:
             self._relay_pin.value(self._state)
             _update_indicator(self._state, self._button_objname)
         else:
-            print(f'debouncing: {curr_time - self._event_time}')
             self._event_time = curr_time
 
     def reset_timer(self):
@@ -80,7 +79,8 @@ def setup():
     _button2.irq(trigger=Pin.IRQ_RISING, handler=button2_rising_edge)
     # _button1.irq(trigger=Pin.IRQ_FALLING, handler=button1_falling_edge)
     # _button2.irq(trigger=Pin.IRQ_FALLING, handler=button2_falling_edge)
-    # TODO: reset timer on both rising and falling edge
+
+    # this seems to work fine, but it might make sense to reset the timer on both rising and falling edges
 
 def update():
     file_stale = state1.file_is_stale() or state2.file_is_stale()
@@ -95,16 +95,12 @@ def update():
 
 def _write_file(filedict):
     with open(_RELAY_STATE_FILENAME, 'w') as relay_file:
-        # TODO: combine into one line with json.dump?
-        relay_file_str = json.dumps(filedict)
-        relay_file.write(relay_file_str)
+        json.dump(filedict, relay_file)
 
 def _read_file():
     try:
         with open(_RELAY_STATE_FILENAME) as relay_file:
-            # TODO: combine into one line with json.load?
-            relay_file_str = relay_file.read()
-            return json.loads(relay_file_str)
+            return json.load(relay_file)
     except OSError:
         new_dict = {'relay1': False, 'relay2': False}
         _write_file(new_dict)

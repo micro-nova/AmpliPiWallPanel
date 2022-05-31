@@ -40,6 +40,7 @@ def save_wifi_info(ssid, password, ip, autodetect):
     _save_wifi_info({'ssid': ssid, 'password': password, 'ip': ip, 'autodetect': autodetect})
 
 def patch_wifi_info(ssid=None, password=None, ip=None, autodetect=None):
+    """Saves wifi info to file, but doesn't modify the info for the arguments that have the value None"""
     new_info = load_wifi_info()
     new_ssid = ssid if ssid else new_info.get('ssid', '')
     new_password = password if password else new_info.get('password', '')
@@ -52,9 +53,6 @@ def _save_wifi_info(wifi_file_dict):
         wifi_file_str = json.dumps(wifi_file_dict)
         wifi_file.write(wifi_file_str)
 
-
-# returns a list of tuples that look like
-# (ssid, bssid, channel, RSSI, authmode, hidden)
 def get_ssid_list():
     """Returns a list of SSIDs as tuples that look like (ssid, bssid, channel, RSSI, authmode, hidden)"""
     # TODO: investigate effectiveness of reactivating wifi
@@ -94,7 +92,6 @@ def try_connect():
         print(f'mDNS detected IP: {detected_ip}')
 
         if wifi_info_dict.get('autodetect', True):
-            # wifi_info_dict['ip'] = detected_ip
             patch_wifi_info(ip=detected_ip)
 
         if _wlan.isconnected():
@@ -114,6 +111,9 @@ def try_connect():
         return False
 
 # TODO: use this function. investigate micropython's wifi disconnect behavior
+# maybe add a function _is_valid to indicate that the wifi config is believed to be valid.
+# "valid" here means that the wifi has been connected to before. only run keep_connected
+# when _is_valid is True
 def keep_connected():
     """Can be called periodically to reconnect if needed."""
     if not _wlan.active():
