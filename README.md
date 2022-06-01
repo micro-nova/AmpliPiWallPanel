@@ -1,8 +1,8 @@
-![Image of display homepage](images/home_page_on_display_transparent_smaller.png)
-
-[//]: # (<img src="images/home_page_on_display_transparent.png" width="354" height="669">)
-
-The newest addition to the AmpliPi family!
+<p align="center">
+  <img alt="Wallpanel with homepage"
+      src="images/home_page_on_display_transparent.png" width="354">
+  </img>
+</p>
 
 Building on top of the powerful NSPanel hardware by Sonoff, we have added our own custom, open-source software to create a beautiful, wall-mountable interface for your AmpliPi system. The wall panel controller can be used to quickly mute, adjust the volume, select streaming sources, and control the currently playing stream for a specific zone or group in your AmpliPi system. The panel mounts in a standard single gang box and can be powered by AC 100-240V. It uses your existing Wi-Fi network to communicate with the main AmpliPi controller, so no additional wiring needs to be run. The panel has 2 physical buttons connected to relays that can be used to control two AC devices, such as lights in a room. You can add as many panels as you’d like to control your AmpliPi system!
 
