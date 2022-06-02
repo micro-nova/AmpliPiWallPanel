@@ -77,8 +77,13 @@ def _update_app_if_queued():
                 file.write(json.dumps(version))
 
             if version['tries'] <= _MAX_RETRIES:
-                with open('temp-token.txt') as file:
-                    token = json.loads(file.read())
+                token = None
+                try:
+                    with open('temp-token.txt') as file:
+                        token = json.loads(file.read())
+                except Exception:
+                    pass
+
 
                 if token is None:
                     ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')

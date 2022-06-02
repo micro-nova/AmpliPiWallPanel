@@ -41,7 +41,7 @@ def load_version_page():
         try:
             with open('temp-token.txt') as file:
                 token = json.loads(file.read())
-        except OSError:
+        except Exception:
             pass
 
         if token is None:
