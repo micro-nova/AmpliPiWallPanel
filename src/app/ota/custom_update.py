@@ -49,6 +49,16 @@ def queue_update(tag):
 
 
 def handle_update():
+    # this is here to temporarily halt the update process to keep the display firmware on the esp32
+    try:
+        with open('halt.txt'):
+            while True:
+                print('halting! remove halt.txt to stop halting.')
+                time.sleep(1)
+    except OSError:
+        pass
+
+
     _update_app_if_queued()
     _update_display_if_queued()
 

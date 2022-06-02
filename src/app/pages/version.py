@@ -62,8 +62,18 @@ def load_version_page():
         print(f'mem free after del: {gc.mem_free()}')
 
 def reload_version_page_ui():
+    show_prereleases = False
+    try:
+        with open('pre-releases-enabled.txt'):
+            show_prereleases = True
+    except OSError:
+        pass
     # take raw _releases data and extract just the names
-    release_names = [release['name'] for release in _releases]
+    if show_prereleases:
+        release_names = [release['name'] for release in _releases]
+    else:
+        release_names = [release['name'] for release in _releases if not release['prerelease']]
+
 
     dropdown.populate(release_names)
 
