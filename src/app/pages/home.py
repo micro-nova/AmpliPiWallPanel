@@ -2,7 +2,7 @@ from app import api, polling
 from app.audioconfig import AudioConfig
 from app.displayserial import get_vol_slider_vol_f, message_is_slider_event, message_id, \
     message_is_button_event, button_is_pressed
-from app.pages import stream, source
+from app.pages import stream, source, config
 from app.polling import get_is_playing, set_is_playing, get_muted, set_muted
 
 # component ids
@@ -13,6 +13,9 @@ MUTE_BUTTON_ID = 13
 VOL_SLIDER_ID = 6
 STREAM_BUTTON_ID = 11
 SOURCE_BUTTON_ID = 12
+
+CONFIG_BUTTON_ID = 7
+CONFIG_BUTTON_OBJNAME = 'bconfig'
 
 _audioconf = AudioConfig()
 
@@ -143,16 +146,12 @@ def handle_msg(message):
 
         elif id == NEXT_BUTTON_ID:
             _on_next(_audioconf.stream_id)
-
         elif id == PREV_BUTTON_ID:
             _on_prev(_audioconf.stream_id)
-
         elif id == STREAM_BUTTON_ID:
             _on_stream()
-
         elif id == SOURCE_BUTTON_ID:
             _on_source()
-
         elif id == MUTE_BUTTON_ID:
             try:
                 if get_muted():
@@ -161,3 +160,6 @@ def handle_msg(message):
                     _on_mute()
             except OSError:
                 print("mute/unmute button event failed due to internet probably")
+        elif id == CONFIG_BUTTON_ID:
+            config.load_config_page()
+

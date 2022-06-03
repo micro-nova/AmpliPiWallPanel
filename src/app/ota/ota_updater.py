@@ -1,7 +1,26 @@
 import gc
+import json
 import os
 
+from app import sysconsts
 from app.ota.httpclient import HttpClient
+
+def make_ota_updater():
+    token = None
+    try:
+        with open('temp-token.txt') as file:
+            token = json.loads(file.read())
+    except Exception:
+        pass
+
+    if token is None:
+        ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
+        print('OTAUpdater loaded without token.')
+    else:
+        ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
+                         headers={'Authorization': 'token {}'.format(token['token'])})
+        print('OTAUpdater loaded with token.')
+    return ota
 
 class OTAUpdater:
     """
@@ -136,15 +155,12 @@ class OTAUpdater:
                 return version
         return '0.0'
 
-    # jonah added this
     def get_all_tags(self):
         tags = self.http_client.get(f'https://api.github.com/repos/{self.github_repo}/tags')
         return tags.json()
 
     def get_all_releases(self):
-        releases = self.http_client.get(f'https://api.github.com/repos/{self.github_repo}/releases')
-        return releases.json()
-
+        return self.http_client.get(f'https://api.github.com/repos/{self.github_repo}/releases').json()
 
     def get_latest_version(self):
         latest_release = self.http_client.get('https://api.github.com/repos/{}/releases/latest'.format(self.github_repo))

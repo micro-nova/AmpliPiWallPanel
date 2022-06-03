@@ -10,6 +10,15 @@ CONNECTION_BUTTON_ID = 5
 UPDATE_BUTTON_ID = 6
 REBOOT_BUTTON_ID = 7
 
+UPDATE_AVAILABLE_FIELD_OBJNAME = 'tuavailable'
+
+_update_available = False
+def set_update_available(available):
+    global _update_available
+    _update_available = available
+
+def load_config_page():
+    displayserial.set_visible(UPDATE_AVAILABLE_FIELD_OBJNAME, _update_available)
 
 def _on_zone_():
     zone.load_zone_page()

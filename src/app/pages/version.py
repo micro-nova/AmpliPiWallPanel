@@ -1,9 +1,10 @@
 import gc
 import json
 
-from app import wifi, sysconsts, displayserial
+from app import wifi, sysconsts, displayserial, utils
 from app.displayserial import VERSION_PAGE_NAME
 from app.dropdown import DropDown
+from app.ota import ota_updater
 from app.ota.ota_updater import OTAUpdater
 from app.pages import versioninfo
 
@@ -16,7 +17,7 @@ _DOWN_BUTTON_ID = 6
 _LOADING_TEXT_OBJNAME = 'tloading'
 _UP_BUTTON_OBJNAME = 'bup'
 _DOWN_BUTTON_OBJNAME = 'bdown'
-_VERSION_OBJNAME = 'tversion'
+VERSION_OBJNAME = 'tversion'
 
 _NUM_ITEM_FIELDS = 4
 
@@ -25,6 +26,8 @@ dropdown = DropDown(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
                     _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
 
 _releases = []  # list of tag jsons (not just tag names)
+
+
 
 _show_prereleases = False
 def disable_prereleases():
@@ -46,24 +49,12 @@ def load_version_page():
     """Loads version page contents. Should only be called when the display is on the version page."""
     global _releases
     # write current version to field
-    displayserial.set_component_txt(displayserial.VERSION_PAGE_NAME, _VERSION_OBJNAME, sysconsts.VERSION)
+    displayserial.set_component_txt(displayserial.VERSION_PAGE_NAME, VERSION_OBJNAME, sysconsts.VERSION)
+
 
     if wifi.is_connected():
         dropdown.set_loading_state()
-        token = None
-        try:
-            with open('temp-token.txt') as file:
-                token = json.loads(file.read())
-        except Exception:
-            pass
-
-        if token is None:
-            _ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
-            print('OTAUpdater loaded without token.')
-        else:
-            _ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
-                              headers={'Authorization': 'token {}'.format(token['token'])})
-            print('OTAUpdater loaded with token.')
+        _ota = ota_updater.make_ota_updater()
 
         _releases = _ota.get_all_releases()
         reload_version_page_ui()

@@ -5,7 +5,8 @@ import machine
 import os
 
 from machine import Pin
-from app import wifi, sysconsts, displayserial
+from app import wifi, sysconsts, displayserial, utils
+from app.ota import ota_updater
 from app.ota.ota_updater import OTAUpdater
 from app.ota.upload import NexUpload
 from app.utils import rmdir_all
@@ -77,21 +78,22 @@ def _update_app_if_queued():
                 file.write(json.dumps(version))
 
             if version['tries'] <= _MAX_RETRIES:
-                token = None
-                try:
-                    with open('temp-token.txt') as file:
-                        token = json.loads(file.read())
-                except Exception:
-                    pass
-
-
-                if token is None:
-                    ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
-                    print('OTAUpdater loaded without token.')
-                else:
-                    ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
-                                      headers={'Authorization': 'token {}'.format(token['token'])})
-                    print('OTAUpdater loaded with token.')
+                # token = None
+                # try:
+                #     with open('temp-token.txt') as file:
+                #         token = json.loads(file.read())
+                # except Exception:
+                #     pass
+                #
+                #
+                # if token is None:
+                #     ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
+                #     print('OTAUpdater loaded without token.')
+                # else:
+                #     ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
+                #                       headers={'Authorization': 'token {}'.format(token['token'])})
+                #     print('OTAUpdater loaded with token.')
+                ota = ota_updater.make_ota_updater()
 
                 print(f'Updating to version {version["tag"]}, try #{version["tries"]}')
                 ota.install_tagged_release(version['tag'])

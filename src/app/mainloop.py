@@ -5,9 +5,11 @@ import sys
 import machine
 from machine import Pin
 
-from app import api, wifi, displayserial, dt, relay
+from app import api, wifi, displayserial, dt, relay, utils
 from app.audioconfig import AudioConfig
 from app.displayserial import BUTTON_MESSAGE, PRESSED_EVENT
+from app.ota import ota_updater
+from app.ota.check_for_updates import check_for_updates
 from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source, ginvalid, advanced
 from app.polling import poll
 
@@ -39,7 +41,7 @@ def run():
         while True:
             if displayserial.uart_any():
                 message_part = displayserial.uart_read()
-                byte_list = [message_part[i:i+1] for i in range(len(message_part))]
+                byte_list = [message_part[i:i + 1] for i in range(len(message_part))]
                 for i in byte_list:
                     message += i
                     if message[-3:] == bytes([0xff, 0xff, 0xff]):
@@ -51,7 +53,6 @@ def run():
                                         displayserial.change_page(displayserial.BOOT_PAGE_NAME)
                                         machine.reset()
 
-
 def run_h():
     tft_reset = Pin(4, Pin.OUT)
     print('enabling screen...')
@@ -59,11 +60,11 @@ def run_h():
 
     # polling constants
     POLLING_INTERVAL_SECONDS = 1
+    CHECK_UPDATE_INTERVAL_SECONDS = 30 * 60  # checks every 30 minutes
 
     # initial startup stuff
     print('loading relay state...')
     relay.setup()
-
 
     connection.load_connection_page()
     audioconf = AudioConfig()
@@ -76,6 +77,7 @@ def run_h():
     displayserial.change_page(displayserial.HOME_PAGE_NAME)
 
     last_poll_time = dt.time_sec() - POLLING_INTERVAL_SECONDS
+    last_check_update_time = dt.time_sec() - CHECK_UPDATE_INTERVAL_SECONDS
     message = b''
     while True:
         # handle api call queue
@@ -83,8 +85,13 @@ def run_h():
 
         # poll info from amplipi api
         curr_time = dt.time_sec()
+
+        if curr_time - last_check_update_time > CHECK_UPDATE_INTERVAL_SECONDS:
+            last_check_update_time = curr_time
+            check_for_updates()
+
         if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
-            last_poll_time = dt.time_sec()
+            last_poll_time = curr_time
             gc.collect()
 
             # handle relay file saving
@@ -110,7 +117,7 @@ def run_h():
         if displayserial.uart_any():
             # read stuff in
             message_part = displayserial.uart_read()
-            byte_list = [message_part[i:i+1] for i in range(len(message_part))]
+            byte_list = [message_part[i:i + 1] for i in range(len(message_part))]
             for i in byte_list:
                 message += i
 
@@ -142,7 +149,6 @@ def run_h():
                             ginvalid.handle_msg(message)
                         elif message[1] == ADVANCED_CONFIG_PAGE_ID:
                             advanced.handle_msg(message)
-
 
                     # clear message only if it was properly terminated
                     message = b''
