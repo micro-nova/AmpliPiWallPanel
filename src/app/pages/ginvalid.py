@@ -1,5 +1,4 @@
-from app import displayserial
-from app.displayserial import BUTTON_MESSAGE
+from app.displayserial import message_is_button_event, button_is_pressed, message_id
 from app.pages import zone, source
 
 _REGROUP_BUTTON_ID = 2
@@ -18,8 +17,8 @@ def _on_change_group():
 
 def handle_msg(message):
     print('handling ginvalid page message')
-    if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
-        id = message[2]
+    if message_is_button_event(message) and button_is_pressed(message):
+        id = message_id(message)
         if id == _REGROUP_BUTTON_ID:
             _on_regroup()
         elif id == _CHANGE_ZONE_BUTTON_ID:

@@ -1,6 +1,6 @@
 from app import api, displayserial, polling
 from app.audioconfig import AudioConfig
-from app.displayserial import STREAM_PAGE_NAME, BUTTON_MESSAGE
+from app.displayserial import STREAM_PAGE_NAME, message_is_button_event, button_is_pressed, message_id
 from app.dropdown import DropDown
 
 _ITEM_OBJNAME = "titem"  # num
@@ -58,6 +58,6 @@ def load_stream_page():
 
 def handle_msg(message):
     """Handles messages from the display that are relevant to the stream page."""
-    if message[0] == BUTTON_MESSAGE and message[3] == 0x01 and message[2] == _BACK_BUTTON_ID:
+    if message_is_button_event(message) and button_is_pressed(message) and message_id(message) == _BACK_BUTTON_ID:
         polling.invalid_group_handled()
     dropdown.handle_message(message)

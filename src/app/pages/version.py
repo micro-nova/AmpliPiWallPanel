@@ -25,6 +25,15 @@ dropdown = DropDown(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
 
 _releases = []  # list of tag jsons (not just tag names)
 
+_show_prereleases = False
+def disable_prereleases():
+    global _show_prereleases
+    _show_prereleases = False
+
+def enable_prerelease():
+    global _show_prereleases
+    _show_prereleases = True
+
 def _select_version_callback(index):
     # load version info page since nextion display should be there already
     versioninfo.load_versioninfo_page(_releases[index])
@@ -62,14 +71,8 @@ def load_version_page():
         print(f'mem free after del: {gc.mem_free()}')
 
 def reload_version_page_ui():
-    show_prereleases = False
-    try:
-        with open('pre-releases-enabled.txt'):
-            show_prereleases = True
-    except OSError:
-        pass
     # take raw _releases data and extract just the names
-    if show_prereleases:
+    if _show_prereleases:
         release_names = [release['name'] for release in _releases]
     else:
         release_names = [release['name'] for release in _releases if not release['prerelease']]

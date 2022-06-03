@@ -1,6 +1,7 @@
 from app import api, polling
 from app.audioconfig import AudioConfig
-from app.displayserial import BUTTON_MESSAGE, SLIDER_MESSAGE, get_vol_slider_vol_f
+from app.displayserial import get_vol_slider_vol_f, message_is_slider_event, message_id, \
+    message_is_button_event, button_is_pressed
 from app.pages import stream, source
 from app.polling import get_is_playing, set_is_playing, get_muted, set_muted
 
@@ -118,19 +119,17 @@ def _on_vol(message):
 def handle_msg(message):
     """Receives a message from the main page (from the display) and processes it."""
     print("handling main page message")
-    if message[0] == SLIDER_MESSAGE:
+    id = message_id(message)
+    if message_is_slider_event(message):
         # valid slider update
-        id = message[2]
         if id == VOL_SLIDER_ID:
             # TODO: technically should check if the id is correct, but its not
             #  needed right now because there is only one slider on the home page
             _on_vol(message)
 
     # if message is button and button is pressed
-    elif message[0] == BUTTON_MESSAGE and message[3] == 0x01:
+    elif message_is_button_event(message) and button_is_pressed(message):
         # valid press event
-        id = message[2]
-
         if id == PLAY_BUTTON_ID:
             try:
                 if get_is_playing():

@@ -1,6 +1,6 @@
 from app import api, displayserial, polling
 from app.audioconfig import AudioConfig
-from app.displayserial import ZONE_PAGE_NAME, BUTTON_MESSAGE
+from app.displayserial import ZONE_PAGE_NAME, message_is_button_event, button_is_pressed, message_id
 from app.dropdown import DropDown
 
 _ITEM_OBJNAME = "titem"  # num
@@ -98,9 +98,10 @@ def load_zone_page(groups=False):
 
 
 def handle_msg(message):
-    if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
-        if message[2] == _BACK_BUTTON_ID:
+    if message_is_button_event(message) and button_is_pressed(message):
+        id = message_id(message)
+        if id == _BACK_BUTTON_ID:
             polling.invalid_group_handled()
-        if message[2] == _GROUP_BUTTON_ID:
+        if id == _GROUP_BUTTON_ID:
             _on_group_zone_button()
     _dropdown.handle_message(message)

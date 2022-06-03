@@ -71,9 +71,25 @@ CONNECTION_PAGE_NAME = "cpage"
 SOURCE_PAGE_NAME = "sourcepage"
 GROUP_INVALID_PAGE_NAME = "ginvalidpage"
 BOOT_PAGE_NAME = "bootpage"
+ADVANCED_SETTINGS_PAGE_NAME = "advpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
+
+def message_id(message) -> int:
+    return message[2]
+
+def message_is_button_event(message) -> bool:
+    return message[0] == BUTTON_MESSAGE
+
+def message_is_slider_event(message) -> bool:
+    return message[0] == SLIDER_MESSAGE
+
+def message_is_text(message) -> bool:
+    return message[0] == TEXT_MESSAGE
+
+def button_is_pressed(button_message) -> bool:
+    return button_message[3] == PRESSED_EVENT
 
 def stream_type_to_pic_id(stream_type):
     if stream_type == 'rca':

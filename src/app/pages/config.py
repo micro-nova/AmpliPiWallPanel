@@ -1,7 +1,7 @@
 import machine
 
 from app import displayserial
-from app.displayserial import BUTTON_MESSAGE
+from app.displayserial import message_id, message_is_button_event, button_is_pressed
 from app.pages import connection, zone, version
 
 # component ids
@@ -18,6 +18,7 @@ def _on_connection():
     connection.load_connection_page()
 
 def _on_update():
+    version.disable_prereleases()
     version.load_version_page()
 
 def _on_reboot():
@@ -26,8 +27,8 @@ def _on_reboot():
 
 def handle_msg(message):
     print("handling config page message")
-    if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
-        id = message[2]
+    if message_is_button_event(message) and button_is_pressed(message):
+        id = message_id(message)
         if id == ZONE_BUTTON_ID:
             _on_zone_()
         elif id == CONNECTION_BUTTON_ID:

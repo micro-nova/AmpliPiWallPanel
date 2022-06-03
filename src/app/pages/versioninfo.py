@@ -4,6 +4,7 @@ import time
 from app import displayserial
 
 # objnames
+from app.displayserial import message_is_button_event, button_is_pressed, message_id
 from app.ota import custom_update
 from app.pages import version
 
@@ -17,9 +18,9 @@ _tag_name = None
 
 def handle_msg(message):
     print('handling versioninfo page message')
-    if message[0] == displayserial.BUTTON_MESSAGE and message[3] == 0x01:
+    if message_is_button_event(message) and button_is_pressed(message):
         # valid press event
-        id = message[2]
+        id = message_id(message)
         if id == BACK_BUTTON_ID:
             _on_back()
         elif id == APPLY_BUTTON_ID:

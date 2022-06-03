@@ -1,8 +1,6 @@
-import time
-
 from app import wifi, displayserial
-from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, BUTTON_MESSAGE, TEXT_MESSAGE, \
-    receive_text_message_str, WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID
+from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, receive_text_message_str, WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID, message_is_button_event, \
+    button_is_pressed, message_id, message_is_text
 from app.pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
@@ -90,9 +88,8 @@ def handle_msg(message):
     global ip_field_txt
     global autodetect
     print("handling connection page message")
-    if message[0] == BUTTON_MESSAGE and message[3] == 0x01:
-        id = message[2]
-
+    id = message_id(message)
+    if message_is_button_event(message) and button_is_pressed(message):
         if id == _CONNECT_BUTTON_ID:
             # TODO: indicate that device is trying to connect here somehow
             print("Connect button pressed")
@@ -117,8 +114,7 @@ def handle_msg(message):
             autodetect = False
             print('setting autodetect to false')
             update_autodetect_graphics()
-    elif message[0] == TEXT_MESSAGE:
-        id = message[2]
+    elif message_is_text(message):
         text = receive_text_message_str(message)
         if id == _SSID_FIELD_ID:
             ssid_field_txt = text

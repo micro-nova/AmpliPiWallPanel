@@ -1,5 +1,5 @@
 from app import displayserial
-
+from app.displayserial import button_is_pressed, message_is_button_event, message_id
 
 class DropDown:
     """
@@ -86,8 +86,8 @@ class DropDown:
     def handle_message(self, message):
         """Receives a message from the display and processes it. Should only be
         passed messages that are relevant to the page that contains the instance of DropDown."""
-        if message[0] == displayserial.BUTTON_MESSAGE and message[3] == displayserial.PRESSED_EVENT:
-            id = message[2]
+        if message_is_button_event(message) and button_is_pressed(message):
+            id = message_id(message)
             if id in range(self.first_field_id, self.first_field_id + self.num_fields):
                 # grab the selection's index and string
                 self.selected_index = self.start_index + id - self.first_field_id
