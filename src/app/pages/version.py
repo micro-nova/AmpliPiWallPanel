@@ -1,7 +1,7 @@
 import gc
 import json
 
-from app import wifi, sysconsts
+from app import wifi, sysconsts, displayserial
 from app.displayserial import VERSION_PAGE_NAME
 from app.dropdown import DropDown
 from app.ota.ota_updater import OTAUpdater
@@ -16,6 +16,7 @@ _DOWN_BUTTON_ID = 6
 _LOADING_TEXT_OBJNAME = 'tloading'
 _UP_BUTTON_OBJNAME = 'bup'
 _DOWN_BUTTON_OBJNAME = 'bdown'
+_VERSION_OBJNAME = 'tversion'
 
 _NUM_ITEM_FIELDS = 4
 
@@ -44,6 +45,9 @@ dropdown.add_item_index_callback(_select_version_callback)
 def load_version_page():
     """Loads version page contents. Should only be called when the display is on the version page."""
     global _releases
+    # write current version to field
+    displayserial.set_component_txt(displayserial.VERSION_PAGE_NAME, _VERSION_OBJNAME, sysconsts.VERSION)
+
     if wifi.is_connected():
         dropdown.set_loading_state()
         token = None
@@ -73,11 +77,9 @@ def load_version_page():
 def reload_version_page_ui():
     # take raw _releases data and extract just the names
     if _show_prereleases:
-        release_names = [release['name'] for release in _releases]
+        release_names = [f"  {release['tag_name']} {release['name']}" for release in _releases]
     else:
-        release_names = [release['name'] for release in _releases if not release['prerelease']]
-
-
+        release_names = [f"  {release['tag_name']} {release['name']}" for release in _releases if not release['prerelease']]
     dropdown.populate(release_names)
 
 def handle_msg(message):
