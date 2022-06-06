@@ -1,17 +1,4 @@
-# import traceback
-import gc
-import sys
 
-import machine
-from machine import Pin
-
-from app import api, wifi, displayserial, dt, relay, utils
-from app.audioconfig import AudioConfig
-from app.displayserial import BUTTON_MESSAGE, PRESSED_EVENT
-from app.ota import ota_updater
-from app.ota.check_for_updates import check_for_updates
-from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source, ginvalid, advanced
-from app.polling import poll
 
 # pages
 MAIN_PAGE_ID = 0
@@ -31,6 +18,12 @@ ADVANCED_CONFIG_PAGE_ID = 15
 REBOOT_BUTTON_ID = 3
 
 def run():
+    # putting imports here to curb memory usage
+    import machine
+
+    from app import displayserial
+    from app.displayserial import BUTTON_MESSAGE, PRESSED_EVENT
+
     try:
         run_h()
     except Exception as e:
@@ -54,6 +47,16 @@ def run():
                                         machine.reset()
 
 def run_h():
+    # putting imports here to curb memory usage
+    import gc
+
+    from machine import Pin
+
+    from app import api, wifi, displayserial, dt, relay
+    from app.audioconfig import AudioConfig
+    from app.ota.check_for_updates import check_for_updates
+    from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source, ginvalid, advanced
+    from app.polling import poll
     tft_reset = Pin(4, Pin.OUT)
     print('enabling screen...')
     tft_reset.value(0)

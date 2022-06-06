@@ -1,8 +1,6 @@
 import usocket, os, gc
 import machine
 
-from app.utils import rmdir_all
-
 class Response:
 
     def __init__(self, socket, saveToFile=None):
@@ -13,8 +11,8 @@ class Response:
         self._encoding = 'utf-8'
         if saveToFile is not None:
             CHUNK_SIZE = 512  # bytes
-            print(f'saving file {saveToFile}')
-            print(f'{gc.mem_free()} bytes free.')
+            # print(f'saving file {saveToFile}')
+            # print(f'{gc.mem_free()} bytes free.')
             with open(saveToFile, 'w') as outfile:
                 data = self._socket.read(CHUNK_SIZE)
                 while data:

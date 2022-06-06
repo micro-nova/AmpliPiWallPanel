@@ -2,7 +2,7 @@ import gc
 import json
 import os
 
-from app import sysconsts
+from app import sysconsts, displayserial
 from app.ota.httpclient import HttpClient
 
 def make_ota_updater():
@@ -37,6 +37,7 @@ class OTAUpdater:
         self.main_dir = main_dir
         self.new_version_dir = new_version_dir
         self.secrets_files = secrets_files
+        self.display_msg = ''
 
     def __del__(self):
         self.http_client = None
@@ -181,8 +182,17 @@ class OTAUpdater:
         self._download_all_files(version)
         print('Version {} downloaded to {}'.format(version, self.modulepath(self.new_version_dir)))
 
+    def print(self, msg):
+        """Prints to console and update screen"""
+        print(msg)
+        self.display_msg += msg + r'\r'
+        if self.display_msg.count(r'\r') > 8:
+            # https://stackoverflow.com/questions/64238644/python-how-to-get-last-n-lines-of-a-multiline-string
+            self.display_msg = r'\r'.join(self.display_msg.splitlines()[-8:])
+        displayserial.set_component_txt(displayserial.UPDATE_PAGE_NAME, 'tinfo', self.display_msg)
+
+
     def _download_all_files(self, version, sub_dir=''):
-        # was url = 'https://api.github.com/repos/{}/contents{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
         url = 'https://api.github.com/repos/{}/contents/{}{}{}?ref=refs/tags/{}'.format(self.github_repo, self.github_src_dir, self.main_dir, sub_dir, version)
         print(url)
         gc.collect()
@@ -193,31 +203,22 @@ class OTAUpdater:
             if file == 'message':
                 print('got "message" string instead of dict. not sure why.')
                 continue
-            # print('file[path]: ' + file['path'])
-            # print('file[path].replace... ' + file['path'].replace(self.github_src_dir, ''))
-            # print(f'github_src_dir: {self.github_src_dir}')
-            # p1 = self.new_version_dir + '/'
-            # print(p1)
-            # p1 = p1.replace(self.github_src_dir, '')
-            # p1 = p1 + file['path'].replace(self.github_src_dir, '').replace(self.main_dir + '/', '')
-            # print(p1)
-            # path = self.modulepath(p1)
-            # print(path)
             path = self.modulepath(self.new_version_dir + '/' + file['path'].replace(self.main_dir + '/', '').replace(self.github_src_dir, ''))
-            print(f'path: {path}')
-            print(f'path without filename: {path[0:path.rfind("/")]}')
-            print(f'filename: {path.split("/")[-1]}')
+            # print(f'path: {path}')
+            # print(f'path without filename: {path[0:path.rfind("/")]}')
+            # print(f'filename: {path.split("/")[-1]}')
             if file['type'] == 'file':
                 gitPath = file['path']
-                print(os.listdir(path[0:path.rfind('/')]))
+                # print(os.listdir(path[0:path.rfind('/')]))
 
                 if path.split("/")[-1] not in os.listdir(path[0:path.rfind('/')]):
-                    print('\tDownloading: ', gitPath, 'to', path)
+                    self.print(f'\tDownloading: {gitPath} to {path}')
+                    # print('\tDownloading: ', gitPath, 'to', path)
                     self._download_file(version, gitPath, path)
                 else:
-                    print(f'Skipping file, already downloaded')
+                    self.print(f'Skipping file {gitPath}, already downloaded')
             elif file['type'] == 'dir':
-                print('Creating dir', path)
+                self.print(f'Creating dir {path}')
                 self.mkdir(path)
                 self._download_all_files(version, sub_dir + '/' + file['name'])
             gc.collect()

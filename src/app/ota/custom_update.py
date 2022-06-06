@@ -1,15 +1,4 @@
-import json
-import time
 
-import machine
-import os
-
-from machine import Pin
-from app import wifi, sysconsts, displayserial, utils
-from app.ota import ota_updater
-from app.ota.ota_updater import OTAUpdater
-from app.ota.upload import NexUpload
-from app.utils import rmdir_all
 
 _TAG_FILE = 'version_queue.txt'
 _DISPLAY_FIRMWARE_DIR = 'app'
@@ -17,6 +6,10 @@ _DISPLAY_FIRMWARE_FILE = 'amplipi_v2.tft'
 _MAX_RETRIES = 6
 
 def queue_update(tag):
+    import json
+
+    import os
+
     if _TAG_FILE in os.listdir():
         with open(_TAG_FILE, 'w') as file:
             version = json.loads(file.read())
@@ -38,18 +31,13 @@ def queue_update(tag):
             print(f'String to write: {json_str}')
             file.write(json_str)
 
-# def requeue_update():
-#     if _TAG_FILE in os.listdir():
-#         with open(_TAG_FILE, 'w') as file:
-#             version = json.load(file)
-#             if version['tries'] < _MAX_RETRIES:
-#                 version['tries'] += 1
-#             else:
-#                 file.close()
-#                 os.remove(_TAG_FILE)
-
 
 def handle_update():
+    import gc
+    import time
+
+    import machine
+
     # this is here to temporarily halt the update process to keep the display firmware on the esp32
     try:
         with open('halt.txt'):
@@ -58,12 +46,30 @@ def handle_update():
                 time.sleep(1)
     except OSError:
         pass
+    gc.collect()
 
-
-    _update_app_if_queued()
-    _update_display_if_queued()
+    try:
+        _update_app_if_queued()
+    except Exception as e:
+        print(e)
+        print(gc.mem_free())
+        machine.reset()
+    try:
+        _update_display_if_queued()
+    except Exception as e:
+        print(e)
+        print(gc.mem_free())
+        machine.reset()
 
 def _update_app_if_queued():
+    import json
+
+    import machine
+    import os
+
+    from app import wifi, displayserial
+    from app.ota import ota_updater
+    from app.utils import rmdir_all
     if _TAG_FILE in os.listdir():
         # connect to wifi
         wifi.try_connect()
@@ -78,21 +84,6 @@ def _update_app_if_queued():
                 file.write(json.dumps(version))
 
             if version['tries'] <= _MAX_RETRIES:
-                # token = None
-                # try:
-                #     with open('temp-token.txt') as file:
-                #         token = json.loads(file.read())
-                # except Exception:
-                #     pass
-                #
-                #
-                # if token is None:
-                #     ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='')
-                #     print('OTAUpdater loaded without token.')
-                # else:
-                #     ota = OTAUpdater(sysconsts.WALL_PANEL_REPO, main_dir='app', github_src_dir='src', module='',
-                #                       headers={'Authorization': 'token {}'.format(token['token'])})
-                #     print('OTAUpdater loaded with token.')
                 ota = ota_updater.make_ota_updater()
 
                 print(f'Updating to version {version["tag"]}, try #{version["tries"]}')
@@ -107,6 +98,12 @@ def _update_app_if_queued():
                 rmdir_all('next')
 
 def _update_display_if_queued():
+    import time
+
+    import os
+
+    from machine import Pin
+    from app.ota.upload import NexUpload
     if _DISPLAY_FIRMWARE_FILE in os.listdir(_DISPLAY_FIRMWARE_DIR):
         tft_reset = Pin(4, Pin.OUT)
         tft_reset.value(1)

@@ -1,9 +1,10 @@
 import json
-import network
 import time
+
+import network
 import usocket
 
-from app.displayserial import change_page, CONFIG_PAGE_NAME, CONNECTION_PAGE_NAME
+from app.displayserial import change_page, CONNECTION_PAGE_NAME
 from app.pages.connection import load_connection_page
 from app.sysconsts import AMPLIPI_LOCAL_DOMAIN
 

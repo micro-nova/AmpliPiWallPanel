@@ -1,6 +1,6 @@
 from app import wifi, sysconsts, displayserial
 from app.ota.ota_updater import make_ota_updater
-from app.pages import version, home, config
+from app.pages import home, config
 from app.utils import compare_versions
 
 def check_for_updates():
