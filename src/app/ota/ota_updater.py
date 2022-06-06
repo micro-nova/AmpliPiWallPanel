@@ -187,8 +187,8 @@ class OTAUpdater:
         print(msg)
         self.display_msg += msg + r'\r'
         if self.display_msg.count(r'\r') > 8:
-            # https://stackoverflow.com/questions/64238644/python-how-to-get-last-n-lines-of-a-multiline-string
-            self.display_msg = r'\r'.join(self.display_msg.splitlines()[-8:])
+            self.display_msg = self.display_msg[self.display_msg.find(r'\r')+2:]
+            # self.display_msg = r'\r'.join(self.display_msg.splitlines()[-8:])
         displayserial.set_component_txt(displayserial.UPDATE_PAGE_NAME, 'tinfo', self.display_msg)
 
 
