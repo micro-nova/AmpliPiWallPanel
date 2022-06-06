@@ -1,3 +1,5 @@
+import gc
+
 from app import wifi, sysconsts, displayserial
 from app.ota.ota_updater import make_ota_updater
 from app.pages import home, config
@@ -30,5 +32,9 @@ def check_for_updates():
                                                  displayserial.GEAR_PIC_ID)
             displayserial.set_component_property(displayserial.HOME_PAGE_NAME, home.CONFIG_BUTTON_OBJNAME, 'pic2',
                                                  displayserial.GEAR_PIC_ID)
+
+        del ota
+        ota = None
+        gc.collect()
     else:
         print('failed up check for updates. not connected to wifi')

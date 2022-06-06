@@ -1,11 +1,9 @@
 import gc
-import json
 
-from app import wifi, sysconsts, displayserial, utils
+from app import wifi, sysconsts, displayserial
 from app.displayserial import VERSION_PAGE_NAME
 from app.dropdown import DropDown
 from app.ota import ota_updater
-from app.ota.ota_updater import OTAUpdater
 from app.pages import versioninfo
 
 _ITEM_OBJNAME = "titem"  # num

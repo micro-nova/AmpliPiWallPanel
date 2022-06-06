@@ -1,4 +1,4 @@
-VERSION = '0.1.21'
+VERSION = '0.1.22'
 MIN_AMPLIPI_VERSION = '1.7'
 
 WALL_PANEL_REPO = 'micro-nova/AmpliPiWallPanel'

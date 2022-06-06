@@ -5,6 +5,7 @@ import machine
 from app import displayserial
 from app.displayserial import message_is_button_event, button_is_pressed, message_id
 from app.pages import version
+from app.utils import rmdir_all
 
 _REBOOT_BUTTON_ID = 1
 _PRE_RELEASES_BUTTON_ID = 2
@@ -32,6 +33,7 @@ def _on_factory_reset():
     _try_remove('wifi.txt')
     _try_remove('zone.txt')
     _try_remove('halt.txt')
+    _try_remove_dir_recursive('next')
 
     # reboot
     _on_reboot()
@@ -39,5 +41,11 @@ def _on_factory_reset():
 def _try_remove(file):
     try:
         os.remove(file)
+    except OSError:
+        pass
+
+def _try_remove_dir_recursive(dir):
+    try:
+        rmdir_all(dir)
     except OSError:
         pass

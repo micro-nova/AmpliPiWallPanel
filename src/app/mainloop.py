@@ -63,7 +63,7 @@ def run_h():
 
     # polling constants
     POLLING_INTERVAL_SECONDS = 1
-    CHECK_UPDATE_INTERVAL_SECONDS = 30 * 60  # checks every 30 minutes
+    CHECK_UPDATE_INTERVAL_SECONDS = 60 * 60 * 24  # checks every 24 hours
 
     # initial startup stuff
     print('loading relay state...')

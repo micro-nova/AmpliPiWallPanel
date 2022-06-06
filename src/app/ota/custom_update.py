@@ -35,6 +35,7 @@ def queue_update(tag):
 def handle_update():
     import gc
     import time
+    import app.utils as utils
 
     import machine
 
@@ -53,6 +54,7 @@ def handle_update():
     except Exception as e:
         print(e)
         print(gc.mem_free())
+        utils.rmdir_all('next')
         machine.reset()
     try:
         _update_display_if_queued()
