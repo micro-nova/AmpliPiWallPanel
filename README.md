@@ -23,7 +23,15 @@ The NSPanel uses a Nextion display for the touch panel display that communicates
 The ESP32 controls the touch panel by sending and receiving [Nextion instructions](https://nextion.tech/instruction-set/) over UART to the display's STM32.
 
 ## Updates
-The panel uses GitHub releases to provide firmware and UI updates. New releases available will be indicated by a red dot on top of the settings icon.
+The panel uses GitHub releases to provide firmware and UI updates. New releases available will be indicated by a red exclamation point next to the settings icon.
 
 ## Programming the NSPanel
-TODO: add instructions on how to use the device
+If you have your own NSPanel, you can flash this software to the device using [esptool](https://docs.espressif.com/projects/esptool/en/latest/esp32/). You will need a USB to UART converter. Unclip the panel from the base, remove four screws and lift the plastic cover. The five pins, 3V3, RX, TX, GPIO0 and GND are needed, with GPIO0 connected to GND to put the esp32 into bootloader mode. 
+<p align="center">
+  <img alt="NSPanel Pinout"
+      src="images/sonoff_NSpanel_pinout.jpg" width="350">
+  </img>
+</p>
+Once you have this wired up to your flasher, you can download 0.1.22.bin and flash it using the command "esptool.py -p COM3 -b 460800 write_flash 0x0 0.1.22.bin", where COM3 is your flasher's port. 
+
+After this flashes, you can reassemble and install the device into a wall socket. The esp32 should start flashing the nextion display automatically shortly after powering on. Since this bin is likely not the latest version, after setup, you can go into settings->update and update to the latest verison.
