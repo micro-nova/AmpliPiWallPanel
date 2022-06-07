@@ -32,6 +32,8 @@ If you have your own NSPanel, you can flash this software to the device using [e
       src="images/sonoff_NSpanel_pinout.jpg" width="350">
   </img>
 </p>
+
+
 Once you have this wired up to your flasher, you can download [0.1.22.bin](https://github.com/micro-nova/AmpliPiWallPanel/releases/download/0.1.22/0.1.22.bin) and flash it using the command "esptool.py -p COM3 -b 460800 write_flash 0x0 0.1.22.bin", where COM3 is your flasher's port. 
 
 After this flashes, you can reassemble and install the device into a wall socket. The esp32 should start flashing the nextion display automatically shortly after powering on. Since this bin is likely not the latest version, after setup, you can go into settings->update and update to the latest verison.
