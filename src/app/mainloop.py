@@ -64,6 +64,7 @@ def run_h():
     # polling constants
     POLLING_INTERVAL_SECONDS = 1
     CHECK_UPDATE_INTERVAL_SECONDS = 60 * 60 * 24  # checks every 24 hours
+    RELAY_FILE_UPDATE_SECONDS = 30
 
     # initial startup stuff
     print('loading relay state...')
@@ -79,8 +80,10 @@ def run_h():
     # make sure display is on the home page
     displayserial.change_page(displayserial.HOME_PAGE_NAME)
 
-    last_poll_time = dt.time_sec() - POLLING_INTERVAL_SECONDS
-    last_check_update_time = dt.time_sec() - CHECK_UPDATE_INTERVAL_SECONDS
+    curr_t = dt.time_sec()
+    last_poll_time = curr_t - POLLING_INTERVAL_SECONDS
+    last_check_update_time = curr_t - CHECK_UPDATE_INTERVAL_SECONDS
+    last_relay_file_update_time = curr_t - RELAY_FILE_UPDATE_SECONDS
     message = b''
     while True:
         # handle api call queue
@@ -89,6 +92,11 @@ def run_h():
         # poll info from amplipi api
         curr_time = dt.time_sec()
 
+        if curr_time - last_relay_file_update_time > RELAY_FILE_UPDATE_SECONDS:
+            last_relay_file_update_time = curr_time
+            # handle relay file saving
+            relay.update()
+
         if curr_time - last_check_update_time > CHECK_UPDATE_INTERVAL_SECONDS:
             last_check_update_time = curr_time
             check_for_updates()
@@ -96,9 +104,6 @@ def run_h():
         if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
             last_poll_time = curr_time
             gc.collect()
-
-            # handle relay file saving
-            relay.update()
 
             try:
                 if wifi.is_connected():
