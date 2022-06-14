@@ -6,7 +6,7 @@ import usocket
 
 from app.displayserial import change_page, CONNECTION_PAGE_NAME
 from app.pages.connection import load_connection_page
-from app.sysconsts import AMPLIPI_LOCAL_DOMAIN
+from app.sysconsts import get_amplipi_local_domain
 
 _WIFI_CONFIG_FILENAME = '../../wifi.txt'
 
@@ -86,7 +86,7 @@ def try_connect():
 
         detected_ip = ''
         try:
-            detected_ip = usocket.getaddrinfo(AMPLIPI_LOCAL_DOMAIN, 80)[0][4][0]
+            detected_ip = usocket.getaddrinfo(get_amplipi_local_domain(), 80)[0][4][0]
         except Exception:
             pass
         print(f'connected: {is_connected()}')
