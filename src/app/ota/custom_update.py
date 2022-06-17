@@ -54,7 +54,10 @@ def handle_update():
     except Exception as e:
         print(e)
         print(gc.mem_free())
-        utils.rmdir_all('next')
+        try:
+            utils.rmdir_all('next')
+        except OSError:
+            pass
         machine.reset()
     try:
         _update_display_if_queued()
