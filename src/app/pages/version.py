@@ -1,7 +1,7 @@
 import gc
 
 from app import wifi, sysconsts, displayserial
-from app.displayserial import VERSION_PAGE_NAME
+from app.displayserial import VERSION_PAGE_NAME, message_is_button_event, button_is_pressed, message_id
 from app.dropdown import DropDown
 from app.ota import ota_updater
 from app.pages import versioninfo
@@ -12,6 +12,7 @@ _ITEM_OBJNAME = "titem"  # num
 _ITEM_FIRST_ID = 1
 _UP_BUTTON_ID = 5
 _DOWN_BUTTON_ID = 6
+_BACK_BUTTON_ID = 7
 _LOADING_TEXT_OBJNAME = 'tloading'
 _UP_BUTTON_OBJNAME = 'bup'
 _DOWN_BUTTON_OBJNAME = 'bdown'
@@ -19,10 +20,7 @@ VERSION_OBJNAME = 'tversion'
 
 _NUM_ITEM_FIELDS = 4
 
-dropdown = DropDown(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
-                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
-                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
-
+dropdown = DropDown()
 _releases = []  # list of tag jsons (not just tag names)
 
 
@@ -41,14 +39,15 @@ def _select_version_callback(index):
     versioninfo.load_versioninfo_page(_releases[index])
 
 
-dropdown.add_item_index_callback(_select_version_callback)
-
 def load_version_page():
     """Loads version page contents. Should only be called when the display is on the version page."""
     global _releases
+    dropdown.init(VERSION_PAGE_NAME, _ITEM_FIRST_ID,
+                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
+    dropdown.add_item_index_callback(_select_version_callback)
     # write current version to field
     displayserial.set_component_txt(displayserial.VERSION_PAGE_NAME, VERSION_OBJNAME, sysconsts.VERSION)
-
 
     if wifi.is_connected():
         dropdown.set_loading_state()
@@ -73,4 +72,9 @@ def reload_version_page_ui():
 
 def handle_msg(message):
     """Handles messages from the display that are relevant to the version page."""
+    global _releases
+    if message_is_button_event(message) and button_is_pressed(message) and message_id(message) == _BACK_BUTTON_ID:
+        del _releases
+        _releases = None
+        gc.collect()
     dropdown.handle_message(message)

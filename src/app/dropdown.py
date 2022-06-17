@@ -1,3 +1,5 @@
+import gc
+
 from app import displayserial
 from app.displayserial import button_is_pressed, message_is_button_event, message_id
 
@@ -12,7 +14,37 @@ class DropDown:
     num_fields: the number of fields on the page for the dropdown menu
     """
     __BUTTON_INCREMENT_AMOUNT = 4
-    def __init__(self, page_name, first_field_id, field_objname_prefix, up_button_id, up_button_objname, down_button_id, down_button_objname, loading_text_objname, num_fields, first_image_id=None, image_objname_prefix=None):
+    _instance = None
+    _initialized = False
+
+    def __new__(cls):
+        if cls._instance is None:
+            print("creating Dropdown object")
+            cls._instance = super(DropDown, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        self.page_name = None
+        self.first_field_id = None
+        self.field_objname_prefix = None
+        self.up_button_id = None
+        self.up_button_objname = None
+        self.down_button_id = None
+        self.down_button_objname = None
+        self.loading_text_objname = None
+        self.num_fields = None
+        self.first_image_id = None
+        self.image_objname_prefix = None
+
+        self.callbacks = []
+        self.items = []
+        self.pic_ids = []
+        self.selected_index = -1
+        self.selected_string = ''
+        self.start_index = 0
+        gc.collect()
+
+    def init(self, page_name, first_field_id, field_objname_prefix, up_button_id, up_button_objname, down_button_id, down_button_objname, loading_text_objname, num_fields, first_image_id=None, image_objname_prefix=None):
         self.page_name = page_name
         self.first_field_id = first_field_id
         self.field_objname_prefix = field_objname_prefix

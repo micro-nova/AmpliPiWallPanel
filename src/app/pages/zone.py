@@ -1,3 +1,5 @@
+import gc
+
 from app import api, displayserial, polling
 from app.audioconfig import AudioConfig
 from app.displayserial import ZONE_PAGE_NAME, message_is_button_event, button_is_pressed, message_id
@@ -18,10 +20,7 @@ _BACK_BUTTON_ID = 7
 
 _NUM_ITEM_FIELDS = 4
 
-_dropdown = DropDown(ZONE_PAGE_NAME, _ITEM_FIRST_ID,
-                     _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
-                     _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
-
+_dropdown = DropDown()
 
 _zones = []
 _groups = []
@@ -59,6 +58,10 @@ def load_zone_page(groups=False):
     global _zones
     global _groups
     _display_groups_last = groups
+    _dropdown.init(ZONE_PAGE_NAME, _ITEM_FIRST_ID,
+                     _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                     _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
+
     _dropdown.set_loading_state()
     _dropdown.clear_item_index_callbacks()
 
@@ -101,6 +104,9 @@ def handle_msg(message):
     if message_is_button_event(message) and button_is_pressed(message):
         id = message_id(message)
         if id == _BACK_BUTTON_ID:
+            _zones.clear()
+            _groups.clear()
+            gc.collect()
             polling.invalid_group_handled()
         if id == _GROUP_BUTTON_ID:
             _on_group_zone_button()

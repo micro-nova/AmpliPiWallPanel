@@ -1,3 +1,5 @@
+import gc
+
 from app import api, displayserial, polling
 from app.audioconfig import AudioConfig
 from app.displayserial import STREAM_PAGE_NAME, message_is_button_event, button_is_pressed, message_id
@@ -19,10 +21,7 @@ _BACK_BUTTON_ID = 7
 
 _NUM_ITEM_FIELDS = 4
 
-dropdown = DropDown(STREAM_PAGE_NAME, _ITEM_FIRST_ID,
-                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
-                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS,
-                    first_image_id=_IMAGE_FIRST_ID, image_objname_prefix=_IMAGE_OBJNAME)
+dropdown = DropDown()
 
 _streams = []
 
@@ -33,14 +32,15 @@ def _change_stream_callback(index):
     audioconf.change_stream(int(new_stream['id']))
     polling.invalid_group_handled()
 
-
-dropdown.add_item_index_callback(_change_stream_callback)
-
-
 # only call this when on this page
 def load_stream_page():
     """Loads stream page contents. Should only be called when the display is on the stream page."""
     global _streams
+    dropdown.init(STREAM_PAGE_NAME, _ITEM_FIRST_ID,
+                    _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS,
+                    first_image_id=_IMAGE_FIRST_ID, image_objname_prefix=_IMAGE_OBJNAME)
+    dropdown.add_item_index_callback(_change_stream_callback)
     dropdown.set_loading_state()
     # get list of streams
     print("Loading stream list")
@@ -60,4 +60,6 @@ def handle_msg(message):
     """Handles messages from the display that are relevant to the stream page."""
     if message_is_button_event(message) and button_is_pressed(message) and message_id(message) == _BACK_BUTTON_ID:
         polling.invalid_group_handled()
+        _streams.clear()
+        gc.collect()
     dropdown.handle_message(message)

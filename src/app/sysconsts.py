@@ -1,6 +1,6 @@
 import json
 
-VERSION = '0.1.23'
+VERSION = '0.1.24'
 MIN_AMPLIPI_VERSION = '1.7'
 
 WALL_PANEL_REPO = 'micro-nova/AmpliPiWallPanel'

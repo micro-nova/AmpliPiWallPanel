@@ -15,12 +15,13 @@ _DOWN_BUTTON_OBJNAME = 'bdown'
 
 _NUM_SSID_FIELDS = 4
 
-dropdown = DropDown(SSID_PAGE_NAME, _SSID_FIRST_ID,
-                    _SSID_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
-                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_SSID_FIELDS)
+dropdown = DropDown()
 
 def load_ssid_page():
     """Loads the contents of the SSID page. Should only be called when the display is on this page."""
+    dropdown.init(SSID_PAGE_NAME, _SSID_FIRST_ID,
+                    _SSID_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
+                    _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_SSID_FIELDS)
     dropdown.set_loading_state()
     # get list of ssid
     print("Loading SSID list")
