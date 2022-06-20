@@ -76,6 +76,7 @@ SOURCE_PAGE_NAME = "sourcepage"
 GROUP_INVALID_PAGE_NAME = "ginvalidpage"
 BOOT_PAGE_NAME = "bootpage"
 ADVANCED_SETTINGS_PAGE_NAME = "advpage"
+MQTT_PAGE_NAME = "mqttpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 

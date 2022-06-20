@@ -1,6 +1,9 @@
 
 
 # pages
+from app import mqttconfig
+from app.pages import mqtt
+
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
 SSID_PAGE_ID = 3
@@ -14,6 +17,7 @@ SOURCE_PAGE_ID = 11
 DEBUG_PAGE_ID = 12
 GINVALID_PAGE_ID = 13
 ADVANCED_CONFIG_PAGE_ID = 15
+MQTT_PAGE_ID = 16
 
 REBOOT_BUTTON_ID = 3
 
@@ -88,6 +92,7 @@ def run_h():
     while True:
         # handle api call queue
         api.update()
+        mqttconfig.update()
 
         # poll info from amplipi api
         curr_time = dt.time_sec()
@@ -111,6 +116,7 @@ def run_h():
                         # init audioconf
                         if audioconf.load_settings():
                             initialized = True
+                            mqttconfig.start()
                     if audioconf.zone_id >= 0:
                         api.queue_call(poll)
                     else:
@@ -157,6 +163,9 @@ def run_h():
                             ginvalid.handle_msg(message)
                         elif message[1] == ADVANCED_CONFIG_PAGE_ID:
                             advanced.handle_msg(message)
+                        elif message[1] == MQTT_PAGE_ID:
+                            mqtt.handle_msg(message)
+
 
                     # clear message only if it was properly terminated
                     message = b''

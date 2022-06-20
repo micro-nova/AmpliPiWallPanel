@@ -1,6 +1,6 @@
 import gc
 
-from app import api, displayserial, polling
+from app import api, displayserial, polling, mqttconfig
 from app.audioconfig import AudioConfig
 from app.displayserial import ZONE_PAGE_NAME, message_is_button_event, button_is_pressed, message_id
 from app.dropdown import DropDown
@@ -45,11 +45,21 @@ def _change_zone_callback(index):
     audioconf.change_zone(int(new_zone['id']))
     polling.invalid_group_handled()
 
+    # if mqtt's topic is empty, populate it with something reasonable
+    topic = mqttconfig.get_topic()
+    if topic is not None or topic == '':
+        mqttconfig.update_config(topic=f'home/{new_zone["name"]}/wallpanel-sw')
+
 def _change_group_callback(index):
     audioconfig = AudioConfig()
     new_group = _groups[index]
     audioconfig.change_group(int(new_group['id']))
     polling.invalid_group_handled()
+
+    # if mqtt's topic is empty, populate it with something reasonable
+    topic = mqttconfig.get_topic()
+    if topic is not None or topic == '':
+        mqttconfig.update_config(topic=f'home/{new_group["name"]}/wallpanel-sw')
 
 
 # only call this when display is on this page

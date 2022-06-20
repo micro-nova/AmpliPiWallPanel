@@ -6,7 +6,9 @@ import time
 from app.displayserial import uart_write, HOME_PAGE_NAME, RELAY_LEFT_OBJNAME, RELAY_ON_PIC_ID, RELAY_OFF_PIC_ID, \
     RELAY_RIGHT_OBJNAME
 
+
 _RELAY_STATE_FILENAME = 'relay.txt'
+
 
 _BUTTON_1_PIN = 14
 _BUTTON_2_PIN = 27
@@ -22,12 +24,14 @@ _relay2 = Pin(_RELAY_2_PIN, Pin.OUT)
 class RelayState:
     _DEBOUNCE_TIME_NS = 20000000  # nanoseconds
 
-    def __init__(self, relay_pin, init_state, button_objname):
+    def __init__(self, relay_pin, init_state, button_objname, mqtt_publish_func):
         self._state = init_state
         self._pstate = init_state
         self._event_time = time.time_ns()
         self._relay_pin = relay_pin
         self._button_objname = button_objname
+        self.mqtt_publish_func = mqtt_publish_func
+        mqtt_publish_func(init_state)
 
     def try_toggle(self):
         curr_time = time.time_ns()
@@ -36,6 +40,7 @@ class RelayState:
             self._event_time = curr_time
             self._relay_pin.value(self._state)
             _update_indicator(self._state, self._button_objname)
+            self.mqtt_publish_func(self._state)
         else:
             self._event_time = curr_time
 
@@ -51,6 +56,11 @@ class RelayState:
     def get_state(self):
         return self._pstate
 
+    def set_state(self, state):
+        self._state = state
+        self._relay_pin.value(self._state)
+        _update_indicator(self._state, self._button_objname)
+        self.mqtt_publish_func(state)
 
 state1: RelayState = None
 state2: RelayState = None
@@ -70,10 +80,12 @@ def button2_falling_edge(pin):
 def setup():
     global state1
     global state2
+    from app.mqttconfig import send_relay1_state, send_relay2_state
     loaded_state = _read_file()
-    state1 = RelayState(_relay1, loaded_state['relay1'], RELAY_LEFT_OBJNAME)
-    state2 = RelayState(_relay2, loaded_state['relay2'], RELAY_RIGHT_OBJNAME)
-    _update_indicators(loaded_state['relay1'], loaded_state['relay2'])
+    state1 = RelayState(_relay1, loaded_state['relay1'], RELAY_LEFT_OBJNAME, send_relay1_state)
+    state2 = RelayState(_relay2, loaded_state['relay2'], RELAY_RIGHT_OBJNAME, send_relay2_state)
+    _update_indicator(loaded_state['relay1'], RELAY_LEFT_OBJNAME)
+    _update_indicator(loaded_state['relay2'], RELAY_RIGHT_OBJNAME)
 
     _button1.irq(trigger=Pin.IRQ_RISING, handler=button1_rising_edge)
     _button2.irq(trigger=Pin.IRQ_RISING, handler=button2_rising_edge)
@@ -92,6 +104,11 @@ def update():
         print(new_dict)
         _write_file(new_dict)
 
+def set_relay1_state(state):
+    state1.set_state(state)
+
+def set_relay2_state(state):
+    state2.set_state(state)
 
 def _write_file(filedict):
     with open(_RELAY_STATE_FILENAME, 'w') as relay_file:
@@ -106,13 +123,8 @@ def _read_file():
         _write_file(new_dict)
         return new_dict
 
-def _update_indicators(left, right):
-    _update_indicator(left, RELAY_LEFT_OBJNAME)
-    _update_indicator(right, RELAY_RIGHT_OBJNAME)
-
 def _update_indicator(state, button_objname):
     if state:
         uart_write(f'{HOME_PAGE_NAME}.{button_objname}.pic={RELAY_ON_PIC_ID}')
     else:
         uart_write(f'{HOME_PAGE_NAME}.{button_objname}.pic={RELAY_OFF_PIC_ID}')
-
