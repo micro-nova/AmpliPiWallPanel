@@ -49,8 +49,8 @@ Open your configuration.yaml (if you don't know how to do this follow the steps 
 		switch:
 		    - unique_id: {Room Name}_wallpanel_left
 		      name: "{Switch1 Name}"
-		      state_topic: "home/{Room Name}/wallpanel/relay1/status"
-		      command_topic: "home/{Room Name}/wallpanel/relay1/cmd"
+		      state_topic: "home/{Room Name}/wallpanel-sw/relay1/status"
+		      command_topic: "home/{Room Name}/wallpanel-sw/relay1/cmd"
 		      payload_on: "on"
 		      payload_off: "off"
 		      state_on: "on"
@@ -61,8 +61,8 @@ Open your configuration.yaml (if you don't know how to do this follow the steps 
 		switch:
 		    - unique_id: {Room Name}_wallpanel_right
 		      name: "{Switch2 Name}"
-		      state_topic: "home/{Room Name}/wallpanel/relay2/status"
-		      command_topic: "home/{Room Name}/wallpanel/relay2/cmd"
+		      state_topic: "home/{Room Name}/wallpanel-sw/relay2/status"
+		      command_topic: "home/{Room Name}/wallpanel-sw/relay2/cmd"
 		      payload_on: "on"
 		      payload_off: "off"
 		      state_on: "on"
