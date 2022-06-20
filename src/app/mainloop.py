@@ -33,6 +33,7 @@ def run():
     except Exception as e:
         displayserial.change_page('debugpage')
         displayserial.set_component_txt('debugpage', 'tmessage', str(e))
+        print(e)
         message = b''
         # raise e # temp
         while True:
