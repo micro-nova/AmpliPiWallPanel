@@ -43,12 +43,12 @@ After this flashes, you can reassemble and install the device into a wall socket
 Set up an MQTT broker with Home Assistant if you haven't already. It's recommended to use the Mosquitto MQTT broker addon with Home Assistant, you can install it by following the steps [here](https://github.com/home-assistant/addons/blob/master/mosquitto/DOCS.md).
 
 ### 2. Configure Home Assistant
-Open your configuration.yaml (if you don't know how to do this follow the steps under editing configuration.yaml [here](https://www.home-assistant.io/docs/configuration/#editing-configurationyaml)) and add the following lines replacing  ``{Room Name}`` with the name of the room you placed your wall panel in and ``{Switch Name}`` with what you want the respective switch to appear as.
+Open your configuration.yaml (if you don't know how to do this follow the steps under editing configuration.yaml [here](https://www.home-assistant.io/docs/configuration/#editing-configurationyaml)) and add the following lines replacing  ``{Room Name}`` with the name of the room you placed your wall panel in and the ``{Switch Name}``'s with what you want the respective switches to appear as in Home Assistant.
 
     mqtt:
 		switch:
 		    - unique_id: {Room Name}_wallpanel_left
-		      name: "{Switch Name}"
+		      name: "{Switch1 Name}"
 		      state_topic: "home/{Room Name}/wallpanel/relay1/status"
 		      command_topic: "home/{Room Name}/wallpanel/relay1/cmd"
 		      payload_on: "on"
@@ -60,7 +60,7 @@ Open your configuration.yaml (if you don't know how to do this follow the steps 
 		      retain: true
 		switch:
 		    - unique_id: {Room Name}_wallpanel_right
-		      name: "{Switch Name}"
+		      name: "{Switch2 Name}"
 		      state_topic: "home/{Room Name}/wallpanel/relay2/status"
 		      command_topic: "home/{Room Name}/wallpanel/relay2/cmd"
 		      payload_on: "on"
@@ -72,11 +72,13 @@ Open your configuration.yaml (if you don't know how to do this follow the steps 
 		      retain: true
 ###### For more information about the purpose of values in the above configuration read the documentation [here](https://www.home-assistant.io/integrations/switch.mqtt/#full-configuration).
 
-If more than one wallpanels are present in the same room you may have to set the unique id's to something different.
+If more than one wallpanels are present in the same room you may have to set the ``unique_id``'s to something different.
 
 For the above changes to take effect you must restart Home Assistant, but you can continue with the final step while it reboots!
 
-### 3. Configure Your Wall Panel
+### 3. Configure Your Wallpanel
+Firstly, make sure your Wallpanel is updated to at least version 0.2.0.
+
 On your wallpanel navigate to MQTT settings. (gear icon->advanced->MQTT) and enter the your MQTT broker's ip address, a room name, and if necessary, a username and password for your broker.
 ###### Note: your wall panel will automatically set the room it's in to the name of the zone it's first attached to.
 
