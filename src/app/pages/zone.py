@@ -48,7 +48,7 @@ def _change_zone_callback(index):
     # if mqtt's topic is empty, populate it with something reasonable
     topic = mqttconfig.get_topic()
     if topic is None or topic == '':
-        mqttconfig.update_config(topic=f'home/{new_zone["name"]}/wallpanel-sw')
+        mqttconfig.set_topic_base(new_zone['name'])
 
 def _change_group_callback(index):
     audioconfig = AudioConfig()
@@ -59,7 +59,7 @@ def _change_group_callback(index):
     # if mqtt's topic is empty, populate it with something reasonable
     topic = mqttconfig.get_topic()
     if topic is None or topic == '':
-        mqttconfig.update_config(topic=f'home/{new_group["name"]}/wallpanel-sw')
+        mqttconfig.set_topic_base(new_group['name'])
 
 
 # only call this when display is on this page

@@ -41,6 +41,9 @@ def start():
         return True
     return False
 
+def set_topic_base(base):
+    update_config(topic=f'home/{base}/wp')
+
 def update_config(broker_ip=None, topic=None, username=None, password=None):
     global config
     config = _read_file()
