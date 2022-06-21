@@ -19,27 +19,31 @@ config: dict = None
 def start():
     global c
     global config
-    if c is not None:
-        c.disconnect()
+    try:
+        if c is not None:
+            c.disconnect()
 
-    config = _read_file()
-    broker_ip = get_broker_ip()
-    if broker_ip is not None and len(broker_ip) > 0:
-        ip_port = broker_ip.split(':')
-        id = machine.unique_id()
-        readable_id = '{:02x}{:02x}{:02x}{:02x}'.format(id[0], id[1], id[2], id[3])
-        username = None if get_username() == '' else get_username()
-        password = None if get_password() == '' else get_password()
-        if len(ip_port) == 2 and ip_port[1].isnumeric():
-            c = umqtt.MQTTClient(readable_id, ip_port[0], port=int(ip_port[1]), user=username, password=password)
-        else:
-            c = umqtt.MQTTClient(readable_id, ip_port[0], user=username, password=password)
+        config = _read_file()
+        broker_ip = get_broker_ip()
+        if broker_ip is not None and len(broker_ip) > 0:
+            ip_port = broker_ip.split(':')
+            id = machine.unique_id()
+            readable_id = '{:02x}{:02x}{:02x}{:02x}'.format(id[0], id[1], id[2], id[3])
+            username = None if get_username() == '' else get_username()
+            password = None if get_password() == '' else get_password()
+            if len(ip_port) == 2 and ip_port[1].isnumeric():
+                c = umqtt.MQTTClient(readable_id, ip_port[0], port=int(ip_port[1]), user=username, password=password)
+            else:
+                c = umqtt.MQTTClient(readable_id, ip_port[0], user=username, password=password)
 
-        c.set_callback(_callback)
-        c.connect()
-        c.subscribe(_relay1_topic(config, True))
-        c.subscribe(_relay2_topic(config, True))
-        return True
+            c.set_callback(_callback)
+            try_connect()
+            c.subscribe(_relay1_topic(config, True))
+            c.subscribe(_relay2_topic(config, True))
+            return True
+    except Exception as e:
+        print(f'mqttconfig start threw an error: {e}')
+
     return False
 
 def set_topic_base(base):
@@ -58,8 +62,15 @@ def update_config(broker_ip=None, topic=None, username=None, password=None):
         config['password'] = password
     _write_file(config)
 
-    # restart/start qmtt clinet
+    # start/restart mqtt client
     start()
+    # if c is None:
+    #     start()
+    # else:
+    #     try:
+    #         c.connect(clean_session=False)
+    #     except Exception as e:
+    #         print(f'got {e} from c.connect(clean_session=False')
 
 def get_broker_ip():
     if config is not None:
@@ -87,20 +98,33 @@ def update():
             c.check_msg()
         except Exception as e:
             print(f'mqttconfig check_msg threw an error: {e}')
-            c.connect()
+            try_connect()
             time.sleep_ms(100)
+
+def try_connect():
+    if c is not None:
+        try:
+            c.connect()
+        except Exception as e:
+            print(f'mqttconfig connect threw an error: {e}')
 
 def send_relay1_state(state):
     """Publishes a message indicating the state of relay1. Currently using QoS 1,
     which guarantees the message is delivered at least one time"""
     if c is not None:
-        c.publish(_relay1_topic(config, False), 'on' if state else 'off')
+        try:
+            c.publish(_relay1_topic(config, False), 'on' if state else 'off')
+        except Exception as e:
+            print(f'mqttconfig publish threw an error: {e}')
 
 def send_relay2_state(state):
     """Publishes a message indicating the state of relay2. Currently using QoS 1,
     which guarantees the message is delivered at least one time"""
     if c is not None:
-        c.publish(_relay2_topic(config, False), 'on' if state else 'off')
+        try:
+            c.publish(_relay2_topic(config, False), 'on' if state else 'off')
+        except Exception as e:
+            print(f'mqttconfig publish threw an error: {e}')
 
 def _callback(topic, msg):
     # handle switch stuff
