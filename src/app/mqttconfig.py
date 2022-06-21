@@ -1,6 +1,7 @@
 import json
 import umqtt.simple as umqtt
 import machine
+import time
 
 
 
@@ -82,7 +83,12 @@ def get_password():
 
 def update():
     if c is not None:
-        c.check_msg()
+        try:
+            c.check_msg()
+        except Exception as e:
+            print(f'mqttconfig check_msg threw an error: {e}')
+            c.connect()
+            time.sleep_ms(100)
 
 def send_relay1_state(state):
     """Publishes a message indicating the state of relay1. Currently using QoS 1,

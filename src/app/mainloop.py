@@ -1,8 +1,6 @@
 
 
-# pages
-from app import mqttconfig
-from app.pages import mqtt
+
 
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
@@ -62,6 +60,9 @@ def run_h():
     from app.ota.check_for_updates import check_for_updates
     from app.pages import config, connection, home, ssid, stream, version, versioninfo, zone, source, ginvalid, advanced
     from app.polling import poll
+    # pages
+    from app import mqttconfig
+    from app.pages import mqtt
     tft_reset = Pin(4, Pin.OUT)
     print('enabling screen...')
     tft_reset.value(0)
@@ -93,7 +94,6 @@ def run_h():
     while True:
         # handle api call queue
         api.update()
-        mqttconfig.update()
 
         # poll info from amplipi api
         curr_time = dt.time_sec()
@@ -109,6 +109,7 @@ def run_h():
 
         if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
             last_poll_time = curr_time
+            mqttconfig.update()
             gc.collect()
 
             try:
