@@ -2,6 +2,7 @@ import json
 import umqtt.simple as umqtt
 import machine
 import time
+import random
 
 
 
@@ -27,14 +28,18 @@ def start():
         broker_ip = get_broker_ip()
         if broker_ip is not None and len(broker_ip) > 0:
             ip_port = broker_ip.split(':')
-            id = machine.unique_id()
-            readable_id = '{:02x}{:02x}{:02x}{:02x}'.format(id[0], id[1], id[2], id[3])
+            # id = machine.unique_id()
+            # readable_id = '{:02x}{:02x}{:02x}{:02x}'.format(id[0], id[1], id[2], id[3])
+            id = get_client_id()
+            if id is None or len(id) == 0:
+                id = f'{random.randint(0, 2**31-1)}'
+                update_config(client_id=id)
             username = None if get_username() == '' else get_username()
             password = None if get_password() == '' else get_password()
             if len(ip_port) == 2 and ip_port[1].isnumeric():
-                c = umqtt.MQTTClient(readable_id, ip_port[0], port=int(ip_port[1]), user=username, password=password)
+                c = umqtt.MQTTClient(id, ip_port[0], port=int(ip_port[1]), user=username, password=password)
             else:
-                c = umqtt.MQTTClient(readable_id, ip_port[0], user=username, password=password)
+                c = umqtt.MQTTClient(id, ip_port[0], user=username, password=password)
 
             c.set_callback(_callback)
             try_connect()
@@ -49,7 +54,7 @@ def start():
 def set_topic_base(base):
     update_config(topic=f'home/{base}/wp')
 
-def update_config(broker_ip=None, topic=None, username=None, password=None):
+def update_config(broker_ip=None, topic=None, username=None, password=None, client_id=None):
     global config
     config = _read_file()
     if broker_ip is not None:
@@ -60,6 +65,8 @@ def update_config(broker_ip=None, topic=None, username=None, password=None):
         config['username'] = username
     if password is not None:
         config['password'] = password
+    if client_id is not None:
+        config['client_id'] = client_id
     _write_file(config)
 
     # start/restart mqtt client
@@ -92,6 +99,11 @@ def get_password():
         return config.get('password', None)
     return None
 
+def get_client_id():
+    if config is not None:
+        return config.get('client_id', None)
+    return None
+
 def update():
     if c is not None:
         try:
@@ -109,8 +121,7 @@ def try_connect():
             print(f'mqttconfig connect threw an error: {e}')
 
 def send_relay1_state(state):
-    """Publishes a message indicating the state of relay1. Currently using QoS 1,
-    which guarantees the message is delivered at least one time"""
+    """Publishes a message indicating the state of relay1."""
     if c is not None:
         try:
             c.publish(_relay1_topic(config, False), 'on' if state else 'off')
@@ -118,8 +129,7 @@ def send_relay1_state(state):
             print(f'mqttconfig publish threw an error: {e}')
 
 def send_relay2_state(state):
-    """Publishes a message indicating the state of relay2. Currently using QoS 1,
-    which guarantees the message is delivered at least one time"""
+    """Publishes a message indicating the state of relay2."""
     if c is not None:
         try:
             c.publish(_relay2_topic(config, False), 'on' if state else 'off')
@@ -145,7 +155,7 @@ def _callback(topic, msg):
 
 
 def _read_file() -> dict:
-    loaded_config = {'broker_ip': '', 'topic': '', 'username': '', 'password': ''}
+    loaded_config = {'broker_ip': '', 'topic': '', 'username': '', 'password': '', 'client_id': ''}
     try:
         with open(_MQTT_CONFIG_FILENAME) as mqtt_file:
             loaded_config = json.load(mqtt_file)
