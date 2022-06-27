@@ -28,11 +28,9 @@ def start():
         broker_ip = get_broker_ip()
         if broker_ip is not None and len(broker_ip) > 0:
             ip_port = broker_ip.split(':')
-            # id = machine.unique_id()
-            # readable_id = '{:02x}{:02x}{:02x}{:02x}'.format(id[0], id[1], id[2], id[3])
             id = get_client_id()
             if id is None or len(id) == 0:
-                id = f'{random.randint(0, 2**31-1)}'
+                id = f'{random.randint(0, 2**31-1)},{machine.unique_id()}'
                 update_config(client_id=id)
             username = None if get_username() == '' else get_username()
             password = None if get_password() == '' else get_password()
