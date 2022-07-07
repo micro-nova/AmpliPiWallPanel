@@ -124,6 +124,7 @@ def _read_file():
         return new_dict
 
 def _update_indicator(state, button_objname):
+    uart_write('sleep=0')
     if state:
         uart_write(f'{HOME_PAGE_NAME}.{button_objname}.pic={RELAY_ON_PIC_ID}')
     else:
