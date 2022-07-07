@@ -1,7 +1,5 @@
 
 
-
-
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
 SSID_PAGE_ID = 3
@@ -16,6 +14,7 @@ DEBUG_PAGE_ID = 12
 GINVALID_PAGE_ID = 13
 ADVANCED_CONFIG_PAGE_ID = 15
 MQTT_PAGE_ID = 16
+BRIGHTNESS_PAGE_ID = 17
 
 REBOOT_BUTTON_ID = 3
 
@@ -63,6 +62,7 @@ def run_h():
     # pages
     from app import mqttconfig
     from app.pages import mqtt
+    from app.pages import brightness
     tft_reset = Pin(4, Pin.OUT)
     print('enabling screen...')
     tft_reset.value(0)
@@ -85,6 +85,9 @@ def run_h():
 
     # make sure display is on the home page
     displayserial.change_page(displayserial.HOME_PAGE_NAME)
+
+    # initialize timeout, brightness
+    brightness.init()
 
     curr_t = dt.time_sec()
     last_poll_time = curr_t - POLLING_INTERVAL_SECONDS
@@ -167,7 +170,8 @@ def run_h():
                             advanced.handle_msg(message)
                         elif message[1] == MQTT_PAGE_ID:
                             mqtt.handle_msg(message)
+                        elif message[1] == BRIGHTNESS_PAGE_ID:
+                            brightness.handle_msg(message)
 
-
-                    # clear message only if it was properly terminated
+                    #  clear message
                     message = b''

@@ -126,8 +126,6 @@ def handle_msg(message):
     if message_is_slider_event(message):
         # valid slider update
         if id == VOL_SLIDER_ID:
-            # TODO: technically should check if the id is correct, but its not
-            #  needed right now because there is only one slider on the home page
             _on_vol(message)
 
     # if message is button and button is pressed

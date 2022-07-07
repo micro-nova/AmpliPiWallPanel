@@ -77,6 +77,7 @@ GROUP_INVALID_PAGE_NAME = "ginvalidpage"
 BOOT_PAGE_NAME = "bootpage"
 ADVANCED_SETTINGS_PAGE_NAME = "advpage"
 MQTT_PAGE_NAME = "mqttpage"
+BRIGHTNESS_PAGE_NAME = "brightpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
@@ -203,6 +204,12 @@ def update_mute_button(muted):
 def get_vol_slider_vol_f(message):
     vol = message[3] + (message[4] << 8) + (message[5] << 16) + (message[6] << 24)
     return vol / VOL_SLIDER_MAX
+
+def get_slider_value(message):
+    return message[3] + (message[4] << 8) + (message[5] << 16) + (message[6] << 24)
+
+def set_component_value(pagename, componentname, value):
+    uart_write(f'{pagename}.{componentname}.val={value}')
 
 
 # returns the string from a test message

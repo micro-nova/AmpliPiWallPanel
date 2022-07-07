@@ -6,7 +6,7 @@ from app import displayserial
 # objnames
 from app.displayserial import message_is_button_event, button_is_pressed, message_id
 from app.ota import custom_update
-from app.pages import version
+from app.pages import version, brightness
 
 VERSION_INFO_OBJNAME = "tver"
 
@@ -40,6 +40,7 @@ def load_versioninfo_page(release):
 
 def _on_apply():
     if _tag_name is not None:
+        brightness.reset()
         custom_update.queue_update(_tag_name)
         machine.reset()
 
