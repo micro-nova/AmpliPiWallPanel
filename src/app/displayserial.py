@@ -94,6 +94,12 @@ def message_is_slider_event(message) -> bool:
 def message_is_text(message) -> bool:
     return message[0] == TEXT_MESSAGE
 
+def message_is_sleep(message):
+    return message == b'\x86'
+
+def message_is_wake(message):
+    return message == b'\x87'
+
 def button_is_pressed(button_message) -> bool:
     return button_message[3] == PRESSED_EVENT
 

@@ -1,4 +1,4 @@
-
+from app.displayserial import message_is_sleep, message_is_wake
 
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
@@ -144,9 +144,14 @@ def run_h():
                 if message[-3:] == bytes([0xff, 0xff, 0xff]):
                     # remove termination
                     message = message[0:-3]
+                    print(message)
+                    print(message.decode("utf-8"))
                     if len(message) > 1:
-                        # if message is a relay event,
-                        if message[1] == MAIN_PAGE_ID:
+                        if message_is_sleep(message):
+                            print('screen is sleeping')
+                        elif message_is_wake(message):
+                            print('screen is awake')
+                        elif message[1] == MAIN_PAGE_ID:
                             home.handle_msg(message)
                         elif message[1] == CONFIG_PAGE_ID:
                             config.handle_msg(message)
