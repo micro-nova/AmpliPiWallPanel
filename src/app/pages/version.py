@@ -54,6 +54,8 @@ def load_version_page():
         _ota = ota_updater.make_ota_updater()
 
         _releases = _ota.get_all_releases()
+        if not _show_prereleases:
+            _releases = [release for release in _releases if not release['prerelease']]
         reload_version_page_ui()
 
         print(f'mem free before del: {gc.mem_free()}')
@@ -64,10 +66,7 @@ def load_version_page():
 
 def reload_version_page_ui():
     # take raw _releases data and extract just the names
-    if _show_prereleases:
-        release_names = [f"  {release['tag_name']} {release['name']}" for release in _releases]
-    else:
-        release_names = [f"  {release['tag_name']} {release['name']}" for release in _releases if not release['prerelease']]
+    release_names = [f"  {release['tag_name']} {release['name']}" for release in _releases]
     dropdown.populate(release_names)
 
 def handle_msg(message):
