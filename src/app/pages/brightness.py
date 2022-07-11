@@ -1,4 +1,5 @@
 import json
+from math import sqrt
 
 from app import dt
 from app.displayserial import message_id, message_is_slider_event, message_is_button_event, button_is_pressed, \
@@ -17,7 +18,7 @@ _BRIGHTNESS_FADE_TIME = 8
 
 _file_stale = False
 _last_touch_time = dt.time_sec()
-_params = {'timeout': 10, 'active_b': 100, 'inactive_b': 10}
+_params = {'timeout': 60, 'active_b': 100, 'inactive_b': 10}
 _last_brightness = -1
 
 def init():
@@ -69,7 +70,7 @@ def handle_msg(message):
     if message_is_slider_event(message):
         if id == TIMEOUT_SLIDER_ID:
             _file_stale = True
-            timeout = 2 + ((get_slider_value(message) / 255) ** 2) * 60 * 10
+            timeout = _timeout_slider_to_value(get_slider_value(message))
             _params['timeout'] = timeout
             print(f'received {timeout} for timeout slider')
             if timeout >= 60:
@@ -101,14 +102,20 @@ def handle_msg(message):
         if id == BACK_BUTTON_ID:
             _save_file()
 
+def _timeout_slider_to_value(slider_val):
+    return 2 + ((slider_val / 255) ** 2) * 600
+
+def _value_to_timeout_slider(value):
+    return sqrt((value-2)*(255**2)/600)
 
 def _update_ui():
-    # set timeout value field
-    if _params['timeout'] == 0:
-        set_component_txt(BRIGHTNESS_PAGE_NAME, 'ttimeout', 'Disabled')
+    if _params["timeout"] >= 60:
+        set_component_txt(BRIGHTNESS_PAGE_NAME, 'ttimeout', f'{int(_params["timeout"] / 60)} m')
     else:
-        set_component_txt(BRIGHTNESS_PAGE_NAME, 'ttimeout', f'{_params["timeout"]} s')
+        set_component_txt(BRIGHTNESS_PAGE_NAME, 'ttimeout', f'{int(_params["timeout"])} s')
+    timeout_slider_value = _value_to_timeout_slider(_params["timeout"])
     # set slider values
+    set_component_value(BRIGHTNESS_PAGE_NAME, 'htime', int(timeout_slider_value))
     set_component_value(BRIGHTNESS_PAGE_NAME, 'hactive', _params['active_b'])
     set_component_value(BRIGHTNESS_PAGE_NAME, 'hinactive', _params['inactive_b'])
 
