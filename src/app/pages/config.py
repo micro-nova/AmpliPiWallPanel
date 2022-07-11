@@ -8,7 +8,6 @@ from app.pages import connection, zone, version
 ZONE_BUTTON_ID = 3
 CONNECTION_BUTTON_ID = 5
 UPDATE_BUTTON_ID = 6
-REBOOT_BUTTON_ID = 7
 
 UPDATE_AVAILABLE_FIELD_OBJNAME = 'tuavailable'
 
@@ -30,10 +29,6 @@ def _on_update():
     version.disable_prereleases()
     version.load_version_page()
 
-def _on_reboot():
-    displayserial.change_page(displayserial.BOOT_PAGE_NAME)
-    machine.reset()
-
 def handle_msg(message):
     print("handling config page message")
     if message_is_button_event(message) and button_is_pressed(message):
@@ -44,5 +39,3 @@ def handle_msg(message):
             _on_connection()
         elif id == UPDATE_BUTTON_ID:
             _on_update()
-        elif id == REBOOT_BUTTON_ID:
-            _on_reboot()
