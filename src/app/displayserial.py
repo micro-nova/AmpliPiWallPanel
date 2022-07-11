@@ -78,6 +78,7 @@ BOOT_PAGE_NAME = "bootpage"
 ADVANCED_SETTINGS_PAGE_NAME = "advpage"
 MQTT_PAGE_NAME = "mqttpage"
 BRIGHTNESS_PAGE_NAME = "brightpage"
+IDLE_PAGE_NAME = "idlepage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 

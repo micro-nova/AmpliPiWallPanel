@@ -98,6 +98,9 @@ def run_h():
         # handle api call queue
         api.update()
 
+        # update brightness
+        brightness.update()
+
         # poll info from amplipi api
         curr_time = dt.time_sec()
 
@@ -144,8 +147,7 @@ def run_h():
                 if message[-3:] == bytes([0xff, 0xff, 0xff]):
                     # remove termination
                     message = message[0:-3]
-                    print(message)
-                    print(message.decode("utf-8"))
+                    brightness.reset_touch_timer()
                     if len(message) > 1:
                         if message_is_sleep(message):
                             print('screen is sleeping')

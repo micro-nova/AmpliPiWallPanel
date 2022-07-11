@@ -27,7 +27,7 @@ def handle_msg(message):
 
 def _on_reboot():
     displayserial.change_page(displayserial.BOOT_PAGE_NAME)
-    brightness.reset()
+    brightness.reset_touch_timer()
     machine.reset()
 
 def _on_factory_reset():
