@@ -40,7 +40,7 @@ def load_versioninfo_page(release):
 
 def _on_apply():
     if _tag_name is not None:
-        brightness.reset()
+        brightness.reset_touch_timer()
         custom_update.queue_update(_tag_name)
         machine.reset()
 
