@@ -50,6 +50,9 @@ def update():
     # print(_last_touch_time)
     # print(_params['timeout'])
     # print(p)
+    if _file_stale and p >= 1:
+        _save_file()
+
     if brightness != _last_brightness:
         _last_brightness = brightness
         # change display brightness
@@ -96,7 +99,7 @@ def handle_msg(message):
 
     elif message_is_button_event(message) and button_is_pressed(message):
         if id == BACK_BUTTON_ID:
-            _on_back()
+            _save_file()
 
 
 def _update_ui():
@@ -151,7 +154,7 @@ def _update_ui():
 #             _on_back()
 #             _file_stale = False
 #
-def _on_back():
+def _save_file():
     global _file_stale
     if _file_stale:
         try:
