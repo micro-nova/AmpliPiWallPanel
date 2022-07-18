@@ -1,4 +1,4 @@
-from app.displayserial import message_is_sleep, message_is_wake
+
 
 MAIN_PAGE_ID = 0
 CONFIG_PAGE_ID = 2
@@ -15,6 +15,7 @@ GINVALID_PAGE_ID = 13
 ADVANCED_CONFIG_PAGE_ID = 15
 MQTT_PAGE_ID = 16
 BRIGHTNESS_PAGE_ID = 17
+PRESETS_PAGE_ID = 19
 
 REBOOT_BUTTON_ID = 3
 
@@ -63,6 +64,8 @@ def run_h():
     from app import mqttconfig
     from app.pages import mqtt
     from app.pages import brightness
+    from app.displayserial import message_is_sleep, message_is_wake
+    from app.pages import presets
     tft_reset = Pin(4, Pin.OUT)
     print('enabling screen...')
     tft_reset.value(0)
@@ -179,6 +182,8 @@ def run_h():
                             mqtt.handle_msg(message)
                         elif message[1] == BRIGHTNESS_PAGE_ID:
                             brightness.handle_msg(message)
+                        elif message[1] == PRESETS_PAGE_ID:
+                            presets.handle_msg(message)
 
                     #  clear message
                     message = b''

@@ -79,6 +79,7 @@ ADVANCED_SETTINGS_PAGE_NAME = "advpage"
 MQTT_PAGE_NAME = "mqttpage"
 BRIGHTNESS_PAGE_NAME = "brightpage"
 IDLE_PAGE_NAME = "idlepage"
+PRESET_PAGE_NAME = "presetpage"
 
 tftUart = UART(2, baudrate=115200, tx=16, rx=17)
 
@@ -125,19 +126,16 @@ def stream_type_to_pic_id(stream_type):
 def change_page(pagename):
     uart_write(f'page {pagename}')
 
-
 def send_title(title):
     # check if string is too long and trim if it is
     if len(title) > 30:
         title = title[0:26] + "..."
     set_component_txt(HOME_PAGE_NAME, SONG_NAME_OBJNAME, title)
 
-
 def send_album(album):
     if len(album) > 35:
         album = album[0:31] + "..."
     set_component_txt(HOME_PAGE_NAME, ALBUM_NAME_OBJNAME, album)
-
 
 def send_artist(artist):
     # check if string is too long and trim if it is
@@ -158,7 +156,6 @@ def send_stream_type(stream_type):
     else:
         set_visible(STREAM_ICON_OBJNAME, False)
 
-
 def send_source_name(source_name):
     set_component_txt(HOME_PAGE_NAME, SOURCE_NAME_OBJNAME, source_name)
 
@@ -166,7 +163,6 @@ def send_zone_or_group_name(zone_name):
     if len(zone_name) > 30:
         zone_name = zone_name[0:26] + "..."
     set_component_txt(CONFIG_PAGE_NAME, ZONE_NAME_OBJNAME, zone_name)
-
 
 def set_component_txt(pagename, componentname, txt):
     uart_write(f'{pagename}.{componentname}.txt="{txt}"')
@@ -177,13 +173,8 @@ def set_component_property(pagename, componentname, propertyname, value):
 def set_image(pagename, componentname, pic):
     uart_write(f'{pagename}.{componentname}.pic={pic}')
 
-# def set_image_local(componentname, pic):
-#     uart_write(f'{componentname}.pic="{pic}')
-
-
 def set_visible(id_or_name, visible):
     uart_write(f'vis {id_or_name},{1 if visible else 0}')
-
 
 def update_play_pause_button(playing):
     if playing:
@@ -192,7 +183,6 @@ def update_play_pause_button(playing):
     else:
         uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PLAY_UP_PIC_ID}')
         uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PLAY_DOWN_PIC_ID}')
-
 
 def update_mute_button(muted):
     if muted:
@@ -206,7 +196,6 @@ def update_mute_button(muted):
         uart_write(f'{HOME_PAGE_NAME}.{VOL_OBJNAME}.pic1={SLIDER_UNMUTED_FOREGROUND_PIC_ID}')
         uart_write(f'{HOME_PAGE_NAME}.{VOL_OBJNAME}.pic2={SLIDER_UNMUTED_CURSOR_PIC_ID}')
 
-
 # returns vol_f from 0 to 1
 def get_vol_slider_vol_f(message):
     vol = message[3] + (message[4] << 8) + (message[5] << 16) + (message[6] << 24)
@@ -217,7 +206,6 @@ def get_slider_value(message):
 
 def set_component_value(pagename, componentname, value):
     uart_write(f'{pagename}.{componentname}.val={value}')
-
 
 # returns the string from a test message
 def receive_text_message_str(message):
@@ -230,20 +218,16 @@ def receive_text_message_str(message):
         # text_str = text_str + message[i].to_bytes(1, 'big').decode("utf-8")
     return text_str
 
-
 # vol_f is from 0 to 1
 def set_vol_slider_vol_f(vol_f):
     pos = floor(vol_f * VOL_SLIDER_MAX)
     uart_write(f'{HOME_PAGE_NAME}.{VOL_OBJNAME}.val={pos}')
 
-
 def uart_any():
     return tftUart.any()
 
-
 def uart_read():
     return tftUart.read()
-
 
 def uart_write(string):
     tftUart.write(string)
