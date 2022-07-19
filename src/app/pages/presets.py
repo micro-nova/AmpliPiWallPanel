@@ -41,6 +41,8 @@ def load_preset_page():
     _dropdown.add_item_index_callback(_apply_preset_callback)
 
     presets = api.get_presets()
+    if presets is None:
+        presets = []
     _preset_ids = [p['id'] for p in presets]
     _preset_names = [p['name'] for p in presets]
     gc.collect()
