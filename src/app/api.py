@@ -92,6 +92,17 @@ def get_source(source_id):
 #     """API call to get all sources. Returns it as a dict or None if failed."""
 #     return _get_safe(f'http://{IP}/api/sources')
 
+def get_presets():
+    """API call to get all presets. Returns it as a list or None if failed."""
+    response = _get_safe(f'http://{_amplipi_ip}/api/presets')
+    if response is not None:
+        return response['presets']
+
+def load_preset(pid):
+    # TODO: how to handle error? should I have been raising custom errors this whole time?
+    """API call to load/execute the preset with pid (preset id)."""
+    _post_safe(f'http://{_amplipi_ip}/api/presets/{pid}/load')
+
 def get_streams():
     """API call to get all streams. Returns it as a list or None if failed."""
     response = _get_safe(f'http://{_amplipi_ip}/api/streams')
