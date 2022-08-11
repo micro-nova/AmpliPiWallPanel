@@ -1,6 +1,7 @@
 from app import wifi, displayserial
-from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, receive_text_message_str, WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID, message_is_button_event, \
-    button_is_pressed, message_id, message_is_text
+from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, receive_text_message_str, \
+    WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID, message_is_button_event, \
+    button_is_pressed, message_id, message_is_text, set_visible
 from app.pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
@@ -42,7 +43,7 @@ def load_connection_page():
     # update page components
     print(f'updating ssid and password fields to {wifi_ssid} and {wifi_password}')
     set_component_txt(CONNECTION_PAGE_NAME, _SSID_FIELD_OBJNAME, wifi_ssid)
-    set_component_txt(CONNECTION_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, wifi_password)
+    set_component_txt(CONNECTION_PAGE_NAME, _PASSWORD_FIELD_OBJNAME, '*' * len(wifi_password))
     set_component_txt(CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, amplipi_ip)
     update_autodetect_graphics()
     update_connection_status()
@@ -91,13 +92,22 @@ def handle_msg(message):
     id = message_id(message)
     if message_is_button_event(message) and button_is_pressed(message):
         if id == _CONNECT_BUTTON_ID:
-            # TODO: indicate that device is trying to connect here somehow
+            set_visible('zspinner', True)
             print("Connect button pressed")
             wifi.disconnect()
             print(f'hopefully autodetect is on. autodetect:{autodetect}')
-            wifi.save_wifi_info(ssid_field_txt, pass_field_txt, ip_field_txt, autodetect)
+            wifi_info = wifi.load_wifi_info()
+            password = pass_field_txt
+            # check if the password is unmodified (i.e. not all asterisks)
+            if pass_field_txt == '*' * len(wifi_info.get('password', '')):
+                print('password is unmodified')
+                password = wifi_info.get('password', '')
+            else:
+                print('password is modified')
+            wifi.save_wifi_info(ssid_field_txt, password, ip_field_txt, autodetect)
             wifi.try_connect()
             update_connection_status()
+            set_visible('zspinner', False)
 
         elif id == _BACK_BUTTON_ID:
             # back button should reset the fields to their saved state
