@@ -130,4 +130,4 @@ class AudioConfig:
         self.stream_id = api.get_stream_id_from_source_dict(source)
 
     def __update_supported_cmds_from_source(self, source):
-        self.supported_cmds = source['supported_cmds']
+        self.supported_cmds = source['info']['supported_cmds']

@@ -29,14 +29,15 @@ def _on_source():
 def _on_play(stream_id):
     polling.skip_next_playing()
 
-    def call():
+    def play():
         api.send_stream_command(stream_id, "play")
         polling.skip_next_playing()
         print("playing")
 
-    # if successfully queued call, change display's playing state
-    if api.queue_call(call):
-        set_is_playing(True)
+    if 'play' in _audioconf.supported_cmds:
+        # if successfully queued call, change display's playing state
+        if api.queue_call(play):
+            set_is_playing(True)
 
 def _on_pause(stream_id):
     polling.skip_next_playing()
