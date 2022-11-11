@@ -26,6 +26,7 @@ class AudioConfig:
             self.stream_id = -1
             self.group_id = -1
             self.using_group = False
+            self.supported_cmds = []
 
     def load_settings(self) -> bool:
         print("loading AudioConfig settings")
@@ -44,6 +45,7 @@ class AudioConfig:
         self.stream_id = new_stream_id
         # make api call to change the source's stream to new_stream_id
         api.set_stream(self.source_id, new_stream_id)
+        self.__update_supported_cmds_from_source(api.get_source(self.source_id))
 
     # changing the zone may also change the source and stream
     def change_zone(self, new_zone_id) -> bool:
@@ -61,7 +63,9 @@ class AudioConfig:
             self.source_id = zone['source_id']
 
             # get the current stream that is running on the source
-            self.__update_stream_id_from_source()
+            source = api.get_source(self.source_id)
+            self.__update_stream_id_from_source(source)
+            self.__update_supported_cmds_from_source(source)
             self.__save_info()
         return True
 
@@ -83,7 +87,9 @@ class AudioConfig:
                 pass
 
             # get the current stream that is running on the source
-            self.__update_stream_id_from_source()
+            source = api.get_source(self.source_id)
+            self.__update_stream_id_from_source(source)
+            self.__update_supported_cmds_from_source(source)
             self.__save_info()
         return True
 
@@ -98,7 +104,9 @@ class AudioConfig:
             api.move_zone_to_source(self.zone_id, self.source_id)
 
         # get current stream
-        self.__update_stream_id_from_source()
+        source = api.get_source(self.source_id)
+        self.__update_stream_id_from_source(source)
+        self.__update_supported_cmds_from_source(source)
 
     def __load_info(self):
         try:
@@ -118,6 +126,8 @@ class AudioConfig:
             zone_file_str = json.dumps(zone_file_dict)
             zone_file.write(zone_file_str)
 
-    def __update_stream_id_from_source(self):
-        source = api.get_source(self.source_id)
+    def __update_stream_id_from_source(self, source):
         self.stream_id = api.get_stream_id_from_source_dict(source)
+
+    def __update_supported_cmds_from_source(self, source):
+        self.supported_cmds = source['supported_cmds']

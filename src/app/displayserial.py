@@ -8,8 +8,19 @@ TERM = b"\xff\xff\xff"
 # ui constants
 PLAY_UP_PIC_ID = 19
 PLAY_DOWN_PIC_ID = 18
+PLAY_GRAY_PIC_ID = 57
 PAUSE_UP_PIC_ID = 4
 PAUSE_DOWN_PIC_ID = 3
+STOP_UP_PIC_ID = 54
+STOP_DOWN_PIC_ID = 53
+STOP_GRAY_PIC_ID = 58
+
+SKIP_UP_PIC_ID = 2
+SKIP_DOWN_PIC_ID = 1
+SKIP_GRAY_PIC_ID = 55
+BACK_UP_PIC_ID = 6
+BACK_DOWN_PIC_ID = 5
+BACK_GRAY_PIC_ID = 56
 
 MUTED_PIC_ID = 15
 UNMUTED_PIC_ID = 16
@@ -46,6 +57,8 @@ STREAM_ICON_OBJNAME = "picon"
 ZONE_NAME_OBJNAME = "bzone"
 SOURCE_NAME_OBJNAME = "bsource"
 PLAY_BUTTON_OBJNAME = "bplay"
+BACK_BUTTON_OBJNAME = "bback"
+SKIP_BUTTON_OBJNAME = "bskip"
 MUTE_BUTTON_OBJNAME = "bmute"
 SONG_NAME_OBJNAME = "tname"
 ALBUM_NAME_OBJNAME = "talbum"
@@ -176,13 +189,62 @@ def set_image(pagename, componentname, pic):
 def set_visible(id_or_name, visible):
     uart_write(f'vis {id_or_name},{1 if visible else 0}')
 
-def update_play_pause_button(playing):
-    if playing:
-        uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PAUSE_UP_PIC_ID}')
-        uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PAUSE_DOWN_PIC_ID}')
+def set_play_pause_button_state(is_playing, supported_cmds):
+    can_pause = 'pause' in supported_cmds
+    can_play = 'play' in supported_cmds
+    can_stop = 'stop' in supported_cmds
+    if is_playing:
+        if can_pause:
+            set_pause_button()
+        elif can_stop:
+            set_stop_button()
+        else:
+            set_gray_stop_button()
     else:
-        uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PLAY_UP_PIC_ID}')
-        uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PLAY_DOWN_PIC_ID}')
+        if can_play:
+            set_play_button()
+        else:
+            set_gray_play_button()
+    set_back_button_enabled('prev' in supported_cmds)
+    set_skip_button_enabled('next' in supported_cmds)
+
+
+def set_play_button():
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PLAY_UP_PIC_ID}')
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PLAY_DOWN_PIC_ID}')
+
+def set_gray_play_button():
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PLAY_GRAY_PIC_ID}')
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PLAY_GRAY_PIC_ID}')
+
+def set_pause_button():
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={PAUSE_UP_PIC_ID}')
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={PAUSE_DOWN_PIC_ID}')
+
+def set_stop_button():
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={STOP_UP_PIC_ID}')
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={STOP_DOWN_PIC_ID}')
+
+def set_gray_stop_button():
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic={STOP_GRAY_PIC_ID}')
+    uart_write(f'{HOME_PAGE_NAME}.{PLAY_BUTTON_OBJNAME}.pic2={STOP_GRAY_PIC_ID}')
+
+def set_back_button_enabled(enabled):
+    if enabled:
+        uart_write(f'{HOME_PAGE_NAME}.{BACK_BUTTON_OBJNAME}.pic={BACK_UP_PIC_ID}')
+        uart_write(f'{HOME_PAGE_NAME}.{BACK_BUTTON_OBJNAME}.pic2={BACK_DOWN_PIC_ID}')
+    else:
+        uart_write(f'{HOME_PAGE_NAME}.{BACK_BUTTON_OBJNAME}.pic={BACK_GRAY_PIC_ID}')
+        uart_write(f'{HOME_PAGE_NAME}.{BACK_BUTTON_OBJNAME}.pic2={BACK_GRAY_PIC_ID}')
+
+def set_skip_button_enabled(enabled):
+    if enabled:
+        uart_write(f'{HOME_PAGE_NAME}.{SKIP_BUTTON_OBJNAME}.pic={SKIP_UP_PIC_ID}')
+        uart_write(f'{HOME_PAGE_NAME}.{SKIP_BUTTON_OBJNAME}.pic2={SKIP_DOWN_PIC_ID}')
+    else:
+        uart_write(f'{HOME_PAGE_NAME}.{SKIP_BUTTON_OBJNAME}.pic={SKIP_GRAY_PIC_ID}')
+        uart_write(f'{HOME_PAGE_NAME}.{SKIP_BUTTON_OBJNAME}.pic2={SKIP_GRAY_PIC_ID}')
+
 
 def update_mute_button(muted):
     if muted:

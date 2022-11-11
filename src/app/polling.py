@@ -4,8 +4,9 @@ from app import api, displayserial
 from app import dt
 from app.api import get_source, get_zone, get_group
 from app.audioconfig import AudioConfig
-from app.displayserial import send_title, send_artist, update_play_pause_button, send_album, update_mute_button, \
-    set_vol_slider_vol_f, send_stream_name, send_zone_or_group_name, send_source_name, HOME_PAGE_NAME, send_stream_type
+from app.displayserial import send_title, send_artist, send_album, update_mute_button, \
+    set_vol_slider_vol_f, send_stream_name, send_zone_or_group_name, send_source_name, HOME_PAGE_NAME, send_stream_type, \
+    set_play_pause_button_state
 
 track_name = " "
 album_name = " "
@@ -169,7 +170,7 @@ def poll_playing(source):
         new_is_playing = source["info"]["state"] == "playing"
     if new_is_playing != is_playing:
         is_playing = new_is_playing
-        update_play_pause_button(is_playing)
+        set_play_pause_button_state(is_playing, _audioconf.supported_cmds)
 
 def poll_stream_name(stream):
     global stream_name
@@ -204,7 +205,7 @@ def get_is_playing():
 def set_is_playing(is_p):
     global is_playing
     is_playing = is_p
-    update_play_pause_button(is_playing)
+    set_play_pause_button_state(is_playing, _audioconf.supported_cmds)
 
 def get_muted():
     return is_muted
