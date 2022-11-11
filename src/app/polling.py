@@ -6,7 +6,7 @@ from app.api import get_source, get_zone, get_group
 from app.audioconfig import AudioConfig
 from app.displayserial import send_title, send_artist, send_album, update_mute_button, \
     set_vol_slider_vol_f, send_stream_name, send_zone_or_group_name, send_source_name, HOME_PAGE_NAME, send_stream_type, \
-    set_play_pause_button_state
+    set_media_controls_state
 
 track_name = " "
 album_name = " "
@@ -14,6 +14,7 @@ artist_name = " "
 stream_name = " "
 stream_type = 'rca'
 is_playing = None
+last_supported_cmds = []
 is_muted = None
 vol_f = 0.0
 
@@ -164,13 +165,15 @@ def poll_artist(source):
 
 def poll_playing(source):
     global is_playing
+    global last_supported_cmds
     if source is None:
         new_is_playing = False
     else:
         new_is_playing = source["info"]["state"] == "playing"
-    if new_is_playing != is_playing:
+    if new_is_playing != is_playing or _audioconf.supported_cmds != last_supported_cmds:
+        last_supported_cmds = _audioconf.supported_cmds
         is_playing = new_is_playing
-        set_play_pause_button_state(is_playing, _audioconf.supported_cmds)
+        set_media_controls_state(is_playing, _audioconf.supported_cmds)
 
 def poll_stream_name(stream):
     global stream_name
@@ -205,7 +208,7 @@ def get_is_playing():
 def set_is_playing(is_p):
     global is_playing
     is_playing = is_p
-    set_play_pause_button_state(is_playing, _audioconf.supported_cmds)
+    set_media_controls_state(is_playing, _audioconf.supported_cmds)
 
 def get_muted():
     return is_muted

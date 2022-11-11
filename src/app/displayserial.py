@@ -189,7 +189,7 @@ def set_image(pagename, componentname, pic):
 def set_visible(id_or_name, visible):
     uart_write(f'vis {id_or_name},{1 if visible else 0}')
 
-def set_play_pause_button_state(is_playing, supported_cmds):
+def set_media_controls_state(is_playing, supported_cmds):
     can_pause = 'pause' in supported_cmds
     can_play = 'play' in supported_cmds
     can_stop = 'stop' in supported_cmds
