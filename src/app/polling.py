@@ -170,8 +170,9 @@ def poll_playing(source):
         new_is_playing = False
     else:
         new_is_playing = source["info"]["state"] == "playing"
+        _audioconf.poll(source)
     if new_is_playing != is_playing or _audioconf.supported_cmds != last_supported_cmds:
-        last_supported_cmds = _audioconf.supported_cmds
+        last_supported_cmds = _audioconf.supported_cmds.copy()
         is_playing = new_is_playing
         set_media_controls_state(is_playing, _audioconf.supported_cmds)
 
