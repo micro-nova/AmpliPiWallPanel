@@ -28,6 +28,9 @@ class AudioConfig:
             self.using_group = False
             self.supported_cmds = []
 
+    def poll(self, source):
+        self.__update_supported_cmds_from_source(source)
+
     def load_settings(self) -> bool:
         print("loading AudioConfig settings")
         self.__load_info()
