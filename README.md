@@ -45,28 +45,29 @@ Set up an MQTT broker with Home Assistant if you haven't already. It's recommend
 ### 2. Configure Home Assistant
 Open your configuration.yaml (if you don't know how to do this follow the steps under editing configuration.yaml [here](https://www.home-assistant.io/docs/configuration/#editing-configurationyaml)) and add the following lines replacing  ``{Room Name}`` with the name of the room you placed your wall panel in and the ``{Switch Name}``'s with what you want the respective switches to appear as in Home Assistant.
 ```
-switch:
-- platform: mqtt
-name: "{Switch 1 Name}"
-state_topic: "home/{Room Name}/wp/relay1/status"
-command_topic: "home/{Room Name}/wp/relay1/cmd"
-payload_on: "on"
-payload_off: "off"
-state_on: "on"
-state_off: "off"
-optimistic: false
-retain: true
+mqtt:
+  switch:
+  - unique_id: switch_1_name
+    name: "{Switch 1 Name}"
+    state_topic: "home/{Room Name}/wp/relay1/status"
+    command_topic: "home/{Room Name}/wp/relay1/cmd"
+    payload_on: "on"
+    payload_off: "off"
+    state_on: "on"
+    state_off: "off"
+    optimistic: false
+    retain: true
 
-- platform: mqtt
-name: "{Switch 2 Name}"
-state_topic: "home/{Room Name}/wp/relay2/status"
-command_topic: "home/{Room Name}/wp/relay2/cmd"
-payload_on: "on"
-payload_off: "off"
-state_on: "on"
-state_off: "off"
-optimistic: false
-retain: true
+    - uniqwe_id: switch_2_name
+    name: "{Switch 2 Name}"
+    state_topic: "home/{Room Name}/wp/relay2/status"
+    command_topic: "home/{Room Name}/wp/relay2/cmd"
+    payload_on: "on"
+    payload_off: "off"
+    state_on: "on"
+    state_off: "off"
+    optimistic: false
+    retain: true
 ```
 ###### For more information about the purpose of values in the above configuration read the documentation [here](https://www.home-assistant.io/integrations/switch.mqtt/#full-configuration).
 
