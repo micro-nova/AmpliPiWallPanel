@@ -52,6 +52,8 @@ def run():
 def run_h():
     # putting imports here to curb memory usage
     import gc
+    import time
+    import _thread
 
     from machine import Pin
 
@@ -97,8 +99,16 @@ def run_h():
     last_check_update_time = curr_t - CHECK_UPDATE_INTERVAL_SECONDS
     last_relay_file_update_time = curr_t - RELAY_FILE_UPDATE_SECONDS
     message = b''
+
+    def mqtt_thread():
+        while True:
+            mqttconfig.update()
+            time.sleep_ms(500)
+
+    _thread.start_new_thread(mqtt_thread, ())
+
     while True:
-        # handle api call queue
+        # # handle api call queue
         api.update()
 
         # update brightness
@@ -118,9 +128,6 @@ def run_h():
 
         if curr_time - last_poll_time > POLLING_INTERVAL_SECONDS:
             last_poll_time = curr_time
-            mqttconfig.update()
-            gc.collect()
-
             try:
                 if wifi.is_connected():
                     if not initialized:
@@ -130,6 +137,8 @@ def run_h():
                             mqttconfig.start()
                     if audioconf.zone_id >= 0:
                         api.queue_call(poll)
+                        gc.collect()
+
                     else:
                         print("didn't poll because zone is not configured")
             except OSError as e:
@@ -137,6 +146,7 @@ def run_h():
                     print("wifi disconnected.")
                 print("polling failed somehow.")
                 print(e)
+            gc.collect()
 
         # poll serial messages from display
         if displayserial.uart_any():
@@ -187,3 +197,4 @@ def run_h():
 
                     #  clear message
                     message = b''
+        time.sleep_ms(10)
