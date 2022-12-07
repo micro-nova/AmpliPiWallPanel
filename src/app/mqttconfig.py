@@ -14,7 +14,7 @@ _OFF_VALUE = 'off'
 _RELAY1_SUBTOPIC = 'relay1'
 _RELAY2_SUBTOPIC = 'relay2'
 
-_RECONNECT_INTERVAL = 120 # seconds
+_RECONNECT_INTERVAL = 180  # seconds
 
 c: umqtt.MQTTClient = None
 config: dict = None
@@ -127,7 +127,8 @@ def update():
         if curr_time - last_reconnect_time >= _RECONNECT_INTERVAL:
             last_reconnect_time = curr_time
             print("trying periodic mqtt reconnect...")
-            try_connect()
+            # try_connect()
+            start()
 
 def try_connect():
     global is_connected
