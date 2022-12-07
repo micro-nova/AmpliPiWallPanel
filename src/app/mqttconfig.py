@@ -5,6 +5,7 @@ import machine
 import time
 import random
 
+from app import relay
 from app.dt import time_sec
 
 _MQTT_CONFIG_FILENAME = 'mqtt.txt'
@@ -51,7 +52,9 @@ def start():
                 c = umqtt.MQTTClient(id, ip_port[0], user=username, password=password)
 
             c.set_callback(_callback)
+            # save current relay state
             try_connect()  # this also sets is_connected
+            relay.mqtt_init()
             c.subscribe(_relay1_topic(config, True))
             c.subscribe(_relay2_topic(config, True))
             return True
