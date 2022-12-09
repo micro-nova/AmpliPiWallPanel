@@ -51,12 +51,15 @@ def start():
             else:
                 c = umqtt.MQTTClient(id, ip_port[0], user=username, password=password)
 
-            c.set_callback(_callback)
-            # save current relay state
             try_connect()  # this also sets is_connected
+            relay.mqtt_init()
+            time.sleep_ms(20)
+            c.check_msg()
+            time.sleep_ms(20)
             relay.mqtt_init()
             c.subscribe(_relay1_topic(config, True))
             c.subscribe(_relay2_topic(config, True))
+            c.set_callback(_callback)
             return True
     except Exception as e:
         print(f'mqttconfig start threw an error: {e}')
@@ -118,12 +121,14 @@ def get_client_id():
 
 def update():
     global last_reconnect_time
+    global is_connected
     if c is not None and is_connected:
         try:
             c.check_msg()
         except Exception as e:
             print(f'mqttconfig check_msg threw an error: {e}')
-            time.sleep_ms(100)
+            is_connected = False
+            time.sleep_ms(20)
     elif c is not None:  # is_connected is false
         # print("tried updating mqtt but mqtt is disconnected.")
         curr_time = time_sec()

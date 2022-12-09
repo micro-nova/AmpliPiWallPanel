@@ -120,7 +120,6 @@ def run_h():
             last_poll_time = curr_time
             mqttconfig.update()
             gc.collect()
-
             try:
                 if wifi.is_connected():
                     if not initialized:
