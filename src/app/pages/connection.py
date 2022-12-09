@@ -8,7 +8,7 @@ _SSID_FIELD_OBJNAME = 'tssidfield'
 _PASSWORD_FIELD_OBJNAME = 'tpassfield'
 _IP_FIELD_OBJNAME = 'tipfield'
 _WIFI_STATUS_OBJNAME = 'pwifi'
-_AMPLIPI_STATUS_OBJNAME = 'pnet'
+_AMPLIPI_STATUS_OBJNAME = 'pnetwork'
 _AUTODETECT_BUTTON_OBJNAME = 'bautodetect'
 
 _WHITE = 65535

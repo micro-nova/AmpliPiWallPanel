@@ -41,6 +41,7 @@ class RelayState:
             self._relay_pin.value(self._state)
             _update_indicator(self._state, self._button_objname)
             self.publish_state()
+            print(f'current relay state: {get_state()}')
         else:
             self._event_time = curr_time
 
@@ -54,7 +55,7 @@ class RelayState:
         self._pstate = self._state
 
     def get_state(self):
-        return self._pstate
+        return self._state
 
     def publish_state(self):
         self.mqtt_publish_func(self._state)
@@ -63,7 +64,7 @@ class RelayState:
         self._state = state
         self._relay_pin.value(self._state)
         _update_indicator(self._state, self._button_objname)
-        self.mqtt_publish_func(state)
+        self.publish_state()
 
 state1: RelayState = None
 state2: RelayState = None
@@ -113,10 +114,17 @@ def set_relay1_state(state):
 def set_relay2_state(state):
     state2.set_state(state)
 
-def mqtt_init():
+def mqtt_init(state=None):
     """Publishes current relay state"""
+    if state is not None:
+        state1.set_state(state[0])
+        state2.set_state(state[1])
     state1.publish_state()
     state2.publish_state()
+
+
+def get_state():
+    return [state1.get_state(), state2.get_state()]
 
 def _write_file(filedict):
     with open(_RELAY_STATE_FILENAME, 'w') as relay_file:

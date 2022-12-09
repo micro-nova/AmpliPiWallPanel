@@ -51,15 +51,27 @@ def start():
             else:
                 c = umqtt.MQTTClient(id, ip_port[0], user=username, password=password)
 
+            # home assistant tries to change the state for some reason,
+            # so store it here and publish it after init
+            # print("get state")
+            state = relay.get_state()
+            # print(f'got state: {state}')
+            # print("set callback")
+            c.set_callback(_callback)
+            # print("try connect")
             try_connect()  # this also sets is_connected
-            relay.mqtt_init()
-            time.sleep_ms(20)
-            c.check_msg()
-            time.sleep_ms(20)
-            relay.mqtt_init()
+            # print("subscribe")
             c.subscribe(_relay1_topic(config, True))
             c.subscribe(_relay2_topic(config, True))
-            c.set_callback(_callback)
+            # print("mqtt_init(state)")
+            for i in range(10):
+                relay.mqtt_init(state)
+                # print(f'relay1: {relay.state1._state}, relay2: {relay.state2._state}')
+                time.sleep_ms(20)
+                # print("check_msg")
+                c.check_msg()
+                time.sleep_ms(20)
+                # print(f'relay1: {relay.state1._state}, relay2: {relay.state2._state}')
             return True
     except Exception as e:
         print(f'mqttconfig start threw an error: {e}')
@@ -71,6 +83,7 @@ def set_topic_base(base):
 
 def update_config(broker_ip=None, topic=None, username=None, password=None, client_id=None):
     global config
+
     config = _read_file()
     if broker_ip is not None:
         config['broker_ip'] = broker_ip
@@ -86,13 +99,7 @@ def update_config(broker_ip=None, topic=None, username=None, password=None, clie
 
     # start/restart mqtt client
     start()
-    # if c is None:
-    #     start()
-    # else:
-    #     try:
-    #         c.connect(clean_session=False)
-    #     except Exception as e:
-    #         print(f'got {e} from c.connect(clean_session=False')
+
 
 def get_broker_ip():
     if config is not None:
@@ -149,6 +156,9 @@ def try_connect():
             is_connected = False
     else:
         is_connected = False
+
+def get_is_connected():
+    return is_connected
 
 def send_relay1_state(state):
     """Publishes a message indicating the state of relay1."""
