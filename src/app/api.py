@@ -12,10 +12,13 @@ _amplipi_ip = ''
 _NET_SLEEP_TIME_MS = 5
 _QUEUE_DELAY_SECONDS = 0.1
 _QUEUE_MAX_SIZE = 4
+_AMPLIPI_RETRY_INTERVAL = 60*5
 
 _queue = []
 _droppable_queue = None
 _last_call_time = dt.time_sec()
+_amplipi_is_connected = True
+_last_attempted_call_time = dt.time_sec()
 
 
 def queue_call(call, droppable=False):
@@ -26,7 +29,6 @@ def queue_call(call, droppable=False):
     else:
         if len(_queue) < _QUEUE_MAX_SIZE:
             _queue.append(call)
-            # print(f'queue length: {len(_queue)}')
         else:
             # can't add to queue; it's full
             print('queue full!')
@@ -52,45 +54,70 @@ def update():
 def _get_safe(request):
     """Wraps get with try-except, checks status_code, and checks if wifi is connected first.
     Returns dict if success, returns None if failed """
-    if wifi.is_connected() and _amplipi_ip:
+    global _amplipi_is_connected
+    global _last_attempted_call_time
+    if wifi.is_connected() and _amplipi_ip and (dt.time_sec() - _last_attempted_call_time > _AMPLIPI_RETRY_INTERVAL or _amplipi_is_connected):
         try:
+            _last_attempted_call_time = dt.time_sec()
             response = urequests.get(request)
             if response.status_code in [200, 201]:
+                _amplipi_is_connected = True
                 return json.loads(response.text)
-            print(response.text)
         except OSError as e:
+            _amplipi_is_connected = False
             print(e)
     return None
 
 def _patch_safe(request, content):
     """Wraps get with try-except, checks if wifi is connected"""
-    if wifi.is_connected() and _amplipi_ip:
+    global _amplipi_is_connected
+    global _last_attempted_call_time
+    if wifi.is_connected() and _amplipi_ip and (dt.time_sec() - _last_attempted_call_time > _AMPLIPI_RETRY_INTERVAL or _amplipi_is_connected):
         try:
+            _last_attempted_call_time = dt.time_sec()
             urequests.patch(request, json=content)
             time.sleep_ms(_NET_SLEEP_TIME_MS)
+            _amplipi_is_connected = True
         except OSError as e:
+            _amplipi_is_connected = False
             print(e)
 
 def _post_safe(request):
     """Wraps post with try-except, checks if wifi is connected"""
-    if wifi.is_connected() and _amplipi_ip:
+    global _amplipi_is_connected
+    global _last_attempted_call_time
+    if wifi.is_connected() and _amplipi_ip and (dt.time_sec() - _last_attempted_call_time > _AMPLIPI_RETRY_INTERVAL or _amplipi_is_connected):
         try:
+            _last_attempted_call_time = dt.time_sec()
             urequests.post(request)
             # can't handle status_code from response because response can be very large,
-            # consuming lots of memory. i think the gc collects it if the return is not
-            # handled
+            # consuming lots of memory. i think the gc collects it if the return is not handled
             time.sleep_ms(_NET_SLEEP_TIME_MS)
+            _amplipi_is_connected = True
         except OSError as e:
+            _amplipi_is_connected = False
             print(e)
+
+def check_amplipi_connection():
+    """Makes a get just to see if amplipi is connected."""
+    global _amplipi_is_connected
+    print(f'Checking connection with AmpliPi at address {_amplipi_ip}')
+    try:
+        urequests.get(f'http://{_amplipi_ip}/api/zones')
+        _amplipi_is_connected = True
+        gc.collect()
+    except OSError as e:
+        _amplipi_is_connected = False
+        print(e)
+
+def set_amplipi_ip(ip):
+    global _amplipi_ip
+    _amplipi_ip = ip
 
 def get_source(source_id):
     """API call to get source from source_id. Returns it as a dict or None if failed."""
     response = _get_safe(f'http://{_amplipi_ip}/api/sources/{source_id}')
     return response
-
-# def get_sources_dict():
-#     """API call to get all sources. Returns it as a dict or None if failed."""
-#     return _get_safe(f'http://{IP}/api/sources')
 
 def get_presets():
     """API call to get all presets. Returns it as a list or None if failed."""
@@ -197,3 +224,6 @@ def get_stream_id_from_source_dict(source):
     if len(source_split) == 2:
         return int(source_split[1])
     return None
+
+def get_amplipi_is_connected():
+    return _amplipi_is_connected

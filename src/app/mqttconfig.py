@@ -15,7 +15,7 @@ _OFF_VALUE = 'off'
 _RELAY1_SUBTOPIC = 'relay1'
 _RELAY2_SUBTOPIC = 'relay2'
 
-_RECONNECT_INTERVAL = 180  # seconds
+_RECONNECT_INTERVAL = 60*10  # seconds
 
 c: umqtt.MQTTClient = None
 config: dict = None
