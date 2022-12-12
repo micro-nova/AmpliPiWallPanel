@@ -1,10 +1,12 @@
+import gc
 import json
 import umqtt.simple as umqtt
 import machine
 import time
 import random
 
-
+from app import relay
+from app.dt import time_sec
 
 _MQTT_CONFIG_FILENAME = 'mqtt.txt'
 
@@ -13,8 +15,12 @@ _OFF_VALUE = 'off'
 _RELAY1_SUBTOPIC = 'relay1'
 _RELAY2_SUBTOPIC = 'relay2'
 
+_RECONNECT_INTERVAL = 180  # seconds
+
 c: umqtt.MQTTClient = None
 config: dict = None
+is_connected = False
+last_reconnect_time = time_sec()
 
 # can also be called again to restart
 def start():
@@ -22,7 +28,13 @@ def start():
     global config
     try:
         if c is not None:
-            c.disconnect()
+            try:
+                c.disconnect()
+            except Exception as e:
+                print(f'mqttconfig start disconnect threw an error: {e}')
+            del c
+            c = None
+            gc.collect()
 
         config = _read_file()
         broker_ip = get_broker_ip()
@@ -39,10 +51,27 @@ def start():
             else:
                 c = umqtt.MQTTClient(id, ip_port[0], user=username, password=password)
 
+            # home assistant tries to change the state for some reason,
+            # so store it here and publish it after init
+            # print("get state")
+            state = relay.get_state()
+            # print(f'got state: {state}')
+            # print("set callback")
             c.set_callback(_callback)
-            try_connect()
+            # print("try connect")
+            try_connect()  # this also sets is_connected
+            # print("subscribe")
             c.subscribe(_relay1_topic(config, True))
             c.subscribe(_relay2_topic(config, True))
+            # print("mqtt_init(state)")
+            for i in range(10):
+                relay.mqtt_init(state)
+                # print(f'relay1: {relay.state1._state}, relay2: {relay.state2._state}')
+                time.sleep_ms(20)
+                # print("check_msg")
+                c.check_msg()
+                time.sleep_ms(20)
+                # print(f'relay1: {relay.state1._state}, relay2: {relay.state2._state}')
             return True
     except Exception as e:
         print(f'mqttconfig start threw an error: {e}')
@@ -54,6 +83,7 @@ def set_topic_base(base):
 
 def update_config(broker_ip=None, topic=None, username=None, password=None, client_id=None):
     global config
+
     config = _read_file()
     if broker_ip is not None:
         config['broker_ip'] = broker_ip
@@ -69,13 +99,7 @@ def update_config(broker_ip=None, topic=None, username=None, password=None, clie
 
     # start/restart mqtt client
     start()
-    # if c is None:
-    #     start()
-    # else:
-    #     try:
-    #         c.connect(clean_session=False)
-    #     except Exception as e:
-    #         print(f'got {e} from c.connect(clean_session=False')
+
 
 def get_broker_ip():
     if config is not None:
@@ -103,36 +127,58 @@ def get_client_id():
     return None
 
 def update():
-    if c is not None:
+    global last_reconnect_time
+    global is_connected
+    if c is not None and is_connected:
         try:
             c.check_msg()
         except Exception as e:
             print(f'mqttconfig check_msg threw an error: {e}')
-            try_connect()
-            time.sleep_ms(100)
+            is_connected = False
+            time.sleep_ms(20)
+    elif c is not None:  # is_connected is false
+        # print("tried updating mqtt but mqtt is disconnected.")
+        curr_time = time_sec()
+        if curr_time - last_reconnect_time >= _RECONNECT_INTERVAL:
+            last_reconnect_time = curr_time
+            print("trying periodic mqtt reconnect...")
+            # try_connect()
+            start()
 
 def try_connect():
+    global is_connected
     if c is not None:
         try:
             c.connect()
+            is_connected = True
         except Exception as e:
             print(f'mqttconfig connect threw an error: {e}')
+            is_connected = False
+    else:
+        is_connected = False
+
+def get_is_connected():
+    return is_connected
 
 def send_relay1_state(state):
     """Publishes a message indicating the state of relay1."""
-    if c is not None:
+    if c is not None and is_connected:
         try:
             c.publish(_relay1_topic(config, False), 'on' if state else 'off')
         except Exception as e:
             print(f'mqttconfig publish threw an error: {e}')
+    else:
+        print("tried sending relay state but mqtt is disconnected.")
 
 def send_relay2_state(state):
     """Publishes a message indicating the state of relay2."""
-    if c is not None:
+    if c is not None and is_connected:
         try:
             c.publish(_relay2_topic(config, False), 'on' if state else 'off')
         except Exception as e:
             print(f'mqttconfig publish threw an error: {e}')
+    else:
+        print("tried sending relay state but mqtt is disconnected.")
 
 def _callback(topic, msg):
     # handle switch stuff
