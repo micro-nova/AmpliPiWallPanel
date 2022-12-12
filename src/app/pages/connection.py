@@ -109,9 +109,7 @@ def handle_msg(message):
                 print('password is modified')
             wifi.save_wifi_info(ssid_field_txt, password, ip_field_txt, autodetect)
             wifi.try_connect()
-            # TODO: call something in API to update the amplipi connection status
-            polling.poll()
-            # alternativey just
+            api.check_amplipi_connection()
             update_connection_status()
             set_visible('zspinner', False)
 
@@ -137,6 +135,8 @@ def handle_msg(message):
         elif id == _PASSWORD_FIELD_ID:
             pass_field_txt = text
         elif id == _IP_FIELD_ID:
+            print(f'setting ip_field_txt to {text}')
             ip_field_txt = text
+            api.set_amplipi_ip(ip_field_txt)
 
         print(f'Received string: {text}')

@@ -12,12 +12,12 @@ _amplipi_ip = ''
 _NET_SLEEP_TIME_MS = 5
 _QUEUE_DELAY_SECONDS = 0.1
 _QUEUE_MAX_SIZE = 4
-_AMPLIPI_RETRY_INTERVAL = 120
+_AMPLIPI_RETRY_INTERVAL = 60*3
 
 _queue = []
 _droppable_queue = None
 _last_call_time = dt.time_sec()
-_amplipi_is_connected = False
+_amplipi_is_connected = True
 _last_attempted_call_time = dt.time_sec()
 
 
@@ -97,6 +97,22 @@ def _post_safe(request):
         except OSError as e:
             _amplipi_is_connected = False
             print(e)
+
+def check_amplipi_connection():
+    """Makes a get just to see if amplipi is connected."""
+    global _amplipi_is_connected
+    print(f'Checking connection with AmpliPi at address {_amplipi_ip}')
+    try:
+        urequests.get(f'http://{_amplipi_ip}/api/zones')
+        _amplipi_is_connected = True
+        gc.collect()
+    except OSError as e:
+        _amplipi_is_connected = False
+        print(e)
+
+def set_amplipi_ip(ip):
+    global _amplipi_ip
+    _amplipi_ip = ip
 
 def get_source(source_id):
     """API call to get source from source_id. Returns it as a dict or None if failed."""
