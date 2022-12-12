@@ -12,7 +12,7 @@ _amplipi_ip = ''
 _NET_SLEEP_TIME_MS = 5
 _QUEUE_DELAY_SECONDS = 0.1
 _QUEUE_MAX_SIZE = 4
-_AMPLIPI_RETRY_INTERVAL = 60*3
+_AMPLIPI_RETRY_INTERVAL = 60*5
 
 _queue = []
 _droppable_queue = None
