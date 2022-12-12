@@ -1,7 +1,7 @@
-from app import wifi, displayserial
+from app import wifi, displayserial, api, polling
 from app.displayserial import set_component_txt, CONNECTION_PAGE_NAME, uart_write, receive_text_message_str, \
     WIFI_CONNECTED_PIC_ID, WIFI_DISCONNECTED_PIC_ID, message_is_button_event, \
-    button_is_pressed, message_id, message_is_text, set_visible
+    button_is_pressed, message_id, message_is_text, set_visible, NETWORK_CONNECTED_PIC_ID, NETWORK_DISCONNECTED_PIC_ID
 from app.pages import ssid
 
 _SSID_FIELD_OBJNAME = 'tssidfield'
@@ -73,7 +73,10 @@ def update_connection_status():
         uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={WIFI_CONNECTED_PIC_ID}')
     else:
         uart_write(f'{CONNECTION_PAGE_NAME}.{_WIFI_STATUS_OBJNAME}.pic={WIFI_DISCONNECTED_PIC_ID}')
-    # TODO: update AmpliPi connectivity info
+    if api.get_amplipi_is_connected() and wifi.is_connected():
+        uart_write(f'{CONNECTION_PAGE_NAME}.{_AMPLIPI_STATUS_OBJNAME}.pic={NETWORK_CONNECTED_PIC_ID}')
+    else:
+        uart_write(f'{CONNECTION_PAGE_NAME}.{_AMPLIPI_STATUS_OBJNAME}.pic={NETWORK_DISCONNECTED_PIC_ID}')
 
 def _on_autodetect():
     global autodetect
@@ -106,6 +109,9 @@ def handle_msg(message):
                 print('password is modified')
             wifi.save_wifi_info(ssid_field_txt, password, ip_field_txt, autodetect)
             wifi.try_connect()
+            # TODO: call something in API to update the amplipi connection status
+            polling.poll()
+            # alternativey just
             update_connection_status()
             set_visible('zspinner', False)
 
