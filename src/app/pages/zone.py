@@ -25,9 +25,6 @@ _dropdown = DropDown()
 _zones = []
 _groups = []
 
-# TODO: zone page will now toggle between zones and groups. need to figure out how
-#  other systems will handle this change.
-
 _display_groups_last = False
 
 def _on_group_zone_button():
@@ -71,8 +68,6 @@ def load_zone_page(groups=False):
     _dropdown.init(ZONE_PAGE_NAME, _ITEM_FIRST_ID,
                      _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
                      _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
-
-    _dropdown.set_loading_state()
     _dropdown.clear_item_index_callbacks()
 
     if groups:
@@ -85,11 +80,6 @@ def load_zone_page(groups=False):
         if _groups is None:
             _groups = []
         names = [group['name'] for group in _groups]
-
-        print(f'{len(names)} groups: ')
-        print(names)
-
-        # dropdown.handle_m
         _dropdown.populate(names)
 
     else:
@@ -102,13 +92,7 @@ def load_zone_page(groups=False):
         if _zones is None:
             _zones = []
         names = [zone['name'] for zone in _zones]
-
-        print(f'{len(names)} zones: ')
-        print(names)
-        # print(_zones)
-
         _dropdown.populate(names)
-
 
 def handle_msg(message):
     if message_is_button_event(message) and button_is_pressed(message):

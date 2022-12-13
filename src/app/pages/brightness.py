@@ -11,7 +11,6 @@ CONFIG_FILENAME = 'brightness.txt'
 TIMEOUT_SLIDER_ID = 3
 ACTIVE_BRIGHTNESS_SLIDER_ID = 5
 INACTIVE_BRIGHTNESS_SLIDER_ID = 9
-
 BACK_BUTTON_ID = 6
 
 _BRIGHTNESS_FADE_TIME = 8
@@ -47,10 +46,6 @@ def update():
     # perform linear interpolation between active and inactive brightness based on time
     p = min(max((t - _last_touch_time - _params['timeout']) / _BRIGHTNESS_FADE_TIME, 0), 1)
     brightness = int(_params['inactive_b'] * p + _params['active_b'] * (1-p))
-    # print(f'brightness: {brightness}')
-    # print(_last_touch_time)
-    # print(_params['timeout'])
-    # print(p)
     if _file_stale and p >= 1:
         _save_file()
 
@@ -65,14 +60,12 @@ def update():
 def handle_msg(message):
     global _file_stale
     global _params
-    print("handling brightness page message")
     id = message_id(message)
     if message_is_slider_event(message):
         if id == TIMEOUT_SLIDER_ID:
             _file_stale = True
             timeout = _timeout_slider_to_value(get_slider_value(message))
             _params['timeout'] = timeout
-            print(f'received {timeout} for timeout slider')
             if timeout >= 60:
                 set_component_txt(BRIGHTNESS_PAGE_NAME, 'ttimeout', f'{int(timeout/60)} m')
             else:

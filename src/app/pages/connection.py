@@ -20,7 +20,7 @@ _CONNECT_BUTTON_ID = 7
 _BACK_BUTTON_ID = 8
 _SSID_FIELD_ID = 3
 _AUTODETECT_BUTTON_ID = 12
-_PASSWORD_FIELD_ID = 4 # might not be needed
+_PASSWORD_FIELD_ID = 4
 _IP_FIELD_ID = 9
 
 ssid_list = []
@@ -31,9 +31,6 @@ autodetect = True
 
 def load_connection_page():
     global autodetect
-    """Loads connection page contents. Can be called whenever since all relevant components are global in the
-    connection page. Although, it shouldn't be called when the user is entering new wifi info since it would override it."""
-    # load wifi info
     wifi_info = wifi.load_wifi_info()
     wifi_ssid = wifi_info.get('ssid', '')
     wifi_password = wifi_info.get('password', '')
@@ -50,21 +47,20 @@ def load_connection_page():
 
 def update_autodetect_graphics():
     if autodetect:
-        # make autodetect button toggled in???
+        # make autodetect button toggled in
         displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco',
                                              _GRAY)
         displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco2',
                                              _GRAY)
-        # make pi text field gray
+        # make ip text field gray
         displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, 'pco', _GRAY)
-        pass
     else:
-        # make autodetect button toggled in???
+        # un-toggle autodetect button
         displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco',
                                              _WHITE)
         displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _AUTODETECT_BUTTON_OBJNAME, 'pco2',
                                              _WHITE)
-        # make pi text field gray
+        # make ip text field black
         displayserial.set_component_property(displayserial.CONNECTION_PAGE_NAME, _IP_FIELD_OBJNAME, 'pco', _BLACK)
 
 def update_connection_status():
@@ -96,9 +92,7 @@ def handle_msg(message):
     if message_is_button_event(message) and button_is_pressed(message):
         if id == _CONNECT_BUTTON_ID:
             set_visible('zspinner', True)
-            print("Connect button pressed")
             wifi.disconnect()
-            print(f'hopefully autodetect is on. autodetect:{autodetect}')
             wifi_info = wifi.load_wifi_info()
             password = pass_field_txt
             # check if the password is unmodified (i.e. not all asterisks)
@@ -121,12 +115,10 @@ def handle_msg(message):
             # nextion will switch to ssidpage, so we need to init that page
             ssid.load_ssid_page()
         elif id == _AUTODETECT_BUTTON_ID:
-            print('autodetect button pressed')
             _on_autodetect()
         elif id == _IP_FIELD_ID:
             # the user entered an IP manually, so disable autodetect
             autodetect = False
-            print('setting autodetect to false')
             update_autodetect_graphics()
     elif message_is_text(message):
         text = receive_text_message_str(message)
@@ -135,8 +127,5 @@ def handle_msg(message):
         elif id == _PASSWORD_FIELD_ID:
             pass_field_txt = text
         elif id == _IP_FIELD_ID:
-            print(f'setting ip_field_txt to {text}')
             ip_field_txt = text
             api.set_amplipi_ip(ip_field_txt)
-
-        print(f'Received string: {text}')

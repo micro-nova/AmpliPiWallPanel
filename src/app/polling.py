@@ -1,11 +1,8 @@
-# note: track and song are the same thing
-
 from app import api, displayserial
-from app import dt
 from app.api import get_source, get_zone, get_group
 from app.audioconfig import AudioConfig
 from app.displayserial import send_title, send_artist, send_album, update_mute_button, \
-    set_vol_slider_vol_f, send_stream_name, send_zone_or_group_name, send_source_name, HOME_PAGE_NAME, send_stream_type, \
+    set_vol_slider_vol_f, send_stream_name, send_zone_or_group_name, send_source_name, send_stream_type, \
     set_media_controls_state
 
 track_name = " "
@@ -17,17 +14,12 @@ is_playing = None
 last_supported_cmds = []
 is_muted = None
 vol_f = 0.0
-
-
+source_name = ''
 _skip_next_vol_f = False
 _skip_next_playing = False
 _skip_next_mute = False
-
 _awaiting_user_input=False
-
-
 _audioconf = AudioConfig()
-
 
 def invalid_group_handled():
     global _awaiting_user_input
@@ -38,8 +30,8 @@ def poll():
     global _skip_next_playing
     global _skip_next_mute
     global _awaiting_user_input
+    global source_name
 
-    # poll_start_time = dt.time_sec()
     zone = None
     group = None
     if _audioconf.using_group:
@@ -52,6 +44,7 @@ def poll():
     if zone is not None:
         source_id = zone['source_id']
         source = get_source(source_id)
+        source_name = source['name']
         _audioconf.stream_id = api.get_stream_id_from_source_dict(source)
         stream = api.get_stream(_audioconf.stream_id)
         if not _skip_next_vol_f:
@@ -74,8 +67,6 @@ def poll():
             # if success, we are no longer waiting on the user to fix the invalid group
             _awaiting_user_input = False
             print('group valid')
-            # print(source_id)
-            # print(source)
         except Exception:
             # go to the ginvalid page once if the group is invalid
             print('group invalid')
@@ -107,7 +98,7 @@ def poll():
         poll_zone_or_group_name(group)
     poll_track(source)
     poll_album(source)
-    poll_stream_name(stream)
+    poll_stream_name(stream, source)
     poll_source_name(source_id)
     poll_artist(source)
 
@@ -118,14 +109,12 @@ def poll_vol_f(zoneorgroup):
         vol_f = new_vol_f
         set_vol_slider_vol_f(vol_f)
 
-
 def poll_muted(zoneorgroup):
     global is_muted
     new_is_muted = zoneorgroup["mute"]
     if new_is_muted != is_muted:
         is_muted = new_is_muted
         update_mute_button(is_muted)
-
 
 def poll_track(source):
     global track_name
@@ -138,10 +127,8 @@ def poll_track(source):
         track_name = new_track_name
         send_title(track_name)
 
-
 def poll_album(source):
     global album_name
-    # new_album_name = source["info"]["album"]
     new_album_name = ''
     if source is not None:
         if 'album' in source['info']:
@@ -151,10 +138,8 @@ def poll_album(source):
         album_name = new_album_name
         send_album(album_name)
 
-
 def poll_artist(source):
     global artist_name
-    # new_artist_name = source["info"]["artist"]
     new_artist_name = ''
     if source is not None:
         if 'artist' in source['info']:
@@ -176,12 +161,15 @@ def poll_playing(source):
         is_playing = new_is_playing
         set_media_controls_state(is_playing, _audioconf.supported_cmds)
 
-def poll_stream_name(stream):
+def poll_stream_name(stream, source):
     global stream_name
     global stream_type
     new_stream_type = None
     new_stream_name = ''
-    if stream is not None:
+    if source['input'].startswith('local'):
+        new_stream_type = 'rca'
+        new_stream_name = source['name']
+    elif stream is not None:
         new_stream_name = stream['name']
         new_stream_type = stream['type']
     if new_stream_name != stream_name:
@@ -231,11 +219,3 @@ def skip_next_mute():
     global _skip_next_mute
     _skip_next_mute = True
 
-# def resume_polling():
-#     global _skip_next_vol_f
-#     global _skip_next_playing
-#     global _skip_next_mute
-#
-#     _skip_next_vol_f = False
-#     _skip_next_playing = False
-#     _skip_next_mute = False

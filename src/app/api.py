@@ -145,6 +145,10 @@ def set_stream(source_id, stream_id):
     """API call to change a source's input to a stream."""
     _patch_safe(f'http://{_amplipi_ip}/api/sources/{source_id}', {"input": f'stream={stream_id}'})
 
+def set_rca(source_id):
+    """API call to change a source to use local input (RCA)"""
+    _patch_safe(f'http://{_amplipi_ip}/api/sources/{source_id}', {"input": 'local'})
+
 def move_zone_to_source(zone_id, source_id):
     """API call to move a zone to a source"""
     _patch_safe(f'http://{_amplipi_ip}/api/zones/{zone_id}', {"source_id": source_id})

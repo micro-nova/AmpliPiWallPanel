@@ -35,8 +35,6 @@ def load_preset_page():
     _dropdown.init(PRESET_PAGE_NAME, _ITEM_FIRST_ID,
                      _ITEM_OBJNAME, _UP_BUTTON_ID, _UP_BUTTON_OBJNAME,
                      _DOWN_BUTTON_ID, _DOWN_BUTTON_OBJNAME, _LOADING_TEXT_OBJNAME, _NUM_ITEM_FIELDS)
-
-    _dropdown.set_loading_state()
     _dropdown.clear_item_index_callbacks()
     _dropdown.add_item_index_callback(_apply_preset_callback)
 

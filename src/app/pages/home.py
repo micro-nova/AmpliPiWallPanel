@@ -111,11 +111,9 @@ def _on_vol(message):
     vol_f = get_vol_slider_vol_f(message)
     polling.skip_next_vol_f()
     polling.skip_next_mute()
-
-    # define the call to be queued
-    # using function def instead of lambda so that multiple statements can be used
     id = _audioconf.group_id if _audioconf.using_group else _audioconf.zone_id
 
+    # define the calls to be queued
     def unmute_call():
         polling.skip_next_vol_f()
         polling.skip_next_mute()
@@ -140,21 +138,13 @@ def handle_msg(message):
         # valid slider update
         if id == VOL_SLIDER_ID:
             _on_vol(message)
-
-    # if message is button and button is pressed
     elif message_is_button_event(message) and button_is_pressed(message):
         # valid press event
         if id == PLAY_BUTTON_ID:
-            try:
-                if get_is_playing():
-                    _on_pause(_audioconf.stream_id)
-                else:
-                    _on_play(_audioconf.stream_id)
-                # poll_playing(get_source(zone_id))
-            except OSError as e:
-                print("play/pause button event failed due to internet probably. error:")
-                print(e)
-
+            if get_is_playing():
+                _on_pause(_audioconf.stream_id)
+            else:
+                _on_play(_audioconf.stream_id)
         elif id == NEXT_BUTTON_ID:
             _on_next(_audioconf.stream_id)
         elif id == PREV_BUTTON_ID:
@@ -164,13 +154,10 @@ def handle_msg(message):
         elif id == SOURCE_BUTTON_ID:
             _on_source()
         elif id == MUTE_BUTTON_ID:
-            try:
-                if get_muted():
-                    _on_unmute()
-                else:
-                    _on_mute()
-            except OSError:
-                print("mute/unmute button event failed due to internet probably")
+            if get_muted():
+                _on_unmute()
+            else:
+                _on_mute()
         elif id == CONFIG_BUTTON_ID:
             config.load_config_page()
         elif id == PRESET_BUTTON_ID:

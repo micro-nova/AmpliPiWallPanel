@@ -78,25 +78,8 @@ class DropDown:
 
         self.__update_fields()
 
-    def set_loading_state(self):
-        """Manipulates the display to show a loading state."""
-        # # make all fields invisible
-        # for i in range(self.num_fields):
-        #     displayserial.set_visible(i + self.first_field_id, False)
-        # if self.first_image_id is not None:
-        #     for i in range(self.num_fields):
-        #         displayserial.set_visible(i + self.first_image_id, False)
-        #
-        # # make buttons invisible
-        # displayserial.set_visible(self.up_button_id, False)
-        # displayserial.set_visible(self.down_button_id, False)
-        #
-        # # make loading text visible
-        # displayserial.set_visible(self.loading_text_id, True)
-        pass
-
     def add_item_index_callback(self, callb):
-        """callb is a lambda one argument and no return value. Adds callb to a list of callbacks that is called
+        """callb is a lambda with one argument and no return value. Adds callb to a list of callbacks that is called
         when the user selects an option from the list."""
         self.callbacks.append(callb)
 
@@ -110,9 +93,6 @@ class DropDown:
             self.selected_index = self.items.index(selected_string)
         except ValueError:
             self.selected_index = -1
-
-    # def get_string_from_index(self, index):
-    #     return
 
     # handles a serial message from the display
     def handle_message(self, message):
@@ -163,15 +143,6 @@ class DropDown:
                 if self.image_objname_prefix is not None:
                     displayserial.set_visible(f'{self.image_objname_prefix}{i}', True)
 
-        # # make sure all fields are visible
-        # for i in range(self.num_fields):
-        #     displayserial.set_visible(i + self.first_field_id, True)
-        #
-        # # if there are less than num_fields, disable unnecessary fields
-        # if num_items < self.num_fields:
-        #     for i in range(num_items, self.num_fields):
-        #         displayserial.set_visible(i + self.first_field_id, False)
-
         # populate fields
         for i in range(min(self.num_fields, num_items)):
             field_string = self.items[i + self.start_index]
@@ -182,7 +153,6 @@ class DropDown:
                     self.__set_image(i, image_id)
                 else:
                     displayserial.set_visible(f'{self.image_objname_prefix}{i}', False)
-
 
         # since we just changed the state of the displayed dropdown,
         # we need to update the up/down button visibilities
@@ -195,7 +165,6 @@ class DropDown:
         else:
             # make up button visible
             displayserial.set_visible(self.up_button_objname, True)
-        # if self.start_index == len(self.items) - self.num_fields or len(self.items) <= self.num_fields:
         if self.start_index >= len(self.items) - self.num_fields:
             # make down button invisible
             displayserial.set_visible(self.down_button_objname, False)

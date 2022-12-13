@@ -1,5 +1,3 @@
-import machine
-
 from app import displayserial
 from app.displayserial import message_id, message_is_button_event, button_is_pressed
 from app.pages import connection, zone, version

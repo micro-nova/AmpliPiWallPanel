@@ -10,7 +10,6 @@ class AudioConfig:
     _instance = None
     _initialized = False
 
-    # https://python-patterns.guide/gang-of-four/singleton/
     def __new__(cls):
         if cls._instance is None:
             print("creating AudioConfig object")
@@ -48,6 +47,10 @@ class AudioConfig:
         self.stream_id = new_stream_id
         # make api call to change the source's stream to new_stream_id
         api.set_stream(self.source_id, new_stream_id)
+        self.__update_supported_cmds_from_source(api.get_source(self.source_id))
+
+    def use_rca(self):
+        api.set_rca(self.source_id)
         self.__update_supported_cmds_from_source(api.get_source(self.source_id))
 
     # changing the zone may also change the source and stream

@@ -12,9 +12,7 @@ _BROKER_IP_FIELD_ID = 7
 _TOPIC_FIELD_ID = 2
 _USERNAME_FIELD_ID = 11
 _PASSWORD_FIELD_ID = 9
-
 _APPLY_BUTTON_ID = 4
-_BACK_BUTTON_ID = 5
 
 
 broker_ip = None
@@ -41,8 +39,6 @@ def handle_msg(message):
     if message_is_button_event(message) and button_is_pressed(message):
         if id == _APPLY_BUTTON_ID:
             _on_apply()
-        elif id == _BACK_BUTTON_ID:
-            _on_back()
     elif message_is_text(message):
         text = receive_text_message_str(message)
         if id == _BROKER_IP_FIELD_ID:
@@ -59,9 +55,6 @@ def _on_apply():
     mqttconfig.update_config(broker_ip=broker_ip, topic=topic, username=username, password=password)
     displayserial.set_visible('zspinner', False)
     _update_is_connected_icon()
-
-def _on_back():
-    pass
 
 def _none_to_empty_str(string) -> str:
     return '' if string is None else string

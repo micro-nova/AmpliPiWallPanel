@@ -8,7 +8,6 @@ _CHANGE_GROUP_BUTTON_ID = 4
 def _on_regroup():
     source.load_source_page()
 
-
 def _on_change_zone():
     zone.load_zone_page()
 

@@ -134,8 +134,7 @@ def run_h():
             except OSError as e:
                 if not wifi.is_connected():
                     print("wifi disconnected.")
-                print("polling failed somehow.")
-                print(e)
+                print(f"polling failed with error: {e}.")
 
         # poll serial messages from display
         if displayserial.uart_any():

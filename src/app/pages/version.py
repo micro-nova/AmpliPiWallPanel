@@ -24,7 +24,6 @@ dropdown = DropDown()
 _releases = []  # list of tag jsons (not just tag names)
 
 
-
 _show_prereleases = False
 def disable_prereleases():
     global _show_prereleases
@@ -50,7 +49,6 @@ def load_version_page():
     displayserial.set_component_txt(displayserial.VERSION_PAGE_NAME, VERSION_OBJNAME, sysconsts.VERSION)
 
     if wifi.is_connected():
-        dropdown.set_loading_state()
         _ota = ota_updater.make_ota_updater()
 
         _releases = _ota.get_all_releases()

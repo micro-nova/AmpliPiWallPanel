@@ -53,25 +53,16 @@ def start():
 
             # home assistant tries to change the state for some reason,
             # so store it here and publish it after init
-            # print("get state")
             state = relay.get_state()
-            # print(f'got state: {state}')
-            # print("set callback")
             c.set_callback(_callback)
-            # print("try connect")
             try_connect()  # this also sets is_connected
-            # print("subscribe")
             c.subscribe(_relay1_topic(config, True))
             c.subscribe(_relay2_topic(config, True))
-            # print("mqtt_init(state)")
             for i in range(10):
                 relay.mqtt_init(state)
-                # print(f'relay1: {relay.state1._state}, relay2: {relay.state2._state}')
                 time.sleep_ms(20)
-                # print("check_msg")
                 c.check_msg()
                 time.sleep_ms(20)
-                # print(f'relay1: {relay.state1._state}, relay2: {relay.state2._state}')
             return True
     except Exception as e:
         print(f'mqttconfig start threw an error: {e}')
@@ -83,7 +74,6 @@ def set_topic_base(base):
 
 def update_config(broker_ip=None, topic=None, username=None, password=None, client_id=None):
     global config
-
     config = _read_file()
     if broker_ip is not None:
         config['broker_ip'] = broker_ip
@@ -137,12 +127,10 @@ def update():
             is_connected = False
             time.sleep_ms(20)
     elif c is not None:  # is_connected is false
-        # print("tried updating mqtt but mqtt is disconnected.")
         curr_time = time_sec()
         if curr_time - last_reconnect_time >= _RECONNECT_INTERVAL:
             last_reconnect_time = curr_time
             print("trying periodic mqtt reconnect...")
-            # try_connect()
             start()
 
 def try_connect():
@@ -196,7 +184,6 @@ def _callback(topic, msg):
             set_relay2_state(True)
         elif msg_str == _OFF_VALUE:
             set_relay2_state(False)
-
 
 def _read_file() -> dict:
     loaded_config = {'broker_ip': '', 'topic': '', 'username': '', 'password': '', 'client_id': ''}

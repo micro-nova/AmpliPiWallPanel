@@ -31,7 +31,6 @@ def _on_reboot():
     machine.reset()
 
 def _on_factory_reset():
-    # remove all config files
     print('removing all config files')
     _try_remove('relay.txt')
     _try_remove('version_queue.txt')
@@ -41,8 +40,6 @@ def _on_factory_reset():
     _try_remove('mqtt.txt')
     _try_remove('brightness.txt')
     _try_remove_dir_recursive('next')
-
-    # reboot
     _on_reboot()
 
 def _try_remove(file):

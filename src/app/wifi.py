@@ -20,9 +20,7 @@ _amplipi_ip = ''
 def load_wifi_info():
     global _amplipi_ip
     """Loads wifi info from file (creates file if it doesn't exist). Returns wifi dict with ssid and password"""
-
     wifi_file_dict = {'ssid': '', 'password': '', 'ip': _amplipi_ip, 'autodetect': True}
-
     try:
         with open(_WIFI_CONFIG_FILENAME) as wifi_file:
             wifi_file_str = wifi_file.read()

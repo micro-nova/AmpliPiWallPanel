@@ -2,8 +2,6 @@ import machine
 import time
 
 from app import displayserial
-
-# objnames
 from app.displayserial import message_is_button_event, button_is_pressed, message_id
 from app.ota import custom_update
 from app.pages import version, brightness
@@ -37,13 +35,11 @@ def load_versioninfo_page(release):
                                     VERSION_INFO_OBJNAME,
                                     release_body)
 
-
 def _on_apply():
     if _tag_name is not None:
         brightness.reset_touch_timer()
         custom_update.queue_update(_tag_name)
         machine.reset()
-
 
 def _on_back():
     print('versioninfo back pressed')
