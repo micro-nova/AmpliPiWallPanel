@@ -44,6 +44,8 @@ def poll():
     if zone is not None:
         source_id = zone['source_id']
         source = get_source(source_id)
+        if source is None:
+            return
         source_name = source['name']
         _audioconf.stream_id = api.get_stream_id_from_source_dict(source)
         stream = api.get_stream(_audioconf.stream_id)
@@ -64,6 +66,8 @@ def poll():
         try:
             source_id = group['source_id']
             source = get_source(source_id)
+            if source is None:
+                return
             # if success, we are no longer waiting on the user to fix the invalid group
             _awaiting_user_input = False
             print('group valid')
@@ -75,13 +79,12 @@ def poll():
                 displayserial.change_page(displayserial.GROUP_INVALID_PAGE_NAME)
                 _awaiting_user_input = True
 
-        if source is not None:
-            new_stream_id = api.get_stream_id_from_source_dict(source)
-            if new_stream_id is not None:
-                _audioconf.stream_id = new_stream_id
-                stream = api.get_stream(_audioconf.stream_id)
-            else:
-                _audioconf.stream_id = -1
+        new_stream_id = api.get_stream_id_from_source_dict(source)
+        if new_stream_id is not None:
+            _audioconf.stream_id = new_stream_id
+            stream = api.get_stream(_audioconf.stream_id)
+        else:
+            _audioconf.stream_id = -1
 
         if not _skip_next_vol_f:
             poll_vol_f(group)
@@ -166,12 +169,13 @@ def poll_stream_name(stream, source):
     global stream_type
     new_stream_type = None
     new_stream_name = ''
-    if source['input'].startswith('local'):
-        new_stream_type = 'rca'
-        new_stream_name = source['name']
-    elif stream is not None:
-        new_stream_name = stream['name']
-        new_stream_type = stream['type']
+    if stream is not None:
+        if source['input'].startswith('local'):
+            new_stream_type = 'rca'
+            new_stream_name = source['name']
+        else:
+            new_stream_name = stream['name']
+            new_stream_type = stream['type']
     if new_stream_name != stream_name:
         stream_name = new_stream_name
         send_stream_name(stream_name)
