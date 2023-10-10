@@ -28,14 +28,10 @@ _streams = []
 
 def _change_stream_callback(index):
     audioconf = AudioConfig()
-    if index == 0:
-        audioconf.use_rca()
-    else:
-        new_stream = _streams[index]
-        audioconf.change_stream(int(new_stream['id']))
+    new_stream = _streams[index]
+    audioconf.change_stream(int(new_stream['id']))
     polling.invalid_group_handled()
 
-# only call this when on this page
 def load_stream_page():
     """Loads stream page contents. Should only be called when the display is on the stream page."""
     global _streams
@@ -55,11 +51,10 @@ def load_stream_page():
         names = []
         types = []
     else:
+        # filter rca streams that don't match the source id
+        _streams = [stream for stream in _streams if stream['type'] != 'rca' or stream['index'] == polling.get_source_id()]
         names = [stream['name'] for stream in _streams]  # if 'name' in stream
         types = [displayserial.stream_type_to_pic_id(stream['type']) for stream in _streams]
-        _streams.insert(0, None) # RCA is handled differently in _change_stream_callback
-        names.insert(0, polling.source_name)
-        types.insert(0, displayserial.stream_type_to_pic_id('rca'))
     print(f'{len(names)} streams: ')
     print(names)
 

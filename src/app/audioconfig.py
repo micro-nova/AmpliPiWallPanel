@@ -49,10 +49,6 @@ class AudioConfig:
         api.set_stream(self.source_id, new_stream_id)
         self.__update_supported_cmds_from_source(api.get_source(self.source_id))
 
-    def use_rca(self):
-        api.set_rca(self.source_id)
-        self.__update_supported_cmds_from_source(api.get_source(self.source_id))
-
     # changing the zone may also change the source and stream
     def change_zone(self, new_zone_id) -> bool:
         self.using_group = False
