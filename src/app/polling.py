@@ -14,7 +14,7 @@ is_playing = None
 last_supported_cmds = []
 is_muted = None
 vol_f = 0.0
-source_name = ''
+source_id = 0
 _skip_next_vol_f = False
 _skip_next_playing = False
 _skip_next_mute = False
@@ -30,7 +30,7 @@ def poll():
     global _skip_next_playing
     global _skip_next_mute
     global _awaiting_user_input
-    global source_name
+    global source_id
 
     zone = None
     group = None
@@ -46,7 +46,6 @@ def poll():
         source = get_source(source_id)
         if source is None:
             return
-        source_name = source['name']
         _audioconf.stream_id = api.get_stream_id_from_source_dict(source)
         stream = api.get_stream(_audioconf.stream_id)
         if not _skip_next_vol_f:
@@ -170,12 +169,8 @@ def poll_stream_name(stream, source):
     new_stream_type = None
     new_stream_name = ''
     if stream is not None:
-        if source['input'].startswith('local'):
-            new_stream_type = 'rca'
-            new_stream_name = source['name']
-        else:
-            new_stream_name = stream['name']
-            new_stream_type = stream['type']
+        new_stream_name = stream['name']
+        new_stream_type = stream['type']
     if new_stream_name != stream_name:
         stream_name = new_stream_name
         send_stream_name(stream_name)
@@ -210,6 +205,9 @@ def set_muted(muted):
     global is_muted
     is_muted = muted
     update_mute_button(is_muted)
+
+def get_source_id():
+    return source_id
 
 def skip_next_vol_f():
     global _skip_next_vol_f
