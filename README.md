@@ -38,6 +38,33 @@ Once you have this wired up to your flasher, you can download [0.1.22.bin](https
 
 After this flashes, you can reassemble and install the device into a wall socket. The esp32 should start flashing the nextion display automatically shortly after powering on. Since this bin is likely not the latest version, after setup, you can go into settings->update and update to the latest verison.
 
+### Editing the display firmware
+
+To make changes to the display firmware you will need to use the [Nextion Editor](https://nextion.tech/nextion-editor/) to make changes to the `amplipi_v2.HMI` display config.
+When you are done, save the display .tft file in Nextion Editor under `File > TFT file output`, save the file as `amplipi_v2.tft`, this is the file you will use to program the display.
+
+### Programming the display firmware
+
+1. Install the Adafruit MicroPython tool [ampy](https://github.com/scientifichackers/ampy)
+2. Push the new `amplipi_v2.tft` to the panel, the ESP firmware expects the display firmware to be in `/app/amplipi_v2.tft`
+
+    ```cmd
+    ampy --port COM7 put .\src\app\amplipi_v2.tft /app/amplipi_v2.tft
+    ```
+
+3. Restart the panel and the ESP firwmare will automatically flash the display using the file on the panel.
+
+### Creating a system image
+
+To create a new system binary we can capture an image of an existing panel which has the modifications we desire using [esptool](https://github.com/espressif/esptool).
+
+```cmd
+esptool.py --baud 460800 --port COM7 read_flash 0x0 0x400000 new_firmware.bin
+```
+
+>Note: if your build also has a new display firmware, take this image after [uploading the display](#programming-the-display-firmware), but before rebooting, as the display firmware is deleted after it is applied.
+
+
 ## Setting up MQTT with Home Assistant
 ### 1. Setting Up an MQTT Broker 
 Set up an MQTT broker with Home Assistant if you haven't already. It's recommended to use the Mosquitto MQTT broker addon with Home Assistant, you can install it by following the steps [here](https://github.com/home-assistant/addons/blob/master/mosquitto/DOCS.md).
